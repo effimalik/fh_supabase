@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   dataLayer.js — FleetFlow Pro  v2.2
+   dataLayer.js — FleetFlow Pro  v3.0 (Supabase, manual refresh)
    Cache-first data layer · IndexedDB persistence · session-auth
    Permission-driven: only permitted datasets are fetched or cached.
 
@@ -41,10 +41,12 @@
   /* ─────────────────────────────────────────
      CONFIG — must match auth.js API_BASE
   ───────────────────────────────────────── */
-  const API_BASE = 'https://script.google.com/macros/s/AKfycbwHZnQa4elV-ChUslHoci1UhWZnTuBPhLIlrI_-TsOX6ysamVvUDrpkpS3pRVMEoWeP/exec';
-   // const API_BASE = 'https://script.google.com/macros/s/AKfycbwjG9K0SJSv5kcUmbQBNnejmyqSg4zdVhX7VudnCyrL2Xa69yhrpjkcNaRY63xe7FZN/exec';
+  // Supabase URL / key come from Auth.getConfig() (single source of truth in auth.js)
 
   const CACHE_PREFIX = 'ap2_';
+  // Data is refreshed MANUALLY (refresh button / AdminPro.forceRefresh) — no expiry, no timers.
+  const MANUAL_TTL = 10 * 365 * 24 * 3600 * 1000;
+  const PAGE_SIZE  = 1000; // Supabase max rows per request
 
   // Dataset keys that intentionally return a multi-sheet object
   // instead of a flat array. Add to this only when a backend handler
@@ -212,15 +214,16 @@
           ttlMs    : 5 * 60 * 1000,             // 5-minute default
           access   : { view: true, add: false, editDelete: false },
         };
-      } else if (typeof val === 'object' && val.apiKey) {
+      } else if (typeof val === 'object') {
         // Rich shape from server — use as-is with safe defaults for any missing fields.
         // Fail closed: a missing/malformed `access` block grants nothing.
         const a = (val.access && typeof val.access === 'object') ? val.access : {};
         entry = {
           label    : String(val.label    || key),
-          apiKey   : String(val.apiKey),
-          paramKey : String(val.paramKey || 'type'),
-          ttlMs    : Number(val.ttlMs)   || 5 * 60 * 1000,
+          apiKey   : String(val.apiKey || ''),
+          paramKey : 'type',
+          tables   : Array.isArray(val.tables) ? val.tables : [],
+          ttlMs    : MANUAL_TTL,
           access   : {
             view       : a.view       === true,
             add        : a.add        === true,
@@ -237,6 +240,10 @@
         console.log(`[DataLayer] "${key}" has no view access — excluded from DATASETS`);
         continue;
       }
+
+      // Datasets with no table mapped (e.g. ap2_master) keep their menu permission
+      // in Auth but are never fetched.
+      if (!entry.tables || !entry.tables.length) continue;
 
       result[key] = entry;
     }
@@ -286,7 +293,7 @@
   async function _idbSet(fullKey, value) {
     const db = await _openDB();
     return new Promise((res, rej) => {
-      const record = { ts: value.ts, data: value.data, fingerprint: value.fingerprint || null };
+      const record = { ts: value.ts, data: value.data, fingerprint: value.fingerprint || null, meta: value.meta || null };
       const tx  = db.transaction(IDB_STORE, 'readwrite');
       const req = tx.objectStore(IDB_STORE).put(record, fullKey);
       req.onsuccess = () => res(true);
@@ -345,7 +352,7 @@
       const k   = keys[i];
       const rec = records[i];
       if (typeof k === 'string' && k.startsWith(CACHE_PREFIX) && rec) {
-        _shadow.set(k, { ts: rec.ts, data: rec.data, fingerprint: rec.fingerprint || null });
+        _shadow.set(k, { ts: rec.ts, data: rec.data, fingerprint: rec.fingerprint || null, meta: rec.meta || null });
       }
     }
     console.log('[DataLayer] IDB shadow loaded —', _shadow.size, 'entries');
@@ -411,15 +418,16 @@
       return _shadow.get(this._key(name)) || null;
     },
 
-    set(name, data) {
+    set(name, data, meta) {
       let fingerprint = null;
       try {
         const raw = sessionStorage.getItem('ap_session');
         if (raw) fingerprint = JSON.parse(raw).sessionFingerprint || null;
       } catch {}
 
-      const entry   = { ts: Date.now(), data, fingerprint };
       const fullKey = this._key(name);
+      const prev    = _shadow.get(fullKey);
+      const entry   = { ts: Date.now(), data, fingerprint, meta: meta || (prev && prev.meta) || null };
 
       _shadow.set(fullKey, entry);
 
@@ -483,6 +491,36 @@
      Attaches session credentials to every request.
      Reads apiKey and paramKey from DATASETS (server-supplied) — no hardcoding.
   ───────────────────────────────────────── */
+  async function _fetchTable(table, token, cfg) {
+    const rows = [];
+    let from = 0;
+    for (;;) {
+      const controller = new AbortController();
+      const timeoutId  = setTimeout(() => controller.abort(), 30000);
+      let res;
+      try {
+        res = await fetch(`${cfg.url}/rest/v1/${encodeURIComponent(table)}?select=*`, {
+          cache: 'no-store', signal: controller.signal,
+          headers: {
+            apikey: cfg.key, Authorization: 'Bearer ' + token,
+            'Range-Unit': 'items', Range: `${from}-${from + PAGE_SIZE - 1}`,
+          },
+        });
+      } finally { clearTimeout(timeoutId); }
+
+      if (res.status === 416) break;                       // range past the end → done
+      if (res.status === 401 || res.status === 403) throw new Error(`access denied reading ${table} (HTTP ${res.status})`);
+      if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${table}`);
+
+      const page = await res.json();
+      if (!Array.isArray(page)) throw new Error(`unexpected response for ${table}`);
+      rows.push(...page);
+      if (page.length < PAGE_SIZE) break;
+      from += PAGE_SIZE;
+    }
+    return rows;
+  }
+
   async function _fetchFromServer(dsKey) {
     if (_inflight[dsKey]) {
       console.log(`[DataLayer] ${dsKey}: piggyback on in-flight fetch`);
@@ -498,68 +536,31 @@
         throw new Error(`[DataLayer] "${dsKey}" not permitted — access denied`);
       }
 
-      const creds = window.Auth && window.Auth.getCredentials
-        ? window.Auth.getCredentials()
-        : null;
+      const token = window.Auth && window.Auth.getAccessToken ? await window.Auth.getAccessToken() : null;
+      if (!token) throw new Error(`[DataLayer] ${dsKey}: no valid session — aborting fetch`);
+      const cfg = window.Auth.getConfig();
 
-      if (!creds || !creds.sessionId || !creds.token) {
-        throw new Error(`[DataLayer] ${dsKey}: no valid session — aborting fetch`);
-      }
-
-      // paramKey and apiKey come from the server-supplied permissions, not hardcode
-      const paramKey = ds.paramKey || 'type';
-      const url = `${API_BASE}?${paramKey}=${encodeURIComponent(ds.apiKey)}`
-        + `&sessionId=${encodeURIComponent(creds.sessionId)}`
-        + `&token=${encodeURIComponent(creds.token)}`
-        + `&_t=${Date.now()}`;
-
-      console.log(`[DataLayer] ${dsKey}: fetching → ${paramKey}=${ds.apiKey}`);
+      console.log(`[DataLayer] ${dsKey}: fetching →`, ds.tables.map(t => t.table).join(', '));
       const t0 = performance.now();
 
-      const controller = new AbortController();
-      const timeoutId  = setTimeout(() => controller.abort(), 30000);
+      const fetched = await Promise.all(ds.tables.map(t => _fetchTable(t.table, token, cfg)));
 
-      let res;
-      try {
-        res = await fetch(url, { cache: 'no-store', redirect: 'follow', mode: 'cors', signal: controller.signal });
-      } finally {
-        clearTimeout(timeoutId);
-      }
-
-      if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${dsKey}`);
-
-      const json = await res.json();
-
-      if (json && typeof json === 'object' && !Array.isArray(json) && json.success === false) {
-        const msg = json.error || json.message || 'Unknown server error';
-        console.error(`[DataLayer] ${dsKey}: API rejected — "${msg}" | ${url}`);
-        throw new Error(`[DataLayer] ${dsKey} API error: ${msg}`);
-      }
-
-      let data;
-
-      if (OBJECT_SHAPE_DATASETS.has(dsKey)) {
-        // Special case: combo payload, not a flat row array.
-        // Validate it has the expected sub-keys with array values.
-        if (!json || typeof json !== 'object' || Array.isArray(json)) {
-          throw new Error(`[DataLayer] ${dsKey}: expected object payload, got ${Array.isArray(json) ? 'array' : typeof json}`);
-        }
-        const hasAnyData = Object.values(json).some(v => Array.isArray(v) && v.length > 0);
-        if (!hasAnyData) {
-          console.warn(`[DataLayer] ${dsKey}: empty response — not caching`);
-          throw new Error(`[DataLayer] ${dsKey}: empty or invalid data received`);
-        }
-        data = json; // store as-is, no row normalisation
+      // One table, no alias → flat array of rows. Several tables / aliases → { alias: rows, … }
+      // (Table_Name in permissions_log, e.g. "ticLog:tic_log,Ticket:tic_mlog")
+      let data, meta;
+      if (ds.tables.length === 1 && !ds.tables[0].alias) {
+        data = _normaliseRows(fetched[0]);
+        meta = { columns: fetched[0].length ? Object.keys(fetched[0][0]) : [] };
       } else {
-        // Standard contract: flat array of rows.
-        data = _normaliseRows(json);
-        if (!Array.isArray(data) || data.length === 0) {
-          console.warn(`[DataLayer] ${dsKey}: empty response — not caching`);
-          throw new Error(`[DataLayer] ${dsKey}: empty or invalid data received`);
-        }
+        data = {}; meta = { columns: {} };
+        ds.tables.forEach((t, i) => {
+          const name = t.alias || t.table;
+          data[name] = _normaliseRows(fetched[i]);
+          meta.columns[name] = fetched[i].length ? Object.keys(fetched[i][0]) : [];
+        });
       }
 
-      _cache.set(dsKey, data);
+      _cache.set(dsKey, data, meta);
       const elapsed = Math.round(performance.now() - t0);
       console.log(`[DataLayer] ${dsKey}: cached`,
         Array.isArray(data) ? `${data.length} rows` : Object.keys(data).map(k => `${k}:${data[k].length}`).join(', '),
@@ -569,8 +570,7 @@
 
     _inflight[dsKey] = promise;
     try {
-      const result = await promise;
-      return result;
+      return await promise;
     } finally {
       delete _inflight[dsKey];
     }
@@ -648,47 +648,16 @@
   ───────────────────────────────────────── */
   const _timers = {};
 
-  function _scheduleRefresh(dsKey) {
-    const ds = DATASETS[dsKey];
-    if (!ds) return;
+  function _scheduleRefresh() { /* manual refresh only — no background timers */ }
 
-    if (_timers[dsKey]) { clearTimeout(_timers[dsKey]); delete _timers[dsKey]; }
-
-    const entry = _cache.get(dsKey);
-    if (!entry) return;
-
-    const age       = Date.now() - entry.ts;
-    const remaining = ds.ttlMs - age;
-    const delay     = Math.max(0, remaining - 30000);
-
-    _timers[dsKey] = setTimeout(async () => {
-      if (document.visibilityState === 'hidden') {
-        _scheduleRefresh(dsKey);
-        return;
-      }
-      console.log(`[DataLayer] background refresh: ${dsKey}`);
-      try {
-        await _fetchFromServer(dsKey);
-        _scheduleRefresh(dsKey);
-      } catch (e) {
-        console.warn(`[DataLayer] background refresh failed: ${dsKey}`, e.message);
-        _timers[dsKey] = setTimeout(() => _scheduleRefresh(dsKey), 2 * 60 * 1000);
-      }
-    }, delay);
-
-    console.log(`[DataLayer] ${dsKey}: next refresh in ${Math.round(delay/1000)}s`);
-  }
-
-  function _startAllTimers() {
-    Object.keys(DATASETS).forEach(_scheduleRefresh);
-  }
+  function _startAllTimers() { /* manual refresh only */ }
 
   /* ─────────────────────────────────────────
      PUBLIC API  — window.AdminPro
   ───────────────────────────────────────── */
   window.AdminPro = {
 
-    VERSION: '2.2',
+    VERSION: '3.0',
 
     /* ── INIT — rebuild permitted DATASETS + purge stale cache + start timers. ── */
     init() {
@@ -771,7 +740,7 @@
     /* ── CACHE UTILITIES ── */
     cache: {
       get      : (name)        => _cache.get(name),
-      set      : (name, data)  => _cache.set(name, data),
+      set      : (name, data, meta) => _cache.set(name, data, meta),
       clear    : (name)        => _cache.clear(name),
       clearAll : ()            => _cache.clearAll(),
       status   : (name)        => _cache.status(name),
@@ -807,6 +776,12 @@
         return { key, label: ds.label, ageMs, ageLabel, fresh, hasData, lastSync,
                  ttl: ds.ttlMs, rowCount, remaining, inFlight };
       });
+    },
+
+    /* ── getColumns — column names (in row-array order) of a cached dataset ── */
+    getColumns(dsKey) {
+      const e = _cache.get(dsKey);
+      return e && e.meta ? e.meta.columns : null;
     },
 
     /* ── getActiveDatasets — exposes permitted dataset configs ── */
@@ -910,6 +885,6 @@
     });
   })();
 
-  console.log('[DataLayer] v2.2 loaded — IndexedDB cache — window.AdminPro ready');
+  console.log('[DataLayer] v3.0 loaded — IndexedDB cache — window.AdminPro ready');
 
 })();

@@ -1,6 +1,6 @@
 
 /* ═══════════════════════════════════════════════════════════════
-   auth.js — FleetFlow Pro  v3.1
+   auth.js — FleetFlow Pro  v4.0 (Supabase)
    Server-validated sessions · absolute + inactivity expiry · secure logout
    LOAD FIRST on every page (before dataLayer.js and any page JS)
 
@@ -38,7 +38,9 @@
   const ABSOLUTE_TTL     = 8  * 60 * 60 * 1000; // 8 hr hard limit
   const SERVER_CHECK_INT = 5  * 60 * 1000;    // server ping every 5 min
   const ALLOWED_ORIGIN   = 'https://effimalik.github.io/Testing/';
-   const API_BASE = 'https://script.google.com/macros/s/AKfycbwHZnQa4elV-ChUslHoci1UhWZnTuBPhLIlrI_-TsOX6ysamVvUDrpkpS3pRVMEoWeP/exec';
+   const SUPABASE_URL = 'https://vqmbnegrqfzphaawwogj.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_57UwCMxEzrWmPdkLf85B_A_7h166c55'; // publishable key — safe in browser (RLS protects data)
+  const REFRESH_SKEW = 60 * 1000; // refresh access token 60s before it expires
    
 
      
@@ -196,44 +198,96 @@
   let _serverCheckTimer = null;
   let _serverCheckInFlight = false;
 
-  async function _validateWithServer() {
+  /* ── Supabase helpers ── */
+  function _sbHeaders(token) {
+    const h = { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' };
+    if (token) h.Authorization = 'Bearer ' + token;
+    return h;
+  }
+
+  // Resolves true (refreshed) · false (refresh token rejected) · null (network/5xx, try later)
+  let _refreshPromise = null;
+  function _refreshAccessToken() {
+    if (_refreshPromise) return _refreshPromise;
+    _refreshPromise = (async () => {
+      const s = _readSession();
+      if (!s || !s.refreshToken) return false;
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+          method: 'POST', headers: _sbHeaders(),
+          body: JSON.stringify({ refresh_token: s.refreshToken }),
+        });
+        if (res.status >= 500) return null;
+        if (!res.ok) return false;
+        const d = await res.json();
+        const cur = _readSession() || s;
+        cur.token = d.access_token;
+        if (d.refresh_token) cur.refreshToken = d.refresh_token;
+        cur.expiresAt = Date.now() + (Number(d.expires_in) || 3600) * 1000;
+        _writeSession(cur);
+        return true;
+      } catch { return null; }
+    })().finally(() => { _refreshPromise = null; });
+    return _refreshPromise;
+  }
+
+  // Returns a valid access token (refreshing if close to expiry), or null if no valid session.
+  async function _getAccessToken() {
+    let s = _readSession();
+    if (!_isClientValid(s)) return null;
+    if (s.expiresAt && Date.now() > s.expiresAt - REFRESH_SKEW) {
+      const ok = await _refreshAccessToken();
+      if (ok === false) { _redirectToLogin('refresh token rejected'); return null; }
+      s = _readSession();
+    }
+    return s ? s.token : null;
+  }
+
+  // Periodic check: token still accepted AND the user is still 'active' in users_log.
+  async function _validateWithServer(retried) {
     if (_serverCheckInFlight) return;
     _serverCheckInFlight = true;
 
-    const s = _readSession();
-    if (!_isClientValid(s)) {
+    const s0 = _readSession();
+    if (!_isClientValid(s0)) {
       _serverCheckInFlight = false;
       _redirectToLogin('client check failed before server call');
       return;
     }
 
     try {
-      const url = `${API_BASE}?type=validateSession`
-        + `&sessionId=${encodeURIComponent(s.sessionId)}`
-        + `&token=${encodeURIComponent(s.token)}`
-        + `&_t=${Date.now()}`;
+      const token = await _getAccessToken();
+      if (!token) { _serverCheckInFlight = false; return; } // already redirected
 
-      const res  = await fetch(url, { cache: 'no-store', redirect: 'follow', mode: 'cors' });
+      const res = await fetch(SUPABASE_URL + '/rest/v1/users_log?select=email,status', {
+        headers: _sbHeaders(token), cache: 'no-store',
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        _serverCheckInFlight = false;
+        if (!retried) {
+          const ok = await _refreshAccessToken();
+          if (ok !== false) { setTimeout(() => _validateWithServer(true), 1500); return; }
+        }
+        _redirectToLogin('server rejected session (' + res.status + ')');
+        return;
+      }
 
       if (!res.ok) {
-        // HTTP error (5xx etc.) — keep session, don't force logout
+        // 5xx etc. — keep session, don't force logout
         console.warn('[Auth] Server validate HTTP', res.status, '— keeping session');
-        _scheduleServerCheck();
-        return;
+      } else {
+        const rows = await res.json();
+        const me = Array.isArray(rows)
+          ? rows.find(r => String(r.email || '').trim().toLowerCase() === s0.email) : null;
+        if (!me || String(me.status || '').trim().toLowerCase() !== 'active') {
+          _serverCheckInFlight = false;
+          _redirectToLogin('account no longer active');
+          return;
+        }
+        const s = _readSession();
+        if (s) { s.lastActive = Date.now(); _writeSession(s); }
       }
-
-      const data = await res.json();
-
-      if (data.valid === false) {
-        _serverCheckInFlight = false;
-        _redirectToLogin('server rejected: ' + (data.reason || 'unknown'));
-        return;
-      }
-
-      // Update lastActive on confirmed valid
-      s.lastActive = Date.now();
-      _writeSession(s);
-
     } catch (e) {
       // Network error — do NOT log out, could be transient
       console.warn('[Auth] Server validate network error (session kept):', e.message);
@@ -352,6 +406,12 @@
   ───────────────────────────────────────── */
   window.Auth = {
 
+    /** Valid Supabase access token (auto-refreshed) or null. Use for every API call. */
+    getAccessToken: _getAccessToken,
+
+    /** Supabase project URL + publishable key (for dataLayer / page code). */
+    getConfig() { return { url: SUPABASE_URL, key: SUPABASE_KEY }; },
+
     /**
      * Returns { sessionId, token } for attaching to API calls.
      * Returns null if session is invalid — caller must abort the request.
@@ -413,6 +473,8 @@
           email              : String(payload.email).trim().toLowerCase(),
           name               : String(payload.name  || payload.email).trim(),
           role               : String(payload.role  || 'User').trim(), // display only
+          refreshToken       : payload.refreshToken ? String(payload.refreshToken) : null,
+          expiresAt          : payload.expiresAt || null,
           permissions        : payload.permissions || null, // portal access map — only TRUE keys from server
           loginAt            : _loginAt,
           lastActive         : _loginAt,
@@ -540,16 +602,9 @@
       } catch {}
 
       // Tell server to destroy session — best-effort, don't block redirect
-      if (s && s.sessionId && s.token) {
-        fetch(`${API_BASE}`, {
-          method  : 'POST',
-          headers : { 'Content-Type': 'text/plain' },
-          body    : JSON.stringify({
-            type      : 'destroySession',
-            sessionId : s.sessionId,
-            token     : s.token,
-          }),
-          keepalive: true, // fires even after navigation
+      if (s && s.token) {
+        fetch(SUPABASE_URL + '/auth/v1/logout', {
+          method: 'POST', headers: _sbHeaders(s.token), keepalive: true,
         }).catch(() => {}); // intentionally ignore errors
       }
 
