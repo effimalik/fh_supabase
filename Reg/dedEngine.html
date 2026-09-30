@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Deduction Upload & Validation Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/apiConfig.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cacheWatcher.js?v=1"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root,[data-theme="dark"]{
+  --bg:#0a0c10;--bg2:#0f1117;--bg3:#141720;
+  --surface:#181c26;--surface2:#1e2333;--surface3:#242a3d;
+  --border:#252b3d;--border2:#2e3650;--border3:#3a4260;
+  --text:#e8edf8;--text2:#8d96b0;--text3:#5a6280;
+  --accent:#4f8ef7;--accent-dim:rgba(79,142,247,.12);--accent-glow:rgba(79,142,247,.25);
+  --teal:#2dd4aa;--teal-dim:rgba(45,212,170,.12);
+  --amber:#f5a623;--amber-dim:rgba(245,166,35,.12);
+  --red:#f05252;--red-dim:rgba(240,82,82,.12);--red-glow:rgba(240,82,82,.2);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --radius:6px;--radius-lg:10px;--radius-xl:14px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --shadow-lg:0 8px 40px rgba(0,0,0,.8);
+  --header-h:56px;
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#ffffff;--bg3:#e8ecf0;
+  --surface:#ffffff;--surface2:#e2e7ed;--surface3:#d7dee6;
+  --border:#c8d0d9;--border2:#9aa5b1;--border3:#7f8b99;
+  --text:#0d1117;--text2:#3d454f;--text3:#5a6370;
+  --accent:#0550ae;--accent-dim:rgba(5,80,174,.12);--accent-glow:rgba(5,80,174,.22);
+  --teal:#116329;--teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00;--amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b;--red-dim:rgba(168,17,27,.11);--red-glow:rgba(168,17,27,.18);
+  --purple:#6639c8;--purple-dim:rgba(102,57,200,.13);
+  --orange:#953800;--orange-dim:rgba(149,56,0,.13);
+  --radius:6px;--radius-lg:10px;--radius-xl:14px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --shadow-lg:0 8px 32px rgba(0,0,0,.15);
+  --header-h:56px;
+}
+[data-theme="purple"]{
+  --bg:#0f0b1e;--bg2:#17112e;--bg3:#1e1840;
+  --surface:#221a3a;--surface2:#2c2250;--surface3:#372a66;
+  --border:#3a2e5e;--border2:#5a4890;--border3:#7259b8;
+  --text:#e8e0ff;--text2:#a899d4;--text3:#7a6ca8;
+  --accent:#c084fc;--accent-dim:rgba(192,132,252,.14);--accent-glow:rgba(192,132,252,.3);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);--red-glow:rgba(248,113,113,.2);
+  --purple:#c084fc;--purple-dim:rgba(192,132,252,.14);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --radius:6px;--radius-lg:10px;--radius-xl:14px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --shadow-lg:0 8px 32px rgba(0,0,0,.7);
+  --header-h:56px;
+}
+[data-theme="ocean"]{
+  --bg:#071520;--bg2:#0d2035;--bg3:#112840;
+  --surface:#143050;--surface2:#1a3d60;--surface3:#204a75;
+  --border:#1e4a72;--border2:#2e6a9e;--border3:#3f84bd;
+  --text:#d6eeff;--text2:#7db8e8;--text3:#4a87b8;
+  --accent:#38bdf8;--accent-dim:rgba(56,189,248,.14);--accent-glow:rgba(56,189,248,.3);
+  --teal:#34d399;--teal-dim:rgba(52,211,153,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);--red-glow:rgba(248,113,113,.2);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --radius:6px;--radius-lg:10px;--radius-xl:14px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --shadow-lg:0 8px 32px rgba(0,0,0,.65);
+  --header-h:56px;
+}
+[data-theme="slate"]{
+  --bg:#0e1117;--bg2:#1a1f28;--bg3:#222836;
+  --surface:#28303e;--surface2:#313c4e;--surface3:#3b475c;
+  --border:#3a4556;--border2:#556070;--border3:#6b7789;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#60a5fa;--accent-dim:rgba(96,165,250,.13);--accent-glow:rgba(96,165,250,.28);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);--red-glow:rgba(248,113,113,.2);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --radius:6px;--radius-lg:10px;--radius-xl:14px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --shadow-lg:0 8px 32px rgba(0,0,0,.6);
+  --header-h:56px;
+}
+html,body{min-height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+.shell{display:flex;flex-direction:column;min-height:100vh;}
+
+/* HEADER */
+.header{height:var(--header-h);display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:300;gap:12px;}
+.brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;letter-spacing:-.3px;}
+.brand-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-sub{font-size:10px;font-weight:500;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;}
+.header-meta{display:flex;align-items:center;gap:10px;}
+.hbadge{display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;background:var(--surface2);border:1px solid var(--border2);font-size:11px;color:var(--text2);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+/* NAV BUTTONS (merged into header) */
+.snav-add{width:26px;height:26px;border-radius:50%;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.snav-add:hover{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.snav-dl-wrap{position:relative;flex-shrink:0;}
+.snav-dl-chevron{transition:transform .15s;}
+.snav-dl-wrap.open .snav-dl-chevron{transform:rotate(180deg);}
+.snav-dl-menu{display:none;position:absolute;top:calc(100% + 6px);bottom:auto;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow-lg);min-width:170px;z-index:2000;overflow:hidden;padding:4px;}
+.snav-dl-wrap.open .snav-dl-menu{display:block;}
+.snav-dl-menu button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:calc(var(--radius) - 2px);border:none;background:transparent;color:var(--text);font-size:12px;font-family:var(--font);font-weight:600;cursor:pointer;text-align:left;}
+.snav-dl-menu button:hover{background:var(--surface2);}
+
+/* CONTENT */
+.content{flex:1;padding:20px 22px 60px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* PAGE HDR */
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+.page-hdr h1{font-size:18px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:10px;}
+.page-hdr p{font-size:12px;color:var(--text3);margin-top:3px;}
+.page-hdr-actions{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;}
+.sep{height:1px;background:var(--border);margin-bottom:18px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface2);color:var(--text);cursor:pointer;font-size:12px;font-family:var(--font);font-weight:600;transition:all .15s;white-space:nowrap;}
+.btn:hover{background:var(--surface3);border-color:var(--border3);}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.btn.primary:hover{background:var(--accent);color:#fff;}
+.btn.success{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.btn.success:hover{background:var(--teal);color:#000;}
+.btn.danger{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.btn.danger:hover{background:var(--red);color:#fff;}
+.btn.amber{background:var(--amber-dim);border-color:var(--amber);color:var(--amber);}
+.btn.amber:hover{background:var(--amber);color:#000;}
+.btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none;}
+.btn.sm{padding:5px 11px;font-size:11px;}
+.btn.xs{padding:3px 8px;font-size:10.5px;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:14px;overflow:hidden;}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;}
+.card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;}
+.card-body{padding:16px;}
+
+/* STAT ROW */
+.stat-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px 16px;flex:1 1 130px;min-width:0;display:flex;align-items:center;gap:12px;}
+.stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-icon.blue{background:var(--accent-dim);color:var(--accent);}
+.stat-icon.teal{background:var(--teal-dim);color:var(--teal);}
+.stat-icon.red{background:var(--red-dim);color:var(--red);}
+.stat-icon.amber{background:var(--amber-dim);color:var(--amber);}
+.stat-icon.purple{background:var(--purple-dim);color:var(--purple);}
+.stat-val{font-size:20px;font-weight:700;font-family:var(--mono);line-height:1;}
+.stat-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-top:2px;}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-xl);padding:44px 24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3);position:relative;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:var(--accent-dim);}
+.uz-icon{width:50px;height:50px;border-radius:14px;background:var(--accent-dim);border:1px solid rgba(79,142,247,.3);display:flex;align-items:center;justify-content:center;color:var(--accent);margin:0 auto 14px;}
+.uz-title{font-size:15px;font-weight:700;margin-bottom:5px;}
+.uz-sub{font-size:12px;color:var(--text3);}
+.uz-tags{display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+.uz-tag{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap;}
+.badge.green{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,170,.25);}
+.badge.red{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,82,82,.25);}
+.badge.amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,166,35,.25);}
+.badge.blue{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(79,142,247,.25);}
+.badge.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+.badge.gray{background:rgba(90,98,128,.15);color:var(--text2);border:1px solid var(--border2);}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;width:100%;}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl thead th{background:var(--bg3);padding:9px 12px;text-align:left;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);border-bottom:2px solid var(--border2);white-space:nowrap;}
+.tbl tbody td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover td{background:rgba(255,255,255,.018);}
+.tbl tbody tr.row-valid td{background:rgba(45,212,170,.025);}
+.tbl tbody tr.row-invalid td{background:rgba(240,82,82,.04);}
+.tbl tbody tr.row-edited td{background:rgba(245,166,35,.04);}
+.mono{font-family:var(--mono);font-size:11.5px;}
+
+/* EDITABLE CELL */
+.cell-input{width:100%;min-width:90px;padding:4px 7px;border-radius:4px;border:1.5px solid var(--amber);background:rgba(245,166,35,.08);color:var(--text);font-family:var(--mono);font-size:12px;outline:none;transition:border-color .15s;}
+.cell-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);}
+.cell-display{font-family:var(--mono);font-size:12px;}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--border);}
+.fi{display:flex;flex-direction:column;gap:3px;}
+.fi label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);}
+.fi select,.fi input{padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:12px;outline:none;}
+.fi select:focus,.fi input:focus{border-color:var(--accent);}
+.fi input{width:170px;}
+.search-w{position:relative;}
+.search-w svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;}
+.search-w input{padding-left:28px;}
+
+/* PAGINATION */
+.pag-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.pag-info{font-size:11.5px;color:var(--text3);}
+.pag-btns{display:flex;gap:4px;}
+.pg-btn{min-width:28px;height:28px;padding:0 6px;border-radius:5px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;font-size:11.5px;font-family:var(--mono);display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.pg-btn:hover:not(:disabled):not(.cur){background:var(--surface3);}
+.pg-btn.cur{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.pg-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* BATCH ITEM */
+.batches-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:14px;}
+.batches-grid .empty{grid-column:1/-1;}
+.batch-item{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);transition:background .12s,border-color .12s;min-width:0;}
+.batch-item:hover{background:var(--surface2);border-color:var(--border2);}
+@media(max-width:980px){
+  .batches-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:680px){
+  .batches-grid{grid-template-columns:1fr;}
+}
+.b-icon{width:38px;height:38px;border-radius:9px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0;}
+.b-info{flex:1;min-width:0;}
+.b-name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.b-meta{font-size:11px;color:var(--text3);margin-top:3px;display:flex;gap:12px;flex-wrap:wrap;}
+.b-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+
+/* INFO BOX */
+.info-box{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:var(--radius);font-size:12px;margin-bottom:12px;}
+.info-box.info{background:var(--accent-dim);border:1px solid rgba(79,142,247,.2);color:var(--text2);}
+.info-box.success{background:var(--teal-dim);border:1px solid rgba(45,212,170,.2);color:var(--text2);}
+.info-box.warn{background:var(--amber-dim);border:1px solid rgba(245,166,35,.2);color:var(--text2);}
+.info-box.danger{background:var(--red-dim);border:1px solid rgba(240,82,82,.2);color:var(--text2);}
+
+/* PROGRESS */
+.prog-wrap{height:5px;background:var(--surface3);border-radius:10px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:10px;transition:width .4s ease;}
+.prog-fill.teal{background:var(--teal);}
+.prog-fill.red{background:var(--red);}
+.prog-fill.blue{background:var(--accent);}
+
+/* PREVIEW METRICS */
+.preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.pm{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;text-align:center;}
+.pm-val{font-size:22px;font-weight:700;font-family:var(--mono);}
+.pm-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-top:3px;}
+
+/* KPI ROW — small cards, always one line */
+.kpi-row{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;}
+.kpi-card{flex:1 1 0;min-width:82px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;text-align:center;white-space:nowrap;}
+.kpi-val{font-size:14px;font-weight:700;font-family:var(--mono);line-height:1.2;}
+.kpi-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-top:2px;}
+
+/* VALID/INVALID TOGGLE */
+.vi-toggle{display:inline-flex;border:1px solid var(--border2);border-radius:20px;padding:2px;background:var(--surface2);}
+.vi-toggle button{border:none;background:transparent;padding:5px 13px;border-radius:18px;font-size:11.5px;font-weight:700;font-family:var(--font);color:var(--text3);cursor:pointer;transition:all .15s;}
+.vi-toggle button.active{background:var(--surface);color:var(--text);}
+.vi-toggle button.on-valid.active{color:var(--teal);}
+.vi-toggle button.on-invalid.active{color:var(--red);}
+
+/* AUDIT */
+.audit-entry{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.audit-entry:last-child{border-bottom:none;}
+.audit-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.audit-dot.ok{background:var(--teal);}
+.audit-dot.warn{background:var(--amber);}
+.audit-dot.err{background:var(--red);}
+.audit-dot.info{background:var(--accent);}
+.audit-dot.lock{background:var(--purple);}
+.audit-time{font-size:10.5px;font-family:var(--mono);color:var(--text3);white-space:nowrap;flex-shrink:0;min-width:130px;}
+.audit-main{flex:1;min-width:0;}
+.audit-action{font-size:12px;font-weight:700;}
+.audit-detail{font-size:11.5px;color:var(--text3);margin-top:2px;}
+
+/* MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(5px);z-index:600;align-items:center;justify-content:center;padding:16px;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);width:100%;max-width:600px;max-height:90vh;display:flex;flex-direction:column;}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.modal-hdr h2{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.modal-body{padding:18px 20px;overflow-y:auto;flex:1;}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid var(--border);flex-shrink:0;}
+.dg2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.dr{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;}
+.dr-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px;}
+.dr-val{font-size:13px;font-weight:500;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--surface3);border:1px solid var(--border3);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:11px 16px;display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.34,1.4,.64,1);z-index:9999;max-width:340px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* OVERLAY */
+.proc-overlay{display:none;position:fixed;inset:0;background:rgba(10,12,16,.92);backdrop-filter:blur(6px);z-index:800;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.proc-overlay.open{display:flex;}
+.spinner{width:38px;height:38px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* EMPTY */
+.empty{text-align:center;padding:52px 20px;color:var(--text3);}
+.empty-ico{font-size:38px;margin-bottom:12px;opacity:.4;}
+
+/* ERR CHIP */
+.err-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;background:var(--red-dim);color:var(--red);border:1px solid rgba(240,82,82,.3);}
+
+/* SELECT */
+.sel{padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:12px;outline:none;}
+
+/* HEADER-ROW YES/NO TOGGLE */
+.hdr-toggle-wrap{display:inline-flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;}
+.hdr-toggle{position:relative;display:inline-block;width:38px;height:20px;flex-shrink:0;}
+.hdr-toggle input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;}
+.hdr-toggle-track{position:absolute;inset:0;background:var(--border2);border-radius:20px;transition:background .15s;pointer-events:none;}
+.hdr-toggle-track::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 2px rgba(0,0,0,.35);}
+.hdr-toggle input:checked ~ .hdr-toggle-track{background:var(--accent);}
+.hdr-toggle input:checked ~ .hdr-toggle-track::after{left:20px;}
+
+@media(max-width:680px){
+  .preview-grid{grid-template-columns:repeat(2,1fr);}
+  .stat-row{display:grid;grid-template-columns:repeat(2,1fr);}
+  .dg2{grid-template-columns:1fr;}
+  .content{padding:14px 14px 60px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ INSTANT THEME SYNC (no flash) ═══ -->
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch(e) {}
+})();
+</script>
+
+<div class="shell">
+
+<!-- OVERLAY -->
+<div class="proc-overlay" id="proc-overlay">
+  <div class="spinner"></div>
+  <div id="proc-title" style="font-size:14px;font-weight:700;color:var(--text);">Processing…</div>
+  <div id="proc-sub" style="font-size:12px;color:var(--text3);">Please wait</div>
+</div>
+
+<!-- MODAL: Row Detail -->
+<div class="modal-backdrop" id="row-modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h2>Row Detail</h2>
+      <button class="btn sm" onclick="closeModal('row-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="row-modal-body"></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('row-modal')">Close</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Batch Detail — all dedLog rows for one Batch ID -->
+<div class="modal-backdrop" id="batch-detail-modal">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-hdr" style="flex-direction:column;align-items:stretch;gap:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <h2><span id="bd-modal-title">Batch Detail</span></h2>
+        <button class="btn sm" onclick="closeModal('batch-detail-modal')">✕</button>
+      </div>
+      <div class="dg2">
+        <div class="dr"><div class="dr-lbl">Requested At</div><div class="dr-val" id="bd-meta-at">—</div></div>
+        <div class="dr"><div class="dr-lbl">Requested By</div><div class="dr-val" id="bd-meta-by">—</div></div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="tbl-wrap" style="max-height:420px;overflow-y:auto;">
+        <table class="tbl">
+          <thead><tr><th>Emp ID</th><th>Ded ID</th><th>Type</th><th>Amount</th><th>Month</th></tr></thead>
+          <tbody id="bd-modal-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('batch-detail-modal')">Close</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-ico"></span><span id="toast-msg"></span></div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ══ SAVED BATCHES — the only page; upload/mapping/preview/save all live in the single ingest window (modal) opened via the + button ══ -->
+<div class="tab-panel active" id="tab-approve">
+  <!-- <div class="page-hdr">
+    <div>
+      <h1>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Saved Batches
+      </h1>
+      <p>Upload, review and save a file in one window — click <strong>+</strong> to start. Saving pushes the batch to Google Sheets (dedLog) in one call.</p>
+    </div>
+  </div> -->
+  <div class="sep"></div>
+
+  <div class="card">
+    <div class="card-hdr">
+      <div class="card-title">Batches</div>
+      <div class="header-meta">
+        <div class="hbadge"><div class="live-dot"></div><span id="hdr-user">HR Admin</span></div>
+        <button class="snav-add" id="btn-nav-add" onclick="openIngestModal()" title="Upload a new deduction file">+</button>
+        <div class="snav-dl-wrap" id="snav-dl-wrap">
+          <button class="btn sm" id="btn-nav-download" onclick="toggleDlMenu(event)" title="Download the deduction upload template">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Download
+            <svg class="snav-dl-chevron" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="snav-dl-menu" id="snav-dl-menu">
+            <button onclick="downloadTemplate('xlsx');closeDlMenu();">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              XLSX Template
+            </button>
+            <button onclick="downloadTemplate('csv');closeDlMenu();">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              CSV Template
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="approve-list" class="card-body batches-grid"></div>
+  </div>
+</div>
+
+<!-- MODAL: single ingest window — Upload → Map → Preview & Save, all in one window -->
+<div class="modal-backdrop" id="col-map-modal">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-hdr">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span id="cm-modal-title">File Upload & Ingestion</span>
+      </h2>
+      <button class="btn sm" onclick="closeModal('col-map-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- ══ PHASE 0: UPLOAD ══ -->
+      <div id="cm-phase-upload">
+        <div class="upload-zone" id="drop-zone" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)" onclick="document.getElementById('file-input').click()">
+          <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFiles(this.files)"/>
+          <div class="uz-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div class="uz-title"><strong>Click to upload</strong> or drag & drop your filled template</div>
+          <div class="uz-sub">Column mapping, validation and save all happen right here, in this window</div>
+          <div class="uz-tags">
+            <span class="uz-tag">.xlsx</span><span class="uz-tag">.xls</span><span class="uz-tag">.csv</span><span class="uz-tag">Max 10MB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PHASE 1: MAP COLUMNS ══ -->
+      <div id="cm-phase-map" style="display:none;">
+
+        <div class="info-box info" id="cm-header-note" style="margin-bottom:14px;"></div>
+
+        <!-- Detected columns preview -->
+        <div style="margin-bottom:14px;">
+          <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px;">Detected Columns in your file</div>
+          <div id="cm-detected-cols" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- Mapping rows -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="cm-fields">
+
+          <!-- Employee ID -->
+          <div class="dr">
+            <div class="dr-lbl" style="margin-bottom:6px;">Employee ID <span style="color:var(--red);">*</span></div>
+            <select class="sel" id="cm-empId" style="width:100%;"></select>
+            <div id="cm-empId-warn" style="display:none;font-size:11px;color:var(--red);margin-top:4px;">Column not found — map manually or this will error.</div>
+          </div>
+
+          <!-- Deduction ID — optional: auto-generated (millisecond-unique) for any row that has none in the file -->
+          <div class="dr">
+            <div class="dr-lbl" style="margin-bottom:6px;">Deduction ID <span style="color:var(--teal);font-weight:400;">(optional)</span></div>
+            <select class="sel" id="cm-dedId" style="width:100%;"></select>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">Not in the file? Leave unselected — a unique ID is generated automatically.</div>
+          </div>
+
+          <!-- Amount -->
+          <div class="dr">
+            <div class="dr-lbl" style="margin-bottom:6px;">Amount (AED) <span style="color:var(--red);">*</span></div>
+            <select class="sel" id="cm-amount" style="width:100%;"></select>
+            <div id="cm-amount-warn" style="display:none;font-size:11px;color:var(--red);margin-top:4px;">Column not found — map manually or this will error.</div>
+          </div>
+
+          <!-- Deduction Type — same layout as the fields above. Marker next to the
+               label flips between a red asterisk (a value is still needed — sheet
+               doesn't cover every row) and a teal dot (already resolved from the
+               sheet for every row, nothing to do here). -->
+          <div class="dr">
+            <div class="dr-lbl" style="margin-bottom:6px;">Deduction Type <span id="cm-dedtype-mark"></span></div>
+            <select class="sel" id="cm-dedType-col" style="width:100%;"></select>
+            <input type="text" id="cm-dedType-manual" placeholder="Enter Deduction Type to fill missing rows"
+              style="display:none;margin-top:6px;width:100%;padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:12px;outline:none;"/>
+            <div id="cm-dedtype-warn" style="display:none;font-size:11px;color:var(--red);margin-top:4px;"></div>
+          </div>
+
+          <!-- Month — same pattern as Deduction Type. -->
+          <div class="dr">
+            <div class="dr-lbl" style="margin-bottom:6px;">Month <span id="cm-month-mark"></span></div>
+            <select class="sel" id="cm-month-col" style="width:100%;"></select>
+            <select id="cm-month-manual" class="sel" style="display:none;margin-top:6px;width:100%;">
+              <option>January 2025</option><option>February 2025</option><option>March 2025</option>
+              <option>April 2025</option><option>May 2025</option><option selected>June 2025</option>
+              <option>July 2025</option><option>August 2025</option><option>September 2025</option>
+              <option>October 2025</option><option>November 2025</option><option>December 2025</option>
+            </select>
+            <div id="cm-month-warn" style="display:none;font-size:11px;color:var(--red);margin-top:4px;"></div>
+          </div>
+
+        </div>
+
+        <!-- Live preview -->
+        <div style="margin-top:16px;">
+          <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px;">Preview (first 3 rows with current mapping)</div>
+          <div class="tbl-wrap" style="max-height:160px;overflow-y:auto;">
+            <table class="tbl">
+              <thead><tr><th>Emp ID</th><th>Ded ID</th><th>Type</th><th>Amount</th><th>Month</th></tr></thead>
+              <tbody id="cm-preview-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PHASE 2: MERGED DATA PREVIEW + SAVE ══ -->
+      <div id="cm-phase-preview" style="display:none;">
+
+        <!-- KPIs — one line, small -->
+        <div class="kpi-row" id="cm-kpi-row"></div>
+
+        <!-- Valid / Invalid toggle — only shown when invalid rows exist -->
+        <div id="cm-view-toggle" style="display:none;margin-bottom:10px;"></div>
+
+        <div class="tbl-wrap" style="max-height:340px;overflow-y:auto;">
+          <table class="tbl" id="cm-full-preview-table">
+            <thead id="cm-full-preview-head"></thead>
+            <tbody id="cm-full-preview-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-foot" id="cm-foot-upload">
+      <button class="btn" onclick="closeModal('col-map-modal')">Cancel</button>
+    </div>
+    <div class="modal-foot" id="cm-foot-map" style="display:none;">
+      <button class="btn" onclick="closeModal('col-map-modal')">Cancel</button>
+      <button class="btn success" onclick="showMappingPreview()">
+        Preview Data →
+      </button>
+    </div>
+    <div class="modal-foot" id="cm-foot-preview" style="display:none;">
+      <button class="btn" onclick="backToMapping()">← Back to Mapping</button>
+      <button class="btn success" id="btn-save" onclick="saveBatch()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Batch (1 Transaction)
+      </button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /shell -->
+
+<script>
+// ═══════════════════════════════════════════════
+// SESSION — logged-in user, read from ap_session (sessionStorage)
+// Same key/shape set at login by docPortal.html:
+// { sessionId, token, email, name, role, permissions, loginAt, lastActive, sessionFingerprint }
+// ═══════════════════════════════════════════════
+function getSession() {
+  try { return JSON.parse(sessionStorage.getItem('ap_session') || '{}'); } catch (_) { return {}; }
+}
+const AP_SESSION = getSession();
+
+// ═══════════════════════════════════════════════
+// TRANSACTION ID — datetime-to-millisecond, guaranteed non-repeating.
+// Assigned to every row the instant it is loaded/parsed. If two rows land
+// in the same millisecond the counter is nudged forward by 1ms so no two
+// Trans IDs can ever collide.
+// ═══════════════════════════════════════════════
+let _lastTransMs = 0;
+function genTransId() {
+  let ms = Date.now();
+  if (ms <= _lastTransMs) ms = _lastTransMs + 1;
+  _lastTransMs = ms;
+  return ms;
+}
+function transMsToDateTime(ms) {
+  try {
+    return new Date(ms).toLocaleString('en-GB', {
+      hour12:false, year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit', second:'2-digit', fractionalSecondDigits:3
+    }).replace(',', '');
+  } catch (_) {
+    return new Date(ms).toISOString();
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CLEAN DATA STORE — no dummy/seed data at all
+// ═══════════════════════════════════════════════
+const DB = {
+  currentMonth: 'June 2025',
+  currentDedType: '',
+  currentUser:  AP_SESSION.email || 'Unknown User',   // logged-in user's email — used as "Uploaded By"
+  batches:      [],
+  auditLog:     [],
+  pendingRows:  [],
+  currentBatchId: null,
+  currentFileId:  null,
+  uploadQueue:  []
+};
+document.getElementById('hdr-user').textContent = DB.currentUser;
+
+/* ═══════════════════════════════════════════════════════
+ *  CACHE — ap2_dedLog, via shared cacheWatcher.js, with a safe fallback
+ *  Mirrors docPortal.html's pattern exactly (same store, same call shape).
+ *  Store: 'datasets'   Key: 'ap2_dedLog'
+ *  rec  = { ts, data:Array, fingerprint }
+ *  row  = [ BatchID, EmpID, DedID, Type, Amount, Month, RequestedAt, RequestedBy ]
+ *  (same 8-column order the dedLog sheet + saveBatch() payload use)
+ * ═══════════════════════════════════════════════════════ */
+const _AP2_CACHE_KEY_DEDLOG = 'ap2_dedLog';
+const _IDB_NAME  = 'ap2_fleet_cache';
+const _IDB_STORE = 'datasets';
+
+if (typeof window.AP2CacheWatcher === 'undefined') {
+  console.warn('[dedEngine] cacheWatcher.js did not load — using local fallback');
+  window.AP2CacheWatcher = (function () {
+    let _conn = null;
+    function _open() {
+      if (_conn) return Promise.resolve(_conn);
+      return new Promise((res, rej) => {
+        let done = false;
+        const req = indexedDB.open(_IDB_NAME);
+        const t = setTimeout(() => { if (!done) { done = true; rej(new Error('idb-open-timeout')); } }, 2000);
+        req.onsuccess = e => { if (!done) { done = true; clearTimeout(t); _conn = e.target.result; res(_conn); } };
+        req.onerror   = e => { if (!done) { done = true; clearTimeout(t); rej(e.target.error); } };
+      });
+    }
+    return {
+      init() {},
+      subscribe() { return () => {}; },
+      notifyNow() {},
+      getStatus() { return { healthy: false, mode: 'local-fallback', lastError: 'cacheWatcher.js not loaded' }; },
+      async readKey(key) {
+        try {
+          const db  = await _open();
+          if (!db.objectStoreNames.contains(_IDB_STORE)) return null;
+          const rec = await new Promise((res, rej) => {
+            const r = db.transaction(_IDB_STORE, 'readonly').objectStore(_IDB_STORE).get(key);
+            r.onsuccess = () => res(r.result || null);
+            r.onerror   = () => rej(r.error);
+          });
+          return (rec && rec.data) ? rec.data : null;
+        } catch (e) {
+          if (e && e.name === 'NotFoundError') return null;
+          console.warn('[dedEngine] fallback read failed:', e.message);
+          return null;
+        }
+      }
+    };
+  })();
+}
+
+let _idbConn = null;
+function _getDB() {
+  if (_idbConn) return Promise.resolve(_idbConn);
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(_IDB_NAME);
+    req.onsuccess = e => { _idbConn = e.target.result; res(_idbConn); };
+    req.onerror   = e => rej(e.target.error);
+  });
+}
+async function _readRawTs(cacheKey) {
+  try {
+    const db = await _getDB();
+    if (!db.objectStoreNames.contains(_IDB_STORE)) return 0;
+    const rec = await new Promise((res, rej) => {
+      const req = db.transaction(_IDB_STORE, 'readonly').objectStore(_IDB_STORE).get(cacheKey);
+      req.onsuccess = () => res(req.result || null);
+      req.onerror   = () => rej(req.error);
+    });
+    return (rec && rec.ts) ? rec.ts : 0;
+  } catch (e) { return 0; }
+}
+async function _readCache(cacheKey) {
+  const data = await AP2CacheWatcher.readKey(cacheKey);
+  if (!data || !Array.isArray(data) || !data.length) return null;
+  const ts = await _readRawTs(cacheKey);
+  return { ts, data };
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  ap2_dedLog — normalise + memory-hoist + group by Batch ID
+ * ═══════════════════════════════════════════════════════ */
+let dedLogRows = []; // normalised rows from ap2_dedLog, RAM copy
+
+function normaliseDedLogRow(r) {
+  if (!r || !Array.isArray(r)) return null;
+  const batchId = String(r[0] || '').trim();
+  if (!batchId || batchId === 'Batch ID') return null; // blank / header row
+  return {
+    batchId,
+    empId:       r[1],
+    dedId:       r[2],
+    type:        String(r[3] || '').trim(),
+    amount:      typeof r[4] === 'number' ? r[4] : parseFloat(String(r[4]).replace(/,/g,'')) || 0,
+    month:       String(r[5] || '').trim(),
+    requestedAt: String(r[6] || '').trim(),
+    requestedBy: String(r[7] || '').trim()
+  };
+}
+
+async function loadDedLog() {
+  try {
+    const rec = await _readCache(_AP2_CACHE_KEY_DEDLOG);
+    dedLogRows = rec ? rec.data.map(normaliseDedLogRow).filter(Boolean) : [];
+  } catch (e) {
+    console.warn('[dedEngine] dedLog cache read failed:', e.message);
+    dedLogRows = [];
+  }
+  renderApproveQueue();
+}
+
+// Groups dedLogRows into one summary per Batch ID (id, month, totals, rows[]).
+function groupDedLogByBatch(rows) {
+  const map = {};
+  rows.forEach(r => {
+    if (!map[r.batchId]) {
+      map[r.batchId] = {
+        id: r.batchId, month: r.month, uploadedBy: r.requestedBy, uploadedAt: r.requestedAt,
+        status: 'SAVED', totalRows: 0, validRows: 0, invalidRows: 0, duplicates: 0,
+        savedAmount: 0, detailRows: []
+      };
+    }
+    const b = map[r.batchId];
+    b.totalRows++; b.validRows++; b.savedAmount += r.amount;
+    b.detailRows.push(r);
+  });
+  return map;
+}
+
+// Batches saved earlier in THIS session (DB.batches) fill in for a batch
+// that hasn't shown up in the ap2_dedLog cache yet — the cache is written
+// on a delay, so without this the just-saved batch would briefly vanish.
+function getMergedBatches() {
+  const map = groupDedLogByBatch(dedLogRows);
+  DB.batches.forEach(b => {
+    if (map[b.id]) return;
+    map[b.id] = {
+      id: b.id, month: b.month, uploadedBy: b.uploadedBy, uploadedAt: b.uploadedAt,
+      status: b.status, totalRows: b.totalRows, validRows: b.validRows,
+      invalidRows: b.invalidRows, duplicates: b.duplicates, savedAmount: b.savedAmount,
+      detailRows: (b.rows || []).map(r => ({
+        batchId: b.id, empId: r.empId, dedId: r.dedId, type: r.dedType,
+        amount: typeof r.amount === 'number' ? r.amount : parseFloat(String(r.amount).replace(/,/g,'')) || 0,
+        month: r.month || b.month, requestedAt: b.uploadedAt, requestedBy: b.uploadedBy
+      }))
+    };
+  });
+  return map;
+}
+
+let _lastBatchMap = {};
+
+function openBatchDetail(batchId) {
+  const b = _lastBatchMap[batchId];
+  const tbody = document.getElementById('bd-modal-body');
+  document.getElementById('bd-modal-title').textContent = 'Batch Detail — ' + batchId;
+  // Requested At / Requested By are batch-level (same for every row in the batch),
+  // so they live once in the modal header instead of repeating as table columns.
+  document.getElementById('bd-meta-at').textContent = (b && (b.uploadedAt || (b.detailRows[0] && b.detailRows[0].requestedAt))) || '—';
+  document.getElementById('bd-meta-by').textContent = (b && (b.uploadedBy || (b.detailRows[0] && b.detailRows[0].requestedBy))) || '—';
+  if (!b || !b.detailRows.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;">No rows found for this batch.</td></tr>';
+  } else {
+    tbody.innerHTML = b.detailRows.map(r => `
+      <tr>
+        <td class="mono">${esc(r.empId)}</td>
+        <td class="mono">${esc(r.dedId)}</td>
+        <td>${esc(r.type)}</td>
+        <td class="mono">${fmt(r.amount, 2)}</td>
+        <td>${esc(r.month)}</td>
+      </tr>`).join('');
+  }
+  openModal('batch-detail-modal');
+}
+
+try {
+  AP2CacheWatcher.init();
+  AP2CacheWatcher.subscribe(() => { loadDedLog(); });
+} catch (e) {
+  console.warn('[dedEngine] cacheWatcher wiring failed, continuing without live updates:', e.message);
+}
+
+/* Parent (index.html) push protocol — same as docPortal.html/allEmp.html */
+window.addEventListener('message', (e) => {
+  if (!e.data) return;
+  if (e.data.type === 'ap-cache-preload' && e.data.datasets && e.data.datasets[_AP2_CACHE_KEY_DEDLOG]) {
+    dedLogRows = e.data.datasets[_AP2_CACHE_KEY_DEDLOG].map(normaliseDedLogRow).filter(Boolean);
+    renderApproveQueue();
+  }
+  if (e.data.type === 'ap-cache-ready' && e.data.key === _AP2_CACHE_KEY_DEDLOG && e.data.data) {
+    dedLogRows = e.data.data.map(normaliseDedLogRow).filter(Boolean);
+    renderApproveQueue();
+  }
+  if (e.data.type === 'ap-cache-updated') {
+    try { window.parent.postMessage({ type: 'ap-cache-request', key: _AP2_CACHE_KEY_DEDLOG }, '*'); } catch (err) {}
+  }
+});
+try { window.parent.postMessage({ type: 'ap-cache-request', key: _AP2_CACHE_KEY_DEDLOG }, '*'); } catch (e) {}
+
+renderApproveQueue();
+loadDedLog();
+
+// ═══════════════════════════════════════════════
+// SINGLE-WINDOW INGEST MODAL — Upload → Map → Preview & Save all in one window
+// ═══════════════════════════════════════════════
+function openIngestModal() {
+  CM = { allRows:[], headerIdx:-1, headerGuess:-1, headerless:true, headers:[], rawRows:[], batchId:'', previewRows:null };
+  DB._pendingFile = null;
+  DB._pendingItem = null;
+  document.getElementById('cm-modal-title').textContent = 'File Upload & Ingestion';
+  showIngestPhase('upload');
+  openModal('col-map-modal');
+}
+
+function showIngestPhase(phase) {
+  document.getElementById('cm-phase-upload').style.display   = phase === 'upload'  ? '' : 'none';
+  document.getElementById('cm-phase-map').style.display      = phase === 'map'     ? '' : 'none';
+  document.getElementById('cm-phase-preview').style.display  = phase === 'preview' ? '' : 'none';
+  document.getElementById('cm-foot-upload').style.display    = phase === 'upload'  ? '' : 'none';
+  document.getElementById('cm-foot-map').style.display       = phase === 'map'     ? '' : 'none';
+  document.getElementById('cm-foot-preview').style.display   = phase === 'preview' ? '' : 'none';
+  document.getElementById('cm-modal-title').textContent =
+    phase === 'upload' ? 'File Upload & Ingestion' :
+    phase === 'map'    ? 'Column Alignment' :
+                         'Batch Preview';
+}
+
+// ═══════════════════════════════════════════════
+// MONTH — manual fallback value, entered inline in the Month field
+// ═══════════════════════════════════════════════
+function updateMonth() {
+  const sel = document.getElementById('cm-month-manual');
+  if (!sel) return;
+  DB.currentMonth = sel.value;
+  if (document.getElementById('uz-month')) document.getElementById('uz-month').textContent = DB.currentMonth;
+  if (typeof updateColPreview === 'function' && CM.headers && CM.headers.length) updateColPreview();
+}
+
+// ═══════════════════════════════════════════════
+// DEDUCTION TYPE — manual fallback value, entered inline in the Deduction Type field
+// ═══════════════════════════════════════════════
+function updateDedType() {
+  const box = document.getElementById('cm-dedType-manual');
+  if (!box) return;
+  DB.currentDedType = box.value.trim();
+  if (typeof updateColPreview === 'function' && CM.headers && CM.headers.length) updateColPreview();
+}
+
+// ═══════════════════════════════════════════════
+// TEMPLATE DOWNLOAD — proper xlsx with SheetJS
+// ═══════════════════════════════════════════════
+function downloadTemplate(type) {
+  const month   = DB.currentMonth;
+  const dedType = DB.currentDedType;
+
+  // Header row — this is always row 1. No instruction text is ever placed
+  // above the headers, so the header row stays row 1 and column positions
+  // never shift regardless of how the file is opened or re-saved.
+  const headers = ['Employee ID','Deduction ID','Deduction Type','Amount (AED)','Month (YYYY-MM)','Remarks'];
+
+  if (type === 'csv') {
+    const hdr  = headers.join(',');
+    const emptyRows = Array(10).fill(',,,,,');
+    const content = [hdr, ...emptyRows].join('\n') + '\n';
+    const bom = '\uFEFF';
+    dl(bom + content, 'Deduction_Template_'+month.replace(' ','_')+'.csv', 'text/csv;charset=utf-8');
+    showToast('CSV template downloaded', 'ok');
+    return;
+  }
+
+  // XLSX via SheetJS
+  const wb = XLSX.utils.book_new();
+
+  // Sheet data: row1 = headers, rows 2-11 = empty data rows.
+  // Deduction Type & Month columns may be left blank per-row — the portal's
+  // current Deduction Type / Payroll Month selections are used as a fallback
+  // for any row where those two cells are empty.
+  const wsData = [
+    headers,
+    ...Array(10).fill(['', '', '', '', '', ''])
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Column widths
+  ws['!cols'] = [
+    { wch: 18 }, // Employee ID
+    { wch: 18 }, // Deduction ID
+    { wch: 22 }, // Deduction Type
+    { wch: 16 }, // Amount
+    { wch: 18 }, // Month
+    { wch: 24 }  // Remarks
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Deduction Template');
+
+  // Instructions live on their own sheet — never in row 1 of the data sheet —
+  // so pasted/appended data always lands starting at the true header row.
+  const instructData = [
+    ['Deduction Template — Instructions'],
+    [''],
+    ['1. Fill data on the "Deduction Template" sheet starting at row 2. Do not rename, reorder, or delete the header row.'],
+    ['2. Employee ID and Deduction ID are required for every row. Format: letters, numbers, - and _ only.'],
+    ['3. Amount (AED) is required and must be a number greater than 0.'],
+    ['4. Deduction Type and Month (YYYY-MM) are OPTIONAL in this sheet.'],
+    ['   • If left blank, they will be filled automatically from the portal\'s Deduction Type / Payroll Month selection at upload time.'],
+    ['   • If provided in the sheet, the sheet value always takes priority over the portal selection, row by row.'],
+    ['   • You can mix — some rows filled in, some left blank — the blanks will use the portal value; filled rows keep their own value.'],
+    [`Current portal defaults at time of download — Payroll Month: ${month}   Deduction Type: ${dedType || '(not set)'}`],
+    [''],
+    ['5. Do not leave fully blank rows between data rows — they are skipped automatically but keep your data contiguous for clarity.']
+  ];
+  const wsInstruct = XLSX.utils.aoa_to_sheet(instructData);
+  wsInstruct['!cols'] = [{ wch: 100 }];
+  XLSX.utils.book_append_sheet(wb, wsInstruct, 'Read Me');
+
+  XLSX.writeFile(wb, 'Deduction_Template_'+month.replace(' ','_')+'.xlsx');
+  showToast('XLSX template downloaded — open in Excel', 'ok');
+}
+
+// ═══════════════════════════════════════════════
+// DRAG & DROP
+// ═══════════════════════════════════════════════
+function onDragOver(e)  { e.preventDefault(); document.getElementById('drop-zone').classList.add('drag'); }
+function onDragLeave()  { document.getElementById('drop-zone').classList.remove('drag'); }
+function onDrop(e)      { e.preventDefault(); onDragLeave(); handleFiles(e.dataTransfer.files); }
+
+// ═══════════════════════════════════════════════
+// FILE HANDLING — read actual file content
+// ═══════════════════════════════════════════════
+function handleFiles(files) {
+  if (!files.length) return;
+  const file = files[0];
+  const ext  = file.name.split('.').pop().toLowerCase();
+  if (!['xlsx','xls','csv'].includes(ext)) { showToast('Only .xlsx, .xls, .csv allowed','err'); return; }
+  if (file.size > 10 * 1024 * 1024)        { showToast(file.name+' exceeds 10MB','err'); return; }
+
+  const uid     = 'UP-'  + String(Date.now()).slice(-6);
+  const fvid    = 'FV-'  + String(Date.now()+1).slice(-5);
+  const batchId = 'BATCH-' + batchMonthYear() + '-' + String(Date.now()).slice(-4);
+
+  const queueItem = {
+    uid, fvid, batchId,
+    name: file.name,
+    size: file.size,
+    month: DB.currentMonth,
+    checksum: 'SHA256:' + Math.random().toString(16).slice(2,10) + '...' + Math.random().toString(16).slice(2,6)
+  };
+
+  // File selected → go straight into ingestion, no separate window/modal.
+  DB._pendingFile = file;
+  DB._pendingItem = queueItem;
+  document.getElementById('file-input').value = '';
+  ingestFile();
+}
+
+// ═══════════════════════════════════════════════
+// INGEST — read XLSX/CSV rows and validate
+// ═══════════════════════════════════════════════
+function ingestFile() {
+  const file = DB._pendingFile;
+  const item = DB._pendingItem;
+  if (!file || !item) return;
+
+  const steps = [
+    ['Archiving original file…','Immutable copy stored'],
+    ['Data cleansing engine…','Trim · Normalise encoding · Fix dates'],
+    ['Structural validation…','Checking mandatory columns'],
+    ['Core validation engine…','Identity · Data Types · Special Chars'],
+    ['Duplicate detection…','File-scope + System-scope check'],
+    ['Building error map…','Cell-level structured errors'],
+    ['Finalising…','Ready for correction']
+  ];
+
+  // Show overlay immediately, then read file
+  runOverlay(steps[0][0], steps[0][1]);
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
+
+  // finishIngest now receives the FULL raw 2D array (no header stripped
+  // yet) — the Column Alignment modal asks the user whether row 1 is a
+  // header and slices accordingly.
+  function finishIngest(allRows) {
+    if (!allRows.length) {
+      hideOverlay();
+      showToast('No data rows found. Fill the template and re-upload.', 'err');
+      return;
+    }
+    DB.currentBatchId = item.batchId;
+    DB.currentFileId  = item.fvid;
+    let si = 1;
+    const iv = setInterval(() => {
+      if (si < steps.length) { updateOverlay(steps[si][0], steps[si][1]); si++; }
+      else {
+        clearInterval(iv);
+        setTimeout(() => {
+          hideOverlay();
+          // Move to the mapping phase of the same window — header is
+          // detected automatically, columns are mapped, then the merged
+          // data is previewed and saved, all without leaving this modal.
+          openColMapModal(allRows, item.batchId);
+          addAudit('UPLOAD', 'info', `Uploaded: ${file.name} · ${allRows.length} row(s) detected · ${item.batchId} · ${item.checksum}`);
+        }, 350);
+      }
+    }, 380);
+  }
+
+  if (ext === 'csv') {
+    reader.onload = (e) => {
+      try {
+        const lines = e.target.result
+          .split('\n')
+          .map(l => l.split(',').map(c => c.trim().replace(/^"|"$/g, '')))
+          .filter(r => r.some(c => String(c).trim() !== ''));
+        finishIngest(lines);
+      } catch(err) { hideOverlay(); showToast('CSV read error: ' + err.message, 'err'); }
+    };
+    reader.onerror = () => { hideOverlay(); showToast('Could not read file', 'err'); };
+    reader.readAsText(file, 'UTF-8');
+  } else {
+    reader.onload = (e) => {
+      try {
+        const wb  = XLSX.read(e.target.result, { type: 'binary' });
+        const ws  = wb.Sheets[wb.SheetNames[0]];
+        const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' })
+          .filter(r => r.some(c => String(c).trim() !== ''));
+        finishIngest(raw);
+      } catch(err) { hideOverlay(); showToast('XLSX read error: ' + err.message, 'err'); }
+    };
+    reader.onerror = () => { hideOverlay(); showToast('Could not read file', 'err'); };
+    reader.readAsBinaryString(file);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// ROW PARSER + VALIDATOR
+// ═══════════════════════════════════════════════
+const SPEC_CHARS = /[#@$%^&*()+=\[\]{}<>?|\\/"'`~!]/;
+
+// ═══════════════════════════════════════════════
+// COLUMN MAPPING
+// ═══════════════════════════════════════════════
+let CM = { allRows:[], headerIdx:-1, headerGuess:-1, headerless:true, headers:[], rawRows:[], batchId:'', previewRows:null };
+
+// Looks for the Employee/Deduction/Amount keywords in the first few rows;
+// falls back to a text-vs-numeric heuristic on row 1; returns -1 if neither
+// finds anything, meaning the file likely has no header row at all.
+function detectHeaderIndex(allRows) {
+  const KEYS = ['employee', 'deduction', 'amount'];
+  for (let i = 0; i < Math.min(allRows.length, 6); i++) {
+    const joined = allRows[i].map(c => String(c).toLowerCase()).join(' ');
+    if (KEYS.every(k => joined.includes(k))) return i;
+  }
+  const first = allRows[0] || [];
+  const cells = first.filter(c => String(c).trim() !== '');
+  if (cells.length) {
+    const numericCount = cells.filter(c => /^-?[\d,]+(\.\d+)?$/.test(String(c).trim())).length;
+    if ((numericCount / cells.length) < 0.5) return 0;
+  }
+  return -1;
+}
+
+function openColMapModal(allRows, batchId) {
+  CM.allRows      = allRows;
+  CM.batchId      = batchId;
+  CM.previewRows  = null;
+  CM.headerGuess  = detectHeaderIndex(allRows);
+
+  applyHeaderAuto();
+  showIngestPhase('map');
+}
+
+// Header row is detected automatically — no yes/no question shown to the
+// user. If keyword detection finds nothing, row 1 is used as the header
+// (the common case), so mapping can proceed either way.
+function applyHeaderAuto() {
+  const note = document.getElementById('cm-header-note');
+  CM.headerIdx  = CM.headerGuess !== -1 ? CM.headerGuess : 0;
+  CM.headers    = (CM.allRows[CM.headerIdx] || []).map(h => String(h).trim());
+  CM.rawRows    = CM.allRows.slice(CM.headerIdx + 1).filter(r => r.some(c => String(c).trim() !== ''));
+  CM.headerless = false;
+  if (note) {
+    note.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Header row detected automatically on row ${CM.headerIdx + 1} of the file — ${CM.rawRows.length} data row(s) found below it.`;
+  }
+  recomputeColumns();
+}
+
+function recomputeColumns() {
+  // Detected columns badges — show a sample value next to generic labels
+  // when there's no real header, so the user can tell what's in each column.
+  const sampleRow = CM.rawRows[0] || [];
+  const sampleFor = (idx) => {
+    const v = String(sampleRow[idx] ?? '').trim();
+    return v ? (v.length > 22 ? v.slice(0, 22) + '…' : v) : '';
+  };
+  document.getElementById('cm-detected-cols').innerHTML = CM.headers.map((h, i) => {
+    const s = CM.headerless ? sampleFor(i) : '';
+    return `<span class="badge gray">${esc(h)}${s ? ` <span style="color:var(--text3);font-weight:400;">· "${esc(s)}"</span>` : ''}</span>`;
+  }).join('');
+
+  // Build <option> list for each dropdown
+  const optLabel = (h, i) => {
+    if (!CM.headerless) return esc(h);
+    const s = sampleFor(i);
+    return s ? `${esc(h)} — e.g. "${esc(s)}"` : esc(h);
+  };
+  const blankOpt    = `<option value="">— select column —</option>`;
+  const blankOptOpt = `<option value="">— none / use portal —</option>`;
+  const colOpts     = CM.headers.map((h, i) => `<option value="${esc(h)}">${optLabel(h, i)}</option>`).join('');
+
+  ['cm-empId','cm-dedId','cm-amount'].forEach(id => {
+    document.getElementById(id).innerHTML = blankOpt + colOpts;
+  });
+  ['cm-dedType-col','cm-month-col'].forEach(id => {
+    document.getElementById(id).innerHTML = blankOptOpt + colOpts;
+  });
+
+  // Auto-detect best match for each field (skipped for headerless files —
+  // "Column 1", "Column 2"… gives nothing meaningful to match against)
+  const autoMatch = (keys) => {
+    if (CM.headerless) return '';
+    for (const k of keys) {
+      const h = CM.headers.find(h => h.toLowerCase().replace(/[^a-z]/g,'').includes(k));
+      if (h) return h;
+    }
+    return '';
+  };
+  document.getElementById('cm-empId').value      = autoMatch(['employeeid','empid','empno','emp']);
+  document.getElementById('cm-dedId').value      = autoMatch(['deductionid','dedid','ded id','deduc']);
+  document.getElementById('cm-dedType-col').value = autoMatch(['type','deductiontype','dedtype','category']);
+  document.getElementById('cm-amount').value     = autoMatch(['amount','aed','value','deductamt']);
+  document.getElementById('cm-month-col').value  = autoMatch(['month','payrollmonth','date','yyyymm']);
+
+  // Flag required columns that couldn't be auto-matched (Deduction ID is
+  // optional — it's auto-generated when not present, so it has no warning)
+  ['cm-empId','cm-amount'].forEach(id => {
+    document.getElementById(id+'-warn').style.display = document.getElementById(id).value ? 'none' : '';
+  });
+
+  syncPortalFallbacks();
+  updateColPreview();
+}
+
+// Manual fallback inputs for Deduction Type / Month — prefilled with the
+// portal's current defaults so re-opening the modal keeps prior selections.
+function syncPortalFallbacks() {
+  const dBox = document.getElementById('cm-dedType-manual');
+  if (dBox && !dBox.value) dBox.value = DB.currentDedType || '';
+  const mSel = document.getElementById('cm-month-manual');
+  if (mSel) mSel.value = DB.currentMonth;
+}
+
+// Only ask for a manual Month / Deduction Type when the sheet doesn't
+// already supply it for every row — if the mapped column is filled in on
+// every row, the manual fallback field stays hidden.
+// Deduction Type / Month use the same visual language as the required
+// columns above: a red asterisk when the field still needs a value from the
+// user (column missing or doesn't cover every row), or a teal dot when the
+// sheet already supplies it for every row — in which case the field is
+// locked (nothing to edit) instead of asking the user to confirm it.
+const REQUIRED_MARK = '<span style="color:var(--red);font-weight:700;">*</span>';
+const RESOLVED_MARK = '<span style="color:var(--teal);font-weight:700;" title="Already found in the sheet for every row">●</span>';
+
+function updateFallbackVisibility(map) {
+  const getCell = (cells, col) => {
+    if (!col) return '';
+    const idx = CM.headers.indexOf(col);
+    return idx !== -1 ? String(cells[idx] ?? '').trim() : '';
+  };
+
+  // ── Deduction Type ──
+  const dedMark   = document.getElementById('cm-dedtype-mark');
+  const dedSelect = document.getElementById('cm-dedType-col');
+  const dedManual = document.getElementById('cm-dedType-manual');
+  const dedWarn   = document.getElementById('cm-dedtype-warn');
+  const missing = map.dedTypeCol
+    ? CM.rawRows.filter(cells => !getCell(cells, map.dedTypeCol)).length
+    : CM.rawRows.length;
+  const dedFullyPopulated = !!map.dedTypeCol && CM.rawRows.length > 0 && missing === 0;
+
+  if (dedFullyPopulated) {
+    dedMark.innerHTML   = RESOLVED_MARK;
+    dedSelect.disabled  = true;
+    dedManual.style.display = 'none';
+    dedWarn.style.display   = 'none';
+  } else {
+    dedMark.innerHTML   = REQUIRED_MARK;
+    dedSelect.disabled  = false;
+    dedManual.style.display = '';
+    dedWarn.style.display   = '';
+    dedWarn.textContent = map.dedTypeCol
+      ? `${missing} of ${CM.rawRows.length} row(s) have no Deduction Type in the sheet — the value above fills them.`
+      : `No column mapped — the value above will be used for every row.`;
+  }
+
+  // ── Month ──
+  const monMark   = document.getElementById('cm-month-mark');
+  const monSelect = document.getElementById('cm-month-col');
+  const monManual = document.getElementById('cm-month-manual');
+  const monWarn   = document.getElementById('cm-month-warn');
+  const missingM = map.monthCol
+    ? CM.rawRows.filter(cells => !getCell(cells, map.monthCol)).length
+    : CM.rawRows.length;
+  const monthFullyPopulated = !!map.monthCol && CM.rawRows.length > 0 && missingM === 0;
+
+  if (monthFullyPopulated) {
+    monMark.innerHTML   = RESOLVED_MARK;
+    monSelect.disabled  = true;
+    monManual.style.display = 'none';
+    monWarn.style.display   = 'none';
+  } else {
+    monMark.innerHTML   = REQUIRED_MARK;
+    monSelect.disabled  = false;
+    monManual.style.display = '';
+    monWarn.style.display   = '';
+    monWarn.textContent = map.monthCol
+      ? `${missingM} of ${CM.rawRows.length} row(s) have no Month in the sheet — the value above fills them.`
+      : `No column mapped — the value above will be used for every row.`;
+  }
+}
+
+function updateColPreview() {
+  const map = getColMapping();
+  updateFallbackVisibility(map);
+
+  const tbody = document.getElementById('cm-preview-body');
+  const preview = CM.rawRows.slice(0, 3);
+  if (!preview.length) { tbody.innerHTML = ''; return; }
+
+  tbody.innerHTML = preview.map((cells, i) => {
+    const get = (col) => col ? String(cells[CM.headers.indexOf(col)] ?? '').trim() : '';
+
+    // Deduction Type: sheet value wins; blank cell falls back to the manual value entered above
+    const sheetVal = get(map.dedTypeCol);
+    const typeVal  = sheetVal || map.typeManual || '';
+    const typeFromPortal = !sheetVal && !!typeVal;
+
+    // Month: sheet value wins; blank cell falls back to the manual value entered above
+    const sheetMonth = get(map.monthCol);
+    const monthVal = sheetMonth || map.monthManual;
+    const monthFromPortal = !sheetMonth;
+
+    const typeCell  = typeVal
+      ? `${esc(typeVal)}${typeFromPortal ? ' <span style="color:var(--text3);font-size:10px;">(portal)</span>' : ''}`
+      : '<span style="color:var(--red);">—</span>';
+    const monthCell = `${esc(monthVal)}${monthFromPortal ? ' <span style="color:var(--text3);font-size:10px;">(portal)</span>' : ''}`;
+
+    return `<tr>
+      <td class="mono">${get(map.empIdCol) ? esc(get(map.empIdCol)) : '<span style="color:var(--red);">—</span>'}</td>
+      <td class="mono">${get(map.dedIdCol) ? esc(get(map.dedIdCol)) : '<span style="color:var(--teal);font-size:10px;">(auto)</span>'}</td>
+      <td>${typeCell}</td>
+      <td class="mono">${get(map.amountCol) ? esc(get(map.amountCol)) : '<span style="color:var(--red);">—</span>'}</td>
+      <td class="mono" style="color:var(--teal);">${monthCell}</td>
+    </tr>`;
+  }).join('');
+}
+
+function getColMapping() {
+  return {
+    empIdCol:    document.getElementById('cm-empId').value,
+    dedIdCol:    document.getElementById('cm-dedId').value,
+    dedTypeCol:  document.getElementById('cm-dedType-col').value,
+    typeManual:  document.getElementById('cm-dedType-manual').value.trim(),
+    amountCol:   document.getElementById('cm-amount').value,
+    monthCol:    document.getElementById('cm-month-col').value,
+    monthManual: document.getElementById('cm-month-manual').value,
+  };
+}
+
+// Builds the final, validated row set from the current mapping — shared by
+// the full data preview and the confirm step, so both always agree.
+function buildMappedRows(map) {
+  const getCell = (cells, col) => {
+    if (!col) return '';
+    const idx = CM.headers.indexOf(col);
+    return idx !== -1 ? String(cells[idx] ?? '').trim() : '';
+  };
+
+  const rows = CM.rawRows.map((cells, i) => {
+    // Trans ID — assigned the instant this row is loaded. Millisecond-precision
+    // datetime value, guaranteed unique across the whole session.
+    const transId = genTransId();
+
+    const empId = getCell(cells, map.empIdCol).replace(/[\u200B-\u200F\uFEFF]/g,'');
+    let dedId   = getCell(cells, map.dedIdCol).replace(/[\u200B-\u200F\uFEFF]/g,'');
+    let dedIdFromTrans = false;
+    if (!dedId) { dedId = String(transId); dedIdFromTrans = true; } // DedID missing from sheet → same value as Trans ID
+
+    let dedType, dedTypeFromPortal = false;
+    const sheetType = getCell(cells, map.dedTypeCol);
+    if (sheetType) { dedType = sheetType; }
+    else { dedType = map.typeManual; dedTypeFromPortal = !!dedType; } // not in sheet → filled from the manual value entered above
+
+    const sheetMonth = getCell(cells, map.monthCol);
+    const month = sheetMonth || map.monthManual;
+    const monthFromPortal = !sheetMonth;
+
+    const rawAmt  = getCell(cells, map.amountCol).replace(/,/g,'');
+    const remarks = '';
+
+    const errors = [];
+    if (!empId) errors.push({ field:'EmployeeID', code:'MISSING_FIELD', msg:'Employee ID is required' });
+    else if (SPEC_CHARS.test(empId)) errors.push({ field:'EmployeeID', code:'SPECIAL_CHAR', msg:'Special character in Employee ID' });
+    else if (!/^[A-Za-z0-9\-_]+$/.test(empId)) errors.push({ field:'EmployeeID', code:'INVALID_FORMAT', msg:'Invalid Employee ID format' });
+
+    // Deduction ID is never a hard error anymore — if it's missing from the
+    // sheet it was just auto-filled with this row's Trans ID above. Only
+    // flag bad characters when the value genuinely came from the sheet.
+    if (!dedIdFromTrans && SPEC_CHARS.test(dedId)) errors.push({ field:'DeductionID', code:'SPECIAL_CHAR', msg:'Special character in Deduction ID' });
+
+    if (!dedType) errors.push({ field:'DeductionType', code:'MISSING_FIELD', msg:'Deduction Type is required — not found in the sheet, choose one manually in Column Alignment' });
+    if (!month)   errors.push({ field:'Month', code:'MISSING_FIELD', msg:'Month is required — not found in the sheet, choose one manually in Column Alignment' });
+
+    let amount = NaN;
+    if (!rawAmt) {
+      errors.push({ field:'Amount', code:'MISSING_FIELD', msg:'Amount is required' });
+    } else if (SPEC_CHARS.test(rawAmt)) {
+      errors.push({ field:'Amount', code:'SPECIAL_CHAR', msg:'Special character in Amount' });
+    } else {
+      amount = parseFloat(rawAmt);
+      if (isNaN(amount)) errors.push({ field:'Amount', code:'INVALID_FORMAT', msg:'Amount must be a number' });
+      else if (amount <= 0) errors.push({ field:'Amount', code:'AMOUNT_ZERO', msg:'Amount must be > 0' });
+    }
+
+    return {
+      row: i + 1, transId, empId, dedId, dedIdFromTrans, dedType, dedTypeFromPortal,
+      amount: isNaN(amount) ? rawAmt : amount,
+      month, monthFromPortal, remarks,
+      status: errors.length > 0 ? 'INVALID' : 'VALID',
+      errors
+    };
+  });
+
+  return rows;
+}
+
+// Map → Preview: validate the mapping choices, build the merged rows
+// (Deduction ID auto-filled with a millisecond-unique ID when missing from
+// the sheet), then render everything — KPIs, valid/invalid toggle, Save —
+// in the same window. No separate confirm step.
+let previewMode = 'valid';
+
+function showMappingPreview() {
+  const map = getColMapping();
+
+  if (!map.empIdCol)  { showToast('Select a column for Employee ID', 'err'); return; }
+  if (!map.amountCol) { showToast('Select a column for Amount', 'err'); return; }
+  if (!map.dedTypeCol && !map.typeManual) { showToast('Map a Deduction Type column or enter a value for every row', 'err'); return; }
+  if (!map.monthCol && !map.monthManual)  { showToast('Map a Month column or select a value for every row', 'err'); return; }
+
+  const rows = buildMappedRows(map);
+  CM.previewRows = rows;
+  DB.pendingRows = rows;
+
+  const vCnt = rows.filter(r => r.status === 'VALID').length;
+  const iCnt = rows.filter(r => r.status === 'INVALID').length;
+  const dCnt = rows.filter(r => r.dedIdFromTrans).length;
+  const amount = rows.filter(r => r.status === 'VALID' && typeof r.amount === 'number').reduce((s,r) => s + r.amount, 0);
+
+  document.getElementById('cm-kpi-row').innerHTML = `
+    <div class="kpi-card"><div class="kpi-val">${rows.length}</div><div class="kpi-lbl">Total</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:var(--teal);">${vCnt}</div><div class="kpi-lbl">Valid</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:var(--red);">${iCnt}</div><div class="kpi-lbl">Invalid</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:var(--purple);">${dCnt}</div><div class="kpi-lbl">Auto Ded ID</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:var(--amber);font-size:12px;">AED ${fmt(amount,0)}</div><div class="kpi-lbl">Valid Amt</div></div>`;
+
+  // Toggle only appears when there are invalid rows — otherwise valid data
+  // is simply shown directly, nothing to switch between.
+  previewMode = iCnt > 0 ? 'invalid' : 'valid';
+  const toggleWrap = document.getElementById('cm-view-toggle');
+  if (iCnt > 0) {
+    toggleWrap.style.display = '';
+    toggleWrap.innerHTML = `
+      <div class="vi-toggle">
+        <button class="on-invalid${previewMode==='invalid'?' active':''}" onclick="setPreviewMode('invalid')">Invalid (${iCnt})</button>
+        <button class="on-valid${previewMode==='valid'?' active':''}" onclick="setPreviewMode('valid')">Valid (${vCnt})</button>
+      </div>`;
+  } else {
+    toggleWrap.style.display = 'none';
+    toggleWrap.innerHTML = '';
+  }
+
+  renderPreviewTable();
+  showIngestPhase('preview');
+}
+
+function setPreviewMode(mode) {
+  previewMode = mode;
+  document.querySelectorAll('#cm-view-toggle .vi-toggle button').forEach(b => {
+    b.classList.toggle('active', (mode === 'valid' && b.classList.contains('on-valid')) || (mode === 'invalid' && b.classList.contains('on-invalid')));
+  });
+  renderPreviewTable();
+}
+
+function renderPreviewTable() {
+  const rows = (CM.previewRows || []).filter(r => previewMode === 'valid' ? r.status === 'VALID' : r.status !== 'VALID');
+  const isInvalid = previewMode === 'invalid';
+
+  document.getElementById('cm-full-preview-head').innerHTML = isInvalid
+    ? `<tr><th style="width:36px;">#</th><th>Emp ID</th><th>Ded ID</th><th>Type</th><th>Amount</th><th>Error Codes</th></tr>`
+    : `<tr><th style="width:36px;">#</th><th>Emp ID</th><th>Ded ID</th><th>Type</th><th>Amount</th><th>Month</th></tr>`;
+
+  if (!rows.length) {
+    document.getElementById('cm-full-preview-body').innerHTML =
+      `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--teal);">${isInvalid ? 'No invalid rows ✓' : 'No valid rows'}</td></tr>`;
+    return;
+  }
+
+  document.getElementById('cm-full-preview-body').innerHTML = rows.map(r => `
+    <tr class="${isInvalid ? 'row-invalid' : 'row-valid'}">
+      <td class="mono">${r.row}</td>
+      <td class="mono">${r.empId ? esc(r.empId) : '<span style="color:var(--red);">—</span>'}</td>
+      <td class="mono">${esc(r.dedId)}${r.dedIdFromTrans ? ' <span style="color:var(--teal);font-size:10px;">(auto)</span>' : ''}</td>
+      <td>${r.dedType ? esc(r.dedType) : '<span style="color:var(--red);">—</span>'}${r.dedTypeFromPortal ? ' <span style="color:var(--teal);font-size:10px;">(portal)</span>' : ''}</td>
+      <td class="mono">${r.amount !== '' && r.amount !== undefined ? (typeof r.amount === 'number' ? 'AED '+fmt(r.amount,0) : esc(String(r.amount))) : '<span style="color:var(--red);">—</span>'}</td>
+      ${isInvalid
+        ? `<td><div style="display:flex;gap:4px;flex-wrap:wrap;">${r.errors.map(e=>`<span class="err-chip">${e.code}</span>`).join('')}</div></td>`
+        : `<td class="mono">${esc(r.month)}${r.monthFromPortal ? ' <span style="color:var(--teal);font-size:10px;">(portal)</span>' : ''}</td>`}
+    </tr>`).join('');
+}
+
+function backToMapping() {
+  showIngestPhase('map');
+}
+
+// Live preview updates when dropdowns change
+document.addEventListener('change', e => {
+  if (['cm-empId','cm-dedId','cm-dedType-col','cm-amount','cm-month-col','cm-month-manual'].includes(e.target.id)) {
+    if (['cm-empId','cm-amount'].includes(e.target.id)) {
+      document.getElementById(e.target.id+'-warn').style.display = e.target.value ? 'none' : '';
+    }
+    updateColPreview();
+  }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'cm-dedType-manual') updateColPreview();
+});
+
+function parseRow(cells, headers, rowNum) {
+  // Map columns flexibly
+  const get = (keys) => {
+    for (const k of keys) {
+      const idx = headers.findIndex(h => h.toLowerCase().replace(/[^a-z]/g,'').includes(k.replace(/[^a-z]/g,'')));
+      if (idx !== -1 && cells[idx] !== undefined) return String(cells[idx]).trim();
+    }
+    return '';
+  };
+
+  const rawEmpId   = get(['employeeid','empid','employee id','emp']);
+  const rawDedId   = get(['deductionid','dedid','deduction id']);
+  const rawDedType = get(['deductiontype','type','ded type','deduction type']);
+  const rawAmount  = get(['amount','aed']);
+  const rawMonth   = get(['month','date','yyyy']);
+  const rawRemarks = get(['remarks','notes','comment']);
+
+  // Trans ID — assigned the instant this row is loaded. Millisecond-precision
+  // datetime value, guaranteed unique across the whole session.
+  const transId = genTransId();
+
+  // Cleanse
+  const empId   = rawEmpId.replace(/\s+/g,' ').replace(/[\u200B-\u200F\uFEFF]/g,'');
+  let dedId     = rawDedId.replace(/\s+/g,' ').replace(/[\u200B-\u200F\uFEFF]/g,'');
+  let dedIdFromTrans = false;
+  if (!dedId) { dedId = String(transId); dedIdFromTrans = true; } // DedID missing from sheet → same value as Trans ID
+  const dedType = rawDedType.replace(/\s+/g,' ');
+  const amountStr = rawAmount.replace(/,/g,'').trim();
+  const month   = rawMonth.trim() || DB.currentMonth;
+  const remarks = rawRemarks;
+
+  const errors = [];
+
+  // Identity validation
+  if (!empId) {
+    errors.push({ field:'EmployeeID', code:'MISSING_FIELD', msg:'Employee ID is required' });
+  } else if (SPEC_CHARS.test(empId)) {
+    errors.push({ field:'EmployeeID', code:'SPECIAL_CHAR', msg:'Special character detected in Employee ID' });
+  } else if (!/^[A-Za-z0-9\-_]+$/.test(empId)) {
+    errors.push({ field:'EmployeeID', code:'INVALID_FORMAT', msg:'Employee ID contains invalid characters' });
+  }
+
+  // Deduction ID is never a hard error anymore — if missing from the sheet
+  // it was just auto-filled with this row's Trans ID above. Only flag bad
+  // characters when the value genuinely came from the sheet.
+  if (!dedIdFromTrans && SPEC_CHARS.test(dedId)) {
+    errors.push({ field:'DeductionID', code:'SPECIAL_CHAR', msg:'Special character detected in Deduction ID' });
+  }
+
+  if (!dedType) {
+    errors.push({ field:'DeductionType', code:'MISSING_FIELD', msg:'Deduction Type is required — not found in the sheet, choose one manually from the portal Deduction Type selector' });
+  }
+  if (!month) {
+    errors.push({ field:'Month', code:'MISSING_FIELD', msg:'Month is required — not found in the sheet, choose one manually from the portal Payroll Month selector' });
+  }
+
+  // Amount validation
+  let amount = NaN;
+  if (!amountStr) {
+    errors.push({ field:'Amount', code:'MISSING_FIELD', msg:'Amount is required' });
+  } else if (SPEC_CHARS.test(amountStr)) {
+    errors.push({ field:'Amount', code:'SPECIAL_CHAR', msg:'Special character detected in Amount' });
+  } else {
+    amount = parseFloat(amountStr);
+    if (isNaN(amount)) {
+      errors.push({ field:'Amount', code:'INVALID_FORMAT', msg:'Amount must be a valid number' });
+    } else if (amount <= 0) {
+      errors.push({ field:'Amount', code:'AMOUNT_ZERO', msg:'Amount must be greater than 0' });
+    }
+  }
+
+  return {
+    row: rowNum,
+    transId, empId, dedId, dedIdFromTrans, dedType,
+    amount: isNaN(amount) ? amountStr : amount,
+    month, remarks,
+    status: errors.length > 0 ? 'INVALID' : 'VALID',
+    errors
+  };
+}
+
+// ═══════════════════════════════════════════════
+// SAVE — one window, one click: validates, saves, and pushes straight to
+// Google Sheets (dedLog) in a single call. No separate approval step.
+// ═══════════════════════════════════════════════
+// webAppUrl now comes from the shared Reg/shared/apiConfig.js constant —
+// the single file every page includes, so all pages point at the same
+// deployment and only need updating in one place when it's redeployed.
+const GS = {
+  SHEET_ID:   '1rloK0PsZUHVQeUIcPOmYETUuQrX-Y4g-OiGX_wkxgVk',
+  SHEET_NAME: 'dedLog',
+  webAppUrl:  API_URL
+};
+
+async function saveBatch() {
+  const valid = (DB.pendingRows || []).filter(r => r.status === 'VALID');
+  if (!valid.length) { showToast('No valid rows to save','err'); return; }
+
+  runOverlay('BEGIN TRANSACTION…', 'Atomic save initiated');
+  await new Promise(r => setTimeout(r, 380));
+  updateOverlay('Inserting valid rows…', valid.length + ' records');
+  await new Promise(r => setTimeout(r, 380));
+  updateOverlay('Pushing to Google Sheets…', `Appending ${valid.length} rows to dedLog in one call`);
+
+  const inv    = DB.pendingRows.filter(r => r.status !== 'VALID').length;
+  const dups   = DB.pendingRows.filter(r => r.errors.some(e => e.code === 'DUPLICATE')).length;
+  const amount = valid.filter(r => typeof r.amount === 'number').reduce((s,r) => s+r.amount, 0);
+  const uploadedAt = nowStr();
+
+  // Batch ID is mandatory — every row in this save must carry one. Normally
+  // set when the file was first loaded (see line ~747); this is just a
+  // safety net in case saveBatch() is ever reached without it.
+  if (!DB.currentBatchId) {
+    DB.currentBatchId = 'BATCH-' + batchMonthYear() + '-' + String(Date.now()).slice(-4);
+  }
+
+  // Rows payload — must match the dedLog sheet's 8 fixed columns exactly:
+  // Batch ID | Emp ID | Ded ID | Type | Amount | Month | Requested At | Requested By.
+  // "Batch ID" is now ONE shared id per upload (DB.currentBatchId, generated
+  // once when the file was loaded) — every row in this save carries the
+  // same value, so the whole batch can be traced/grouped by it. Ded ID
+  // stays per-row (falls back to that row's own Trans ID when missing).
+  const rows = valid.map(r => [
+    DB.currentBatchId,
+    r.empId,
+    r.dedId,
+    r.dedType,
+    typeof r.amount === 'number' ? r.amount : parseFloat(String(r.amount).replace(/,/g,'')) || 0,
+    r.month || DB.currentMonth,
+    uploadedAt,
+    DB.currentUser
+  ]);
+
+  let session = {};
+  try { session = JSON.parse(sessionStorage.getItem('ap_session') || '{}'); } catch (_) {}
+
+  const payload = {
+    action:    'appendRows',
+    type:      GS.SHEET_NAME,
+    sheetName: GS.SHEET_NAME,
+    sessionId: session.sessionId || '',
+    token:     session.token || '',
+    batchId:   DB.currentBatchId,
+    rows:      rows
+  };
+
+  try {
+    const res = await fetch(GS.webAppUrl, {
+      method:  'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body:    JSON.stringify(payload)
+    });
+    const rawText = await res.text();
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}: ${rawText.slice(0,200)}`);
+    let data;
+    try { data = JSON.parse(rawText); }
+    catch (e) { throw new Error('Apps Script returned non-JSON: ' + rawText.slice(0,300)); }
+    if (data.status !== 'ok') throw new Error(data.message || data.error || JSON.stringify(data));
+
+    const batch = {
+      id: DB.currentBatchId,
+      fileId: DB.currentFileId,
+      month: DB.currentMonth,
+      uploadedBy: DB.currentUser,
+      uploadedAt,
+      status: 'SAVED',
+      totalRows: DB.pendingRows.length,
+      validRows: valid.length,
+      invalidRows: inv,
+      duplicates: dups,
+      savedAmount: amount,
+      rows: valid
+    };
+    DB.batches.push(batch);
+    addAudit('SAVE','ok', `Batch saved in 1 transaction & pushed to Google Sheets dedLog · ${valid.length} rows · AED ${fmt(amount,0)} · ${batch.id}`);
+
+    hideOverlay();
+    closeModal('col-map-modal');
+    DB.pendingRows = [];
+    DB.currentBatchId = null;
+    renderApproveQueue();
+    showToast(`✓ Saved & pushed ${valid.length} rows to Google Sheets`, 'ok');
+
+  } catch (err) {
+    hideOverlay();
+    addAudit('SAVE','err', `Save FAILED — Google Sheets push error: ${err.message}`);
+    showToast('Save failed: ' + err.message, 'err');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SAVED BATCHES LIST
+// ═══════════════════════════════════════════════
+function renderApproveQueue() {
+  const mfEl      = document.getElementById('approve-mf');
+  const mf        = mfEl ? mfEl.value : '';
+  const batchMap  = getMergedBatches();
+  _lastBatchMap   = batchMap;
+  const batches   = Object.values(batchMap).filter(b => !mf || b.month === mf)
+                           .sort((a,b) => (b.uploadedAt||'').localeCompare(a.uploadedAt||''));
+  const el        = document.getElementById('approve-list');
+  if (!batches.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-ico">📋</div><p>No batches saved yet.</p><p style="font-size:11px;margin-top:6px;">Click + above to upload, preview and save a file.</p></div>';
+    return;
+  }
+  el.innerHTML = batches.map(b => `
+    <div class="batch-item" style="cursor:pointer;" onclick="openBatchDetail('${esc(b.id)}')">
+      <div class="b-icon" style="background:var(--teal-dim);color:var(--teal);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="b-info">
+        <div class="b-name">${esc(b.id)}
+          <span class="badge green">✓ SAVED</span>
+        </div>
+        <div class="b-meta">
+          <span>${esc(b.month)}</span>
+          <span>${b.validRows} valid rows</span>
+          <span class="mono" style="color:var(--purple);">AED ${fmt(b.savedAmount,0)}</span>
+          <span>Uploaded By ${esc(b.uploadedBy)} · ${esc(b.uploadedAt)}</span>
+        </div>
+        <div style="display:flex;gap:14px;margin-top:4px;font-size:11.5px;color:var(--text3);">
+          <span>Total: ${b.totalRows}</span>
+          <span style="color:var(--teal);">Valid: ${b.validRows}</span>
+          <span style="color:var(--red);">Invalid: ${b.invalidRows}</span>
+          <span style="color:var(--amber);">Dups: ${b.duplicates}</span>
+        </div>
+      </div>
+      <div class="b-actions">
+        <span style="font-size:11.5px;color:var(--teal);font-weight:700;">✓ SAVED</span>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// AUDIT TRAIL
+// ═══════════════════════════════════════════════
+function addAudit(action, type, detail) {
+  DB.auditLog.unshift({ ts:nowStr(), action, type, user:DB.currentUser, batchId:DB.currentBatchId||'—', fileId:DB.currentFileId||'—', detail });
+}
+
+
+
+// ═══════════════════════════════════════════════
+// OVERLAY
+// ═══════════════════════════════════════════════
+function runOverlay(title, sub) {
+  document.getElementById('proc-overlay').classList.add('open');
+  document.getElementById('proc-title').textContent = title || 'Processing…';
+  document.getElementById('proc-sub').textContent   = sub   || 'Please wait';
+}
+function updateOverlay(title, sub) {
+  document.getElementById('proc-title').textContent = title;
+  document.getElementById('proc-sub').textContent   = sub;
+}
+function hideOverlay() {
+  document.getElementById('proc-overlay').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════
+// PAGINATION
+// ═══════════════════════════════════════════════
+function buildPagination(containerId, cur, total, onPageFn) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  const btn = (label, page, disabled, active) => {
+    const b = document.createElement('button');
+    b.className   = 'pg-btn' + (active ? ' cur' : '');
+    b.disabled    = disabled;
+    b.textContent = label;
+    b.onclick     = () => onPageFn(page);
+    return b;
+  };
+  el.appendChild(btn('‹', cur-1, cur<=1, false));
+  for (let p = Math.max(1,cur-2); p <= Math.min(total,cur+2); p++) el.appendChild(btn(p, p, false, p===cur));
+  el.appendChild(btn('›', cur+1, cur>=total, false));
+}
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+let _toastTimer;
+const ICONS = {
+  ok:   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  warn: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>',
+  err:  '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+};
+function showToast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.className = 'toast show';
+  document.getElementById('toast-ico').innerHTML  = ICONS[type] || '';
+  document.getElementById('toast-msg').textContent = msg;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 3800);
+}
+
+// ═══════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════
+function toggleDlMenu(e) {
+  e.stopPropagation();
+  document.getElementById('snav-dl-wrap').classList.toggle('open');
+}
+function closeDlMenu() {
+  document.getElementById('snav-dl-wrap').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('snav-dl-wrap');
+  if (wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
+});
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+});
+
+// ═══════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════
+function esc(s)      { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(n, d=2) { return Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function fmtSize(b)  { return b<1024?b+'B':b<1048576?(b/1024).toFixed(1)+'KB':(b/1048576).toFixed(1)+'MB'; }
+function nowStr()    { return new Date().toLocaleString('en-GB',{hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).replace(',',''); }
+// Batch ID uses TODAY's actual month/year (when the batch is created),
+// never the selected deduction-period month (DB.currentMonth, e.g. the
+// payroll month the deductions apply to) — those two can differ.
+function batchMonthYear() {
+  const MONTHS = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  const d = new Date();
+  return MONTHS[d.getMonth()] + '-' + d.getFullYear();
+}
+function dl(content, filename, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content instanceof ArrayBuffer ? content : [content]], { type }));
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* Listen for messages from parent index.html */
+window.addEventListener('message', (e) => {
+  if (!e.data) return;
+  // Instant theme sync — parent pushes on every theme change
+  if (e.data.type === 'ap-theme' && e.data.theme) {
+    document.documentElement.setAttribute('data-theme', e.data.theme);
+  }
+});
+</script>
+</body>
+</html>

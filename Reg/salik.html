@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Salik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<script src="https://effimalik.github.io/Testing/shared/apiConfig.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/auth.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/dataLayer.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/devPre.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cioView.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cacheWatcher.js?v=1"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+/* ═══ THEME — kept identical to the shared module chrome ═══ */
+:root,[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --surface:#21262d;--surface2:#2d333b;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent-dim:rgba(88,166,255,.12);--accent-glow:rgba(88,166,255,.28);
+  --teal:#39d353;--teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341;--amber-dim:rgba(227,179,65,.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7;--purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e;--orange-dim:rgba(240,136,62,.12);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.5);--shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#fff;--bg3:#e8ecf0;
+  --surface:#fff;--surface2:#e2e7ed;
+  --border:#c8d0d9;--border2:#9aa5b1;
+  --text:#0d1117;--text2:#3d454f;--text3:#5a6370;
+  --accent:#0550ae;--accent-dim:rgba(5,80,174,.12);--accent-glow:rgba(5,80,174,.22);
+  --teal:#116329;--teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00;--amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b;--red-dim:rgba(168,17,27,.11);
+  --purple:#6639c8;--purple-dim:rgba(102,57,200,.13);
+  --orange:#953800;--orange-dim:rgba(149,56,0,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.10);--shadow-md:0 4px 16px rgba(0,0,0,.12);--shadow-lg:0 8px 32px rgba(0,0,0,.15);
+}
+[data-theme="purple"]{
+  --bg:#0f0b1e;--bg2:#17112e;--bg3:#1e1840;
+  --surface:#221a3a;--surface2:#2c2250;
+  --border:#3a2e5e;--border2:#5a4890;
+  --text:#e8e0ff;--text2:#a899d4;--text3:#7a6ca8;
+  --accent:#c084fc;--accent-dim:rgba(192,132,252,.14);--accent-glow:rgba(192,132,252,.3);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#c084fc;--purple-dim:rgba(192,132,252,.14);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5);--shadow-md:0 4px 16px rgba(0,0,0,.6);--shadow-lg:0 8px 32px rgba(0,0,0,.7);
+}
+[data-theme="ocean"]{
+  --bg:#071520;--bg2:#0d2035;--bg3:#112840;
+  --surface:#143050;--surface2:#1a3d60;
+  --border:#1e4a72;--border2:#2e6a9e;
+  --text:#d6eeff;--text2:#7db8e8;--text3:#4a87b8;
+  --accent:#38bdf8;--accent-dim:rgba(56,189,248,.14);--accent-glow:rgba(56,189,248,.3);
+  --teal:#34d399;--teal-dim:rgba(52,211,153,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5);--shadow-md:0 4px 16px rgba(0,0,0,.55);--shadow-lg:0 8px 32px rgba(0,0,0,.65);
+}
+[data-theme="slate"]{
+  --bg:#0e1117;--bg2:#1a1f28;--bg3:#222836;
+  --surface:#28303e;--surface2:#313c4e;
+  --border:#3a4556;--border2:#556070;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#60a5fa;--accent-dim:rgba(96,165,250,.13);--accent-glow:rgba(96,165,250,.28);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.45);--shadow-md:0 4px 16px rgba(0,0,0,.5);--shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;-webkit-text-size-adjust:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+/* ═══ LAYOUT — the page itself never scrolls; only .table-scroll / .up-body do ═══ */
+body{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
+.portal-wrap{display:flex;flex-direction:column;flex:1;min-height:0;width:100%;max-width:1400px;margin:0 auto;padding:14px;gap:14px;overflow:hidden;}
+
+/* ═══ VIEW BAR ═══ */
+.view-bar{position:relative;display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex-shrink:0;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.vb-brand{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex-shrink:0;border-radius:var(--radius-lg);background:var(--accent-dim);color:var(--accent);border:1px solid var(--border);font-size:16px;}
+.vb-spacer{flex:1;}
+.ib{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex-shrink:0;border-radius:var(--radius-lg);background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:15px;line-height:1;cursor:pointer;transition:color .15s,border-color .15s,background .15s;}
+.ib:hover{border-color:var(--accent);color:var(--accent);}
+.ib.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+
+/* cache status indicator */
+#cache-status{padding:0;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex-shrink:0;cursor:pointer;border-radius:var(--radius-lg);background:var(--bg3);border:1px solid var(--border);color:var(--text2);transition:color .2s,border-color .2s,background .2s;}
+#cache-status i{font-size:15px;line-height:1;}
+#cache-status:not(:disabled):hover{color:var(--accent);border-color:var(--accent);}
+#cache-status:disabled{cursor:not-allowed;opacity:.45;}
+#cache-status[data-mode="checking"],#cache-status[data-mode="loading"]{cursor:progress;opacity:.8;}
+#cache-status.ready{color:#fff;background:var(--accent);border-color:var(--accent);box-shadow:0 0 10px var(--accent-glow);}
+#cache-status.ready:hover{color:#fff;filter:brightness(1.12);}
+#cache-status:focus-visible,.ib:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+/* Information icon: no border, ever (still gets the accent color/background on hover/open) */
+#btnInfo{border:none;}
+
+/* panel-toolbar: highlight the "assigned" count in red once it's above zero */
+.assigned-warn{color:var(--red);font-weight:700;}
+
+/* info popover (subtitle, cache status, Salik account) */
+.vb-actions{position:relative;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.info-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:300;width:min(340px,calc(100vw - 28px));display:none;flex-direction:column;gap:12px;padding:14px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);}
+.info-pop.show{display:flex;}
+.info-row{display:flex;flex-direction:column;gap:3px;}
+.info-row .k{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;}
+.info-row .v{font-size:12px;color:var(--text2);word-break:break-word;}
+.info-row .v.ok{color:var(--teal);}
+.info-row .v.warn{color:var(--amber);}
+.ib[aria-expanded="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+#cache-status i.spin{animation:spin 1s linear infinite;}
+#cache-status.ok{color:var(--teal);border-color:rgba(57,211,83,.35);background:var(--teal-dim);}
+#cache-status.bad{color:var(--red);border-color:rgba(248,81,73,.35);background:var(--red-dim);}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ═══ FIELD / FORM ═══ */
+.field{display:flex;flex-direction:column;gap:5px;}
+.override-toggle{display:flex;align-items:center;gap:8px;margin:10px 0 4px;font-size:12.5px;color:var(--text2);cursor:pointer;}
+.override-toggle.override-active{color:#e5484d;font-weight:600;}
+.switch{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0;}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1;}
+.switch-track{position:absolute;inset:0;background:var(--border2);border-radius:999px;transition:background .15s;}
+.switch-thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.35);transition:transform .15s;}
+.switch input:checked ~ .switch-track{background:#e5484d;}
+.switch input:checked ~ .switch-track .switch-thumb{transform:translateX(16px);}
+.switch input:focus-visible ~ .switch-track{outline:2px solid var(--accent);outline-offset:2px;}
+.override-toggle-sm{margin:0;}
+.override-confirm{display:flex;flex-direction:column;gap:8px;margin:8px 0 4px;padding:10px 12px;border:1px solid #e5484d55;background:#e5484d14;border-radius:var(--radius);}
+.override-confirm-warn{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#e5484d;line-height:1.4;}
+.override-confirm-warn i{flex-shrink:0;margin-top:1px;}
+.assign-via-stats{display:flex;gap:14px;font-size:12px;color:var(--text2);margin-bottom:6px;flex-wrap:wrap;}
+.assign-via-stats .warn{color:#e5484d;font-weight:600;}
+.assign-via-action{font-size:12.5px;color:var(--text);}
+.field label{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;}
+.field select,.field input[type=text]{padding:8px 11px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:12.5px;}
+.field select:focus,.field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.config-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+.config-row .field{gap:2px;}
+.config-row .field label{font-size:9.5px;}
+.config-row .field select{padding:5px 8px;font-size:12px;}
+
+/* ═══ BUTTONS / BADGES ═══ */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);border:1.5px solid;font-family:var(--font);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;line-height:1;}
+.btn i{font-size:15px;flex-shrink:0;}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 10px var(--accent-glow);}
+.btn-primary:hover{filter:brightness(1.1);}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border2);}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);}
+.btn-sm{padding:5px 10px;font-size:11.5px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.badge.purple{background:rgba(163,113,247,.18);color:#a371f7;border:1px solid rgba(163,113,247,.3);}
+.badge.ok{background:var(--teal-dim);color:var(--teal);}
+.badge.warn{background:var(--amber-dim);color:var(--amber);}
+.badge.bad{background:var(--red-dim);color:var(--red);}
+
+/* ═══ RESULTS: tabs + flat table ═══ */
+.tab-nav{display:flex;gap:3px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:3px;width:fit-content;}
+.tab-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:var(--radius);border:none;background:transparent;color:var(--text2);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.tab-btn .count{font-family:var(--mono);font-weight:500;font-size:10.5px;background:var(--surface2);border-radius:20px;padding:1px 7px;}
+.tab-btn.active{background:var(--accent);color:#fff;box-shadow:0 0 10px var(--accent-glow);}
+.tab-btn.active .count{background:rgba(255,255,255,.25);color:#fff;}
+.tab-btn:not(.active):hover{background:var(--surface2);color:var(--text);}
+
+.results-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow);overflow:hidden;}
+.panel-toolbar{display:flex;justify-content:flex-start;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:nowrap;}
+.panel-toolbar .search-input{font-family:var(--mono);font-size:12px;border:1.5px solid var(--border2);border-radius:var(--radius);padding:7px 11px;width:220px;background:var(--surface2);color:var(--text);}
+.panel-toolbar .search-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+/* search box collapsed to an icon; expands into the input on click */
+.search-wrap{display:inline-flex;align-items:center;}
+.search-wrap .search-input{width:0;min-width:0;opacity:0;padding:0;border-width:0;margin-left:0;overflow:hidden;transition:width .2s ease,opacity .15s ease,margin .2s ease,padding .2s ease;}
+.search-wrap.open .search-input{width:200px;opacity:1;padding:7px 11px;border-width:1.5px;margin-left:8px;}
+.search-wrap .search-icon-btn.active{border-color:var(--accent);color:var(--accent);}
+/* Fleet Log toolbar: From/To date range + Pushed By filter, next to the search icon */
+.date-filters{display:inline-flex;align-items:center;gap:8px;}
+#fromDateWrap.open .search-input,#toDateWrap.open .search-input{width:150px;opacity:1;padding:7px 11px;border-width:1.5px;margin-left:8px;}
+#pushedByFilterBtn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+/* column filter icon + popover (Fleet Log: Pushed By / Trip Date) */
+.th-filter{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:4px;border:none;border-radius:5px;background:transparent;color:var(--text3);font-size:11px;cursor:pointer;vertical-align:middle;}
+.th-filter:hover{color:var(--accent);background:var(--surface2);}
+.th-filter.active{color:var(--accent);background:var(--accent-dim);}
+.th-label{display:inline-flex;align-items:center;}
+.filter-pop{position:fixed;z-index:500;display:none;flex-direction:column;min-width:170px;max-width:260px;max-height:260px;overflow:auto;padding:6px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);}
+.filter-pop.show{display:flex;}
+.fp-item{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:var(--radius);font-size:12px;font-family:var(--font);text-transform:none;letter-spacing:0;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fp-item i{flex-shrink:0;font-size:14px;color:var(--text3);}
+.fp-item.active i{color:var(--accent);}
+.fp-item:hover{background:var(--surface2);color:var(--text);}
+.fp-item.active{background:var(--accent-dim);color:var(--accent);font-weight:700;}
+.toolbar-actions{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;flex-shrink:0;margin-left:auto;}
+.label{font-size:12px;color:var(--text3);white-space:nowrap;}
+.table-scroll{flex:1 1 auto;min-height:160px;max-height:none;overflow:auto;}
+/* ═══ RESULTS AREA — fixed to the available viewport height, module stays responsive at any width; no page scrollbar, only the table scrolls ═══ */
+#resultsArea{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:10px;width:100%;min-width:0;overflow:hidden;}
+.results-panel{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;width:100%;min-width:0;overflow:hidden;}
+footer.meta{flex:0 0 auto;}
+
+.log-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.log-table th{padding:9px 14px;text-align:left;font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid var(--border);background:var(--bg3);cursor:pointer;white-space:nowrap;position:sticky;top:0;z-index:2;}
+.log-table th:hover{color:var(--accent);}
+.log-table th .arrow{opacity:.5;margin-left:3px;}
+.log-table td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:middle;font-family:var(--mono);white-space:nowrap;}
+.log-table tbody tr:hover{background:var(--surface2);}
+.log-table td.num{text-align:right;}
+
+.empty-state{padding:60px 20px;text-align:center;color:var(--text3);font-size:13px;}
+.empty-state i{font-size:32px;display:block;margin-bottom:10px;opacity:.4;}
+
+footer.meta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text3);padding:0 4px;flex-wrap:wrap;gap:8px;}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--surface2);color:var(--text);border:1px solid var(--border2);padding:10px 16px;border-radius:var(--radius-lg);font-size:12.5px;font-weight:500;z-index:999;opacity:0;transform:translateY(10px);transition:all .25s cubic-bezier(.34,1.56,.64,1);pointer-events:none;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow-lg);max-width:340px;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.success{background:var(--teal-dim);color:var(--teal);border-color:rgba(57,211,83,.25);}
+.toast.error{background:var(--red-dim);color:var(--red);border-color:rgba(248,81,73,.25);}
+.spinner{animation:spin 1s linear infinite;display:inline-flex;}
+/* ═══ MODULE CAPSULE — active module = icon + name, filling the available space; the others are icon-only ═══ */
+/* the capsule's overall width is fixed by JS (sizeCapsule) to whichever single tab needs the
+   most room when active (e.g. "Checkout Sessions", the longest label) plus the icon-only width
+   of the remaining tabs \u2014 so the capsule never changes size, and the active button always
+   stretches to use up whatever width is left over. */
+.capsule{display:flex;align-items:center;gap:2px;padding:3px;background:var(--bg3);border:1px solid var(--border);border-radius:999px;width:fit-content;max-width:100%;}
+.cap-btn{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;height:30px;min-width:32px;padding:0 9px;border:none;border-radius:999px;background:transparent;color:var(--text2);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .18s,color .18s,flex-grow .18s,padding .18s;}
+.cap-btn i{font-size:16px;line-height:1;flex-shrink:0;}
+.cap-txt{display:none;align-items:center;gap:6px;margin-left:7px;}
+.cap-btn.active{flex:1 1 auto;justify-content:center;padding:0 14px 0 11px;background:var(--accent);color:#fff;box-shadow:0 0 10px var(--accent-glow);}
+.cap-btn.active .cap-txt{display:inline-flex;}
+.cap-btn .count{font-family:var(--mono);font-weight:500;font-size:10.5px;border-radius:20px;padding:1px 7px;background:rgba(255,255,255,.25);}
+.cap-btn:not(.active) .count{background:var(--surface2);color:var(--text2);}
+.cap-btn:not(.active):hover{background:var(--surface2);color:var(--text);}
+.cap-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.btn i.spin{animation:spin 1s linear infinite;}
+
+/* ═══ UPLOAD PANEL — right-side div opened from + ═══ */
+.up-back{position:fixed;inset:0;z-index:340;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s;}
+.up-back.show{opacity:1;pointer-events:auto;}
+.up-drawer{position:fixed;top:0;right:0;bottom:0;z-index:350;width:min(560px,96vw);max-width:96vw;display:flex;flex-direction:column;background:var(--bg2);border-left:1px solid var(--border2);box-shadow:var(--shadow-lg);transform:translateX(100%);visibility:hidden;transition:transform .25s cubic-bezier(.4,0,.2,1),visibility 0s .25s,width .2s ease;overflow:hidden;}
+.up-drawer.show{transform:translateX(0);visibility:visible;transition:transform .25s cubic-bezier(.4,0,.2,1),visibility 0s,width .2s ease;}
+/* up-head doubles as the panel toolbar once a PDF is loaded — everything sits in one wrapping row instead of two stacked bars */
+.up-head{display:flex;align-items:center;gap:10px;row-gap:8px;flex-wrap:wrap;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));border-bottom:1px solid var(--border);flex:0 0 auto;}
+.up-head h3{display:flex;align-items:center;gap:8px;flex:0 0 auto;font-size:14px;font-weight:700;}
+.up-head #btnSaveSheet{margin-left:auto;flex:0 0 auto;}
+.up-head #upClose{flex:0 0 auto;}
+.up-file{flex:0 0 auto;min-width:0;max-width:180px;font-size:12px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.up-head .config-row{flex:0 0 auto;}
+#configRow{display:flex;flex-wrap:wrap;}
+#configRow .field{flex:0 0 auto;min-width:0;}
+#configRow .field label{white-space:nowrap;}
+.up-body{flex:1;min-height:0;overflow:auto;}
+.up-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--border);flex:0 0 auto;}
+.up-status{min-width:0;font-size:11.5px;color:var(--text3);}
+/* nothing but the upload icon + file name shows until a PDF is loaded */
+.up-empty{display:flex;flex:1;min-height:0;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:40px 20px;color:var(--text3);text-align:center;}
+.up-empty i{font-size:34px;opacity:.5;}
+.up-empty p{font-size:12.5px;max-width:280px;}
+#upDrawer:not(.has-pdf) .config-row,
+#upDrawer:not(.has-pdf) #upTabs,
+#upDrawer:not(.has-pdf) #excFilter,
+#upDrawer:not(.has-pdf) #upCount,
+#upDrawer:not(.has-pdf) #upSearchWrap,
+#upDrawer:not(.has-pdf) #btnSaveSheet,
+#upDrawer:not(.has-pdf) #btnHideZeroAmt,
+#upDrawer:not(.has-pdf) .up-body,
+#upDrawer:not(.has-pdf) .up-foot{display:none;}
+/* Exceptions-only: the fill options only affect exception trips, so keep them collapsed on Trip Details */
+#upDrawer.has-pdf .config-row{display:none;}
+#upDrawer.has-pdf.up-tab-exceptions .config-row{display:flex;}
+#upDrawer.has-pdf .up-empty{display:none;}
+
+/* ═══ RECONCILIATION — batches as a responsive grid of individual bordered cards ═══ */
+.batches-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;padding:14px;align-items:stretch;}
+.batch-card{position:relative;display:flex;align-items:center;gap:12px;padding:16px 18px;min-width:0;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--bg2);cursor:pointer;transition:background .12s,border-color .12s;}
+.batch-card:hover{background:var(--surface2);border-color:var(--border2);}
+.batch-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.bc-icon{width:34px;height:34px;flex-shrink:0;border-radius:9px;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.bc-body{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1fr;column-gap:18px;row-gap:6px;align-content:start;}
+.bc-col{display:flex;flex-direction:column;gap:6px;min-width:0;}
+.bc-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.bc-name{font-family:var(--mono);font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bc-meta-row{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;color:var(--text2);}
+.bc-amount{font-family:var(--mono);font-weight:700;color:var(--purple);}
+.bk{margin-right:4px;font-family:var(--font);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);}
+.bc-uploaded{font-size:11px;color:var(--text3);}
+.bc-uploaded b{color:var(--text2);font-weight:600;}
+.bc-stats{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--text3);margin-top:2px;}
+.bc-stats .st-v{font-family:var(--mono);font-weight:700;}
+.bc-stats .st-v.ok{color:var(--teal);}
+.bc-stats .st-v.warn{color:var(--amber);}
+.ib:disabled{opacity:.45;cursor:not-allowed;}
+.ib:disabled:hover{border-color:var(--border);color:var(--text2);}
+.ib i.spin{animation:spin 1s linear infinite;}
+.tb-left{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;flex-shrink:0;}
+.tb-select{padding:7px 10px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:12px;}
+@media(pointer:coarse){.tb-select{font-size:16px;padding:8px 10px;}}
+.modal-back{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.55);}
+.modal-back.show{display:flex;}
+.modal{width:min(760px,100%);max-height:calc(100dvh - 28px);display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);overflow:hidden;}
+.modal-head,.modal-foot{display:flex;align-items:center;gap:10px;padding:12px 16px;flex-wrap:wrap;}
+.modal-head{justify-content:space-between;border-bottom:1px solid var(--border);}
+.modal-head h3{font-size:14px;font-weight:700;}
+.modal-foot{justify-content:flex-end;border-top:1px solid var(--border);}
+.modal-body{display:flex;flex-direction:column;gap:10px;padding:14px 16px;min-height:0;overflow:auto;}
+.modal-note{font-size:12.5px;color:var(--text2);}
+.modal-note b{color:var(--text);}
+.modal-note.warn{color:var(--amber);}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1280px){
+  .view-bar{gap:8px;padding:8px max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));padding-top:max(8px,env(safe-area-inset-top));}
+  .config-row .field{flex:1 1 110px;min-width:0;}
+  .config-row .field select{width:100%;}
+  .config-row .field label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+}
+@media(max-width:700px){
+  .portal-wrap{padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));gap:10px;}
+  .panel-toolbar{padding:10px 12px;}
+  .date-filters{flex-wrap:nowrap;}
+  .log-table th,.log-table td{padding:7px 10px;}
+  footer.meta{flex-direction:column;}
+  .toast{left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));max-width:none;}
+}
+@media(max-width:520px){
+  .capsule{order:4;flex:1 1 100%;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .vb-spacer{flex:1;}
+  .batches-list{grid-template-columns:1fr;padding:10px;}
+  .batch-card{flex-wrap:wrap;}
+  .bc-body{grid-template-columns:1fr;}
+  .config-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .config-row .field:last-child{grid-column:1/-1;}
+  .tab-btn{padding:7px 10px;}
+  .empty-state{padding:40px 14px;}
+}
+/* touch screens: bigger targets, and 16px inputs so iOS doesn't zoom on focus */
+@media(pointer:coarse){
+  .ib,#cache-status,.vb-brand{width:40px;height:40px;}
+  .cap-btn{height:36px;min-width:40px;}
+  .field select,.field input[type=text],.panel-toolbar .search-input,.config-row .field select{font-size:16px;padding:8px 10px;}
+  .tab-btn{padding:9px 14px;}
+  .btn-sm{padding:9px 12px;}
+}
+</style>
+</head>
+<body>
+
+<div class="view-bar">
+  <div class="vb-brand"><i class="ti ti-road"></i></div>
+  <!-- modules: default = Fleet Log. Active one shows icon + name, the others are icon-only -->
+  <div class="capsule" id="capsule" role="tablist" aria-label="Salik modules">
+    <button type="button" class="cap-btn active" data-tab="recon" role="tab" aria-selected="true" title="Reconciliation &middot; batches" aria-label="Reconciliation"><i class="ti ti-stack-2"></i><span class="cap-txt">Reconciliation <span class="count" id="cntRecon">0</span></span></button>
+    <button type="button" class="cap-btn" data-tab="sessions" role="tab" aria-selected="false" title="Checkout Sessions (bikes &amp; cars)" aria-label="Checkout Sessions"><i class="ti ti-car"></i><span class="cap-txt">Checkout Sessions <span class="count" id="cntSessions">0</span></span></button>
+    <button type="button" class="cap-btn" data-tab="summary" role="tab" aria-selected="false" title="Summary" aria-label="Summary"><i class="ti ti-chart-bar"></i><span class="cap-txt">Summary <span class="count" id="cntSummary">0</span></span></button>
+    <button type="button" class="cap-btn" data-tab="log" role="tab" aria-selected="false" title="Fleet Log" aria-label="Fleet Log"><i class="ti ti-list-details"></i><span class="cap-txt">Fleet Log <span class="count" id="cntLog">0</span></span></button>
+  </div>
+
+  <div class="vb-spacer"></div>
+
+  <div class="vb-actions">
+  <button type="button" class="ib" id="btnInfo" title="Information" aria-label="Information" aria-expanded="false"><i class="ti ti-info-circle"></i></button>
+  <!-- "+" : inactive until the fleet log data is available; then active — press to load it, step 2 follows -->
+  <button type="button" id="cache-status" data-mode="checking" title="Checking for fleet log data&hellip;" aria-label="Upload Salik data" onclick="onPlusClick()" disabled><i class="ti ti-loader spin"></i></button>
+
+  <div class="info-pop" id="infoPop" role="dialog" aria-label="Information">
+    <div class="info-row"><span class="k">About</span><span class="v" id="vbSub">Toll trips &times; fleet check-in / check-out log</span></div>
+    <div class="info-row"><span class="k">Fleet log</span><span class="v" id="infoCache">Checking&hellip;</span></div>
+    <div class="info-row"><span class="k">Salik trip history</span><span class="v" id="infoHist">Checking&hellip;</span></div>
+    <div class="info-row" id="pdfRow" style="display:none;"><span class="k">Salik PDF</span><span class="v" id="infoPdf"></span></div>
+    <div class="info-row" id="acctRow" style="display:none;"><span class="k">Salik account</span><span id="acctBadge" class="badge purple" style="align-self:flex-start;"></span></div>
+  </div>
+  </div>
+</div>
+
+<div class="portal-wrap">
+
+  <!-- default view: Fleet Log / Summary / Checkout Sessions / Reconciliation batches -->
+  <div id="resultsArea">
+    <div class="results-panel">
+      <div class="panel-toolbar">
+        <div class="tb-left">
+          <div class="date-filters" id="logDateFilters" style="display:none;">
+            <div class="search-wrap" id="fromDateWrap">
+              <!-- From = calendar-event (start), To = calendar-check (end) so the two are visually distinct -->
+              <button type="button" class="ib search-icon-btn" id="fromDateToggle" aria-label="Filter from date" title="From date"><i class="ti ti-calendar-event"></i></button>
+              <input type="date" class="search-input" id="fromDateInput" aria-label="From date">
+            </div>
+            <div class="search-wrap" id="toDateWrap">
+              <button type="button" class="ib search-icon-btn" id="toDateToggle" aria-label="Filter to date" title="To date"><i class="ti ti-calendar-check"></i></button>
+              <input type="date" class="search-input" id="toDateInput" aria-label="To date">
+            </div>
+            <button type="button" class="ib" id="pushedByFilterBtn" aria-label="Filter by Pushed By" title="Pushed by"><i class="ti ti-filter"></i></button>
+          </div>
+          <div class="search-wrap" id="searchWrap">
+            <button type="button" class="ib search-icon-btn" id="searchToggle" aria-label="Search" title="Search"><i class="ti ti-search"></i></button>
+            <input type="text" class="search-input" id="searchBox" placeholder="Filter rows&hellip;">
+          </div>
+          <button type="button" class="ib" id="summaryMonthFilterBtn" aria-label="Filter by month" title="Filter by month" style="display:none;"><i class="ti ti-filter"></i></button>
+          <button type="button" class="ib" id="clearFilterBtn" aria-label="Clear filters" title="Clear all filters"><i class="ti ti-eraser"></i></button>
+        </div>
+        <div class="toolbar-actions">
+          <span class="label" id="rowCountLabel"></span>
+          <span class="label" id="assignedViaCountLabel" title="Assigned via, in the currently filtered rows" style="display:none;"></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="exportSummaryBtn" style="display:none;" title="Export Summary as Excel"><i class="ti ti-file-spreadsheet"></i>Export</button>
+          <button type="button" class="ib" id="labelUploadBtn" aria-label="Update Assigned via" title="Pick a From and To date filter first" disabled style="display:none;"><i class="ti ti-calendar-plus"></i></button>
+          <input type="file" id="labelFileInput" accept=".csv,.txt" style="display:none;">
+        </div>
+      </div>
+      <div class="table-scroll" id="tableHost"></div>
+    </div>
+    <footer class="meta">
+      <span id="metaLeft"></span>
+      <span id="metaRight"></span>
+    </footer>
+  </div>
+
+
+</div>
+
+<div class="filter-pop" id="filterPop" role="dialog" aria-label="Column filter"></div>
+
+<div class="modal-back" id="labelModal" role="dialog" aria-modal="true" aria-labelledby="labelModalTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="labelModalTitle"><i class="ti ti-cloud-upload"></i>&nbsp; Upload label data</h3>
+      <button type="button" class="ib" id="labelModalClose" aria-label="Close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-note">File <b id="labelFileName">&mdash;</b> &middot; <span id="labelRowCount"></span></div>
+      <div class="modal-note">This updates the <b>Assigned via</b> column in the Fleet Log. Pick how to match rows, and which uploaded columns are the key and the label.</div>
+      <div class="config-row">
+        <div class="field">
+          <label>Fleet Log column</label>
+          <select id="labelMatchField">
+            <option value="transactionId">Transaction ID</option>
+            <option value="riderId">Rider ID</option>
+            <option value="plate">Plate</option>
+            <option value="itemId">Item ID</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Uploaded key column</label>
+          <select id="labelKeyCol"></select>
+        </div>
+        <div class="field">
+          <label>Uploaded label column</label>
+          <select id="labelValCol"></select>
+        </div>
+      </div>
+      <div id="labelSummary"></div>
+      <div class="table-scroll" id="labelPreview" style="max-height:30vh;"></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" id="labelModalCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="labelModalApply">Apply labels</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="assignViaModal" role="dialog" aria-modal="true" aria-labelledby="assignViaTitle">
+  <div class="modal" style="width:min(480px,100%);">
+    <div class="modal-head">
+      <h3 id="assignViaTitle"><i class="ti ti-calendar-plus"></i>&nbsp; Update Assigned via</h3>
+      <button type="button" class="ib" id="assignViaClose" aria-label="Close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-note">Sets <b>Assigned via</b> to the chosen month for every row currently shown in the Fleet Log (with your search/date/Pushed&nbsp;by filters applied) that doesn't have an Assigned via value yet.</div>
+      <div class="field">
+        <label>Month</label>
+        <select id="assignViaMonth"></select>
+      </div>
+      <label class="override-toggle" id="overrideLabel" for="assignViaOverride">
+        <span class="switch">
+          <input type="checkbox" id="assignViaOverride">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </span>
+        <span>Overwrite rows that already have an Assigned via value</span>
+      </label>
+      <div class="override-confirm" id="overrideConfirmPanel" style="display:none;">
+        <div class="override-confirm-warn"><i class="ti ti-alert-triangle"></i><span id="overrideConfirmText"></span></div>
+        <label class="override-toggle override-toggle-sm" id="overrideConfirmLabel" for="assignViaOverrideConfirm">
+          <span class="switch">
+            <input type="checkbox" id="assignViaOverrideConfirm">
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </span>
+          <span>Yes, overwrite these rows</span>
+        </label>
+      </div>
+      <div class="modal-note" id="assignViaSummary"></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" id="assignViaCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="assignViaApply">Update</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="dupModal" role="dialog" aria-modal="true" aria-labelledby="dupTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="dupTitle">Upload preview</h3>
+      <button type="button" class="ib" id="dupClose" aria-label="Close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="dupSummary"></div>
+      <div class="table-scroll" id="dupTable" style="max-height:40vh;"></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" id="dupCancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="dupConfirm">Upload</button>
+    </div>
+  </div>
+</div>
+<div class="up-back" id="upBack"></div>
+<aside class="up-drawer" id="upDrawer" role="dialog" aria-label="Upload Salik data" aria-hidden="true">
+  <div class="up-head">
+    <h3 title="Upload PDF"><i class="ti ti-file-upload"></i></h3>
+    <button type="button" class="ib" id="btnUpload" aria-label="Upload PDF" title="Upload PDF"><i class="ti ti-upload"></i></button>
+    <span class="up-file" id="upFile">No PDF selected</span>
+    <!-- panel-toolbar controls merged into the same row as the head, shown once a PDF is loaded -->
+    <div class="tab-nav" id="upTabs">
+      <button class="tab-btn active" data-tab="details">Trip Details <span class="count" id="cntDetails">0</span></button>
+      <button class="tab-btn" data-tab="exceptions">Exceptions <span class="count" id="cntExceptions">0</span></button>
+    </div>
+    <!-- options: changing them re-runs reconciliation automatically; only relevant to (and shown on) the Exceptions tab -->
+    <div class="config-row" id="configRow" title="Reconciles automatically when changed">
+      <div class="field">
+        <label>Fill method</label>
+        <select id="fillMethod" title="Exception trips (outside any check-out to check-in window) get a rider like Power Query fill. Fill down = old person: the rider of the session that ended just before the trip. Fill up = latest person: the rider of the session that starts just after the trip.">
+          <option value="up" selected title="Fill up &middot; latest person">Up</option>
+          <option value="down" title="Fill down &middot; old person">Down</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Window</label>
+        <select id="fillWindow" title="How far from the check-in (fill down) or check-out (fill up) a trip may be. Whole = no limit. Trips that cannot be filled stay Unclassified.">
+          <option value="5">5 min</option>
+          <option value="10" selected>10 min</option>
+          <option value="15">15 min</option>
+          <option value="30">30 min</option>
+          <option value="60">60 min</option>
+          <option value="whole">Whole (no limit)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Item type</label>
+        <select id="itemTypeFilter">
+          <option value="Bike" selected>Bike</option>
+          <option value="Car">Car</option>
+          <option value="ALL">All vehicle types</option>
+        </select>
+      </div>
+    </div>
+    <select class="tb-select" id="excFilter" style="display:none;" aria-label="Filter exceptions">
+      <option value="all">All exceptions</option>
+      <option value="Assigned">Assigned (filled)</option>
+      <option value="Unclassified">Unclassified only</option>
+    </select>
+    <span class="label" id="upCount"></span>
+    <div class="search-wrap" id="upSearchWrap">
+      <button type="button" class="ib search-icon-btn" id="upSearchToggle" aria-label="Search" title="Search"><i class="ti ti-search"></i></button>
+      <input type="text" class="search-input" id="upSearch" placeholder="Filter rows&hellip;">
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" id="btnSaveSheet" title="Save data" disabled><i class="ti ti-cloud-upload"></i>Save</button>
+    <button type="button" class="ib" id="btnHideZeroAmt" aria-label="Remove zero-amount rows" aria-pressed="false" title="Remove rows with Amount (AED) = 0"><i class="ti ti-filter-off"></i></button>
+    <button type="button" class="ib" id="upClose" aria-label="Close"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="up-empty" id="upEmpty">
+    <i class="ti ti-cloud-upload"></i>
+    <p>Upload a Salik PDF to see Trip Details, Exceptions and reconciliation options.</p>
+  </div>
+  <div class="up-body" id="upTable"></div>
+  <div class="up-foot">
+    <span class="up-status" id="upStatus"></span>
+  </div>
+</aside>
+
+<div class="modal-back" id="batchModal" role="dialog" aria-modal="true" aria-labelledby="batchTitle">
+  <div class="modal" style="width:min(980px,100%);">
+    <div class="modal-head">
+      <h3 id="batchTitle">Batch</h3>
+      <button type="button" class="ib" id="batchClose" aria-label="Close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="batchMeta"></div>
+      <div class="table-scroll" id="batchTable" style="max-height:52vh;"></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" id="batchDone">Close</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="pdfInput" accept="application/pdf" hidden>
+<div class="toast" id="toast" role="alert">
+  <i id="toast-icon" class="ti ti-circle-check"></i>
+  <span id="toast-msg">Saved</span>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+ *  Cache layer: shared watcher with safe local fallback.
+ *  Copied unmodified from the shared module structure —
+ *  guarantees AP2CacheWatcher.readKey(key) always works,
+ *  whether or not the shared cacheWatcher.js actually loaded.
+ * ═══════════════════════════════════════════════════════ */
+const _IDB_NAME  = 'ap2_fleet_cache';
+const _IDB_STORE = 'datasets';
+
+if (typeof window.AP2CacheWatcher === 'undefined') {
+  console.warn('[salik] cacheWatcher.js did not load — using local fallback');
+  window.AP2CacheWatcher = (function () {
+    let _conn = null;
+    function _open() {
+      if (_conn) return Promise.resolve(_conn);
+      return new Promise((res, rej) => {
+        let done = false;
+        const req = indexedDB.open(_IDB_NAME);
+        const t = setTimeout(() => { if (!done) { done = true; rej(new Error('idb-open-timeout')); } }, 2000);
+        req.onsuccess = e => { if (!done) { done = true; clearTimeout(t); _conn = e.target.result; res(_conn); } };
+        req.onerror   = e => { if (!done) { done = true; clearTimeout(t); rej(e.target.error); } };
+      });
+    }
+    return {
+      init() {},
+      subscribe() { return () => {}; },
+      notifyNow() {},
+      getStatus() { return { healthy: false, mode: 'local-fallback', lastError: 'cacheWatcher.js not loaded' }; },
+      async readKey(key) {
+        try {
+          const db  = await _open();
+          if (!db.objectStoreNames.contains(_IDB_STORE)) return null;
+          const rec = await new Promise((res, rej) => {
+            const r = db.transaction(_IDB_STORE, 'readonly').objectStore(_IDB_STORE).get(key);
+            r.onsuccess = () => res(r.result || null);
+            r.onerror   = () => rej(r.error);
+          });
+          return (rec && Array.isArray(rec.data) && rec.data.length) ? rec.data : null;
+        } catch (e) {
+          if (e && e.name === 'NotFoundError') return null;
+          console.warn('[salik] fallback read failed:', e.message);
+          return null;
+        }
+      }
+    };
+  })();
+}
+
+/* ===================== STATE ===================== */
+const state = {
+  cioRaw: null,
+  logRows: [],
+  loading: false,
+  addMode: 'checking',
+  watcherInit: false,
+  probeTimer: null,
+  subscribed: false,
+  sessions: [],
+  salikRows: [],
+  pdfMeta: {},
+  results: { log: [], summary: [], details: [], exceptions: [], sessions: [], recon: [] },
+  sort: { log: { key: 'tripTs', dir: 'desc' }, summary: { key: 'month', dir: 'desc' } },
+  activeTab: 'recon', // lands on Reconciliation
+  upOpen: false, upTab: 'details', reconShown: [],   // upload panel + visible Reconciliation batches
+  excFilter: 'all',
+  hideZeroAmount: false,
+  logFilters: { pushedBy: [], fromDate: '', toDate: '', summaryMonth: [] },
+  histCache: [], savedRows: [], hist: [], histMap: new Map(),
+  histLoaded: null, histSub: false, histTimer: null,
+  pendingUpload: null,
+  labelMap: new Map(), labelMatchField: 'transactionId', pendingLabelFile: null,
+  employeeMap: new Map(), empSub: false, empTimer: null, // Rider ID -> Name, from the ap2_employee cache
+  lastRendered: {} // tabName -> rows actually shown after every filter/search/sort (used by Export)
+};
+const UP_TABS = ['details','exceptions'];   // shown in the upload panel; everything else is the default view
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function showToast(msg, type){
+  const t = $('#toast'), icon = $('#toast-icon'), label = $('#toast-msg');
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  icon.className = 'ti ' + (type === 'error' ? 'ti-alert-circle' : type === 'success' ? 'ti-circle-check' : 'ti-info-circle');
+  label.textContent = msg;
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => { t.classList.remove('show'); }, 2800);
+}
+
+// "+" : inactive (spinner / greyed) until the fleet log data is loaded; then active — press to open the upload panel
+function setCacheStatus(mode, info){
+  const el = $('#cache-status');
+  state.addMode = mode;
+  el.dataset.mode = mode;
+  el.className = mode === 'ok' ? 'ready' : '';
+  el.disabled = mode !== 'ok';
+  el.title = mode === 'ok' ? 'Upload Salik data' : mode === 'off' ? 'Waiting for the fleet log' : 'Loading fleet log\u2026';
+  el.innerHTML = (mode === 'checking' || mode === 'loading') ? '<i class="ti ti-loader spin"></i>' : '<i class="ti ti-plus"></i>';
+  const ic = $('#infoCache');
+  ic.textContent = info || '';
+  ic.className = 'v ' + (mode === 'ok' ? 'ok' : mode === 'off' ? 'warn' : '');
+}
+
+/* ===================== STEP 1: fleet log cache ===================== */
+function normalizeCioValue(val){
+  let arr = null;
+  if (Array.isArray(val)) arr = val;
+  else if (val && Array.isArray(val.data)) arr = val.data;
+  else if (val && val.value && Array.isArray(val.value.data)) arr = val.value.data;
+  if (!arr) throw new Error('Unrecognized ap2_cioLog shape — expected an array of log rows or {data:[...]}.');
+  return arr;
+}
+
+// Timeout-protected fallback: AP2CacheWatcher.readKey() only ever looks in
+// the 'datasets' store. If this browser's copy of the cache uses a
+// differently-named store, readKey() will keep returning null even though
+// the data is really there. This scans every store for the key as a
+// fallback — but unlike the old scanAllStoresForKey, it's capped with a
+// timeout so a stuck indexedDB.open() can never hang the caller forever
+// (that hang was the original iPad freeze cause).
+function scanAllStoresForKey(key){
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const req = indexedDB.open(_IDB_NAME);
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new Error('idb-scan-timeout'));
+    }, 2000);
+    req.onerror = () => {
+      if (settled) return;
+      settled = true; clearTimeout(timer);
+      reject(new Error('Could not open IndexedDB "' + _IDB_NAME + '".'));
+    };
+    req.onsuccess = (e) => {
+      if (settled) return;
+      settled = true; clearTimeout(timer);
+      const db = e.target.result;
+      const storeNames = Array.from(db.objectStoreNames);
+      if (storeNames.length === 0){ db.close(); reject(new Error('Database exists but has no object stores.')); return; }
+      let found = null, remaining = storeNames.length;
+      const tx = db.transaction(storeNames, 'readonly');
+      storeNames.forEach(storeName => {
+        const getReq = tx.objectStore(storeName).get(key);
+        getReq.onsuccess = () => {
+          if (getReq.result !== undefined && found === null) found = { store: storeName, value: getReq.result };
+          if (--remaining === 0){ db.close(); found ? resolve(found) : reject(new Error('No object store contained key "' + key + '". Checked: ' + storeNames.join(', '))); }
+        };
+        getReq.onerror = () => { if (--remaining === 0){ db.close(); found ? resolve(found) : reject(new Error('Error reading object stores.')); } };
+      });
+    };
+  });
+}
+
+// Reads try the protected AP2CacheWatcher.readKey() first (same path
+// allEmp.html uses). Only if that comes back empty do we fall back to the
+// timeout-protected store scan above — so the common case never touches a
+// raw indexedDB.open(), and the fallback can't hang even when it's needed.
+async function readCioRaw(){
+  if (!state.watcherInit){
+    if (typeof AP2CacheWatcher.init === 'function') AP2CacheWatcher.init();
+    state.watcherInit = true;
+  }
+  let raw = await AP2CacheWatcher.readKey('ap2_cioLog');
+  let sourceLabel = 'live sync';
+  if (!raw){
+    const found = await scanAllStoresForKey('ap2_cioLog');
+    raw = found.value;
+    sourceLabel = 'store "' + found.store + '"';
+  }
+  return { arr: normalizeCioValue(raw), sourceLabel };
+}
+
+// Checked on open, then every 5 s while the cache is missing. Once found it loads automatically and "+" turns active.
+async function probeCache(){
+  if (state.addMode !== 'checking' && state.addMode !== 'off') return;
+  return loadCache();
+}
+
+async function loadCache(){
+  if (state.loading) return;
+  state.loading = true;
+  clearTimeout(state.probeTimer);
+  if (state.addMode !== 'off') setCacheStatus('loading', 'Loading\u2026');
+  try{
+    const { arr, sourceLabel } = await readCioRaw();
+    state.cioRaw = arr;
+    onCioLoaded(arr, sourceLabel, false);
+    if (typeof AP2CacheWatcher.subscribe === 'function' && !state.subscribed){
+      state.subscribed = true;
+      AP2CacheWatcher.subscribe((key) => {
+        if (key !== 'ap2_cioLog') return;
+        AP2CacheWatcher.readKey('ap2_cioLog').then(raw => {
+          if (!raw) return;
+          try{ const upArr = normalizeCioValue(raw); state.cioRaw = upArr; onCioLoaded(upArr, 'live update', true); }
+          catch(e){ /* ignore malformed live updates */ }
+        });
+      });
+    }
+  }catch(err){
+    setCacheStatus('off', 'Not available yet \u2014 ' + err.message);
+    state.probeTimer = setTimeout(probeCache, 5000);
+  }finally{ state.loading = false; }
+}
+
+// the + button: opens the upload panel (its Upload button picks the Salik PDF)
+function onPlusClick(){ if (state.addMode === 'ok') openUpload(); }
+
+function onCioLoaded(arr, sourceLabel, quiet){
+  state.sessions = buildSessions(arr);
+  state.logRows = arr
+    .filter(r => Array.isArray(r) && r.length >= 6 && r[0])
+    .map(r => ({ ts: new Date(r[0]).getTime(), ref: r[1], riderId: r[2], action: r[3], itemType: r[4], itemId: r[5] }))
+    .filter(r => !isNaN(r.ts));
+  setCacheStatus('ok', arr.length + ' log entries (' + sourceLabel + ') \u00b7 ' + state.sessions.length + ' checkout sessions');
+  recompute();
+}
+
+/* Log row: [isoTimestamp, ref, riderId, action ("Check In"|"Check Out"), itemType, itemId] */
+function buildSessions(rows){
+  const clean = rows
+    .filter(r => Array.isArray(r) && r.length >= 6 && r[0])
+    .map(r => ({ ts: new Date(r[0]).getTime(), ref: r[1], riderId: r[2], action: r[3], itemType: r[4], itemId: r[5] }))
+    .filter(r => !isNaN(r.ts))
+    .sort((a,b) => a.ts - b.ts);
+
+  const byItem = {};
+  clean.forEach(r => { const key = String(r.itemId); (byItem[key] = byItem[key] || []).push(r); });
+
+  const sessions = [];
+  let lastKnownTs = 0;
+  clean.forEach(r => { if (r.ts > lastKnownTs) lastKnownTs = r.ts; });
+
+  Object.keys(byItem).forEach(itemId => {
+    const events = byItem[itemId];
+    let openCheckout = null;
+    events.forEach(ev => {
+      if (ev.action === 'Check Out'){
+        if (openCheckout){
+          sessions.push({ itemId, itemType: openCheckout.itemType, riderId: openCheckout.riderId,
+            checkOutTs: openCheckout.ts, checkInTs: ev.ts, open: false,
+            checkOutRef: openCheckout.ref, checkInRef: ev.ref, note: 'closed by next checkout (no explicit check-in found)' });
+        }
+        openCheckout = ev;
+      } else if (ev.action === 'Check In'){
+        if (openCheckout){
+          sessions.push({ itemId, itemType: openCheckout.itemType, riderId: openCheckout.riderId,
+            checkOutTs: openCheckout.ts, checkInTs: ev.ts, open: false,
+            checkOutRef: openCheckout.ref, checkInRef: ev.ref, note: '' });
+          openCheckout = null;
+        }
+      }
+    });
+    if (openCheckout){
+      sessions.push({ itemId, itemType: openCheckout.itemType, riderId: openCheckout.riderId,
+        checkOutTs: openCheckout.ts, checkInTs: lastKnownTs, open: true,
+        checkOutRef: openCheckout.ref, checkInRef: null, note: 'still checked out — window extended to last log entry' });
+    }
+  });
+
+  return sessions;
+}
+
+/* ===================== SALIKDUMP HISTORY (Loading data) ===================== */
+const HIST_COLS = ['Transaction ID','Rider ID','Plate','Item ID','Trip Date/Time','Amount (AED)','Location','Match','Assigned via','Pushed At','Pushed By'];
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// Sheets can turn an 11-digit id into a number and drop a leading zero, so ids are compared without it.
+function txKey(v){ return String(v == null ? '' : v).trim().replace(/^0+/, ''); }
+function monthLabel(v){ const m = /^(\d{4})-(\d{2})$/.exec(v || ''); return m ? MONTH_NAMES[+m[2]-1] + ' ' + m[1] : (v || '\u2014'); }
+// "Assigned via" is meant to hold a month label like "Dec 2026", but a sheet cell that was
+// ever set as an actual Date comes back as a full timestamp (e.g. 2026-12-31T20:00:00.000Z) —
+// collapse that down to the same Month/Year format the dropdown uses, everywhere else is left as-is.
+function assignedViaLabel(v){
+  const s = String(v == null ? '' : v).trim();
+  if (!s) return '';
+  if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?$/.test(s)){
+    const t = Date.parse(s);
+    if (!isNaN(t)){ const d = new Date(t); return MONTH_NAMES[d.getMonth()] + ' ' + d.getFullYear(); }
+  }
+  return s;
+}
+function parseHistTs(v){
+  if (v instanceof Date) return v.getTime() || 0;
+  const s = String(v == null ? '' : v).trim();
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3], +m[4], +m[5], +(m[6]||0)).getTime();
+  m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})[ ,]+(\d{2}):(\d{2})(?::(\d{2}))?$/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1], +m[4], +m[5], +(m[6]||0)).getTime();
+  const t = Date.parse(s);
+  return isNaN(t) ? 0 : t;
+}
+function fmtCell(v){
+  if (v instanceof Date) return v.getTime() ? fmtTripTs(v.getTime()) : '';
+  const s = String(v == null ? '' : v).trim();
+  return /^\d{4}-\d{2}-\d{2}T.*(Z|[+-]\d{2}:?\d{2})$/.test(s) ? fmtTripTs(Date.parse(s)) : s;
+}
+function normalizeArr(val, key){
+  let arr = null;
+  if (Array.isArray(val)) arr = val;
+  else if (val && Array.isArray(val.data)) arr = val.data;
+  else if (val && val.value && Array.isArray(val.value.data)) arr = val.value.data;
+  if (!arr) throw new Error('Unrecognized ' + key + ' shape \u2014 expected an array of rows or {data:[...]}.');
+  return arr;
+}
+// one salikDump row (array in sheet order, or object keyed by header) -> flat object
+function normaliseHistRow(r){
+  const a = Array.isArray(r) ? r : (r && typeof r === 'object' ? HIST_COLS.map(c => r[c]) : null);
+  if (!a) return null;
+  const S = i => String(a[i] == null ? '' : a[i]).trim();
+  const tx = S(0);
+  if (!tx || tx === 'Transaction ID') return null;
+  const ts = parseHistTs(a[4]);
+  const d = new Date(ts);
+  return { transactionId: tx, riderId: S(1), plate: S(2), itemId: S(3), tripTs: ts,
+    month: ts ? d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') : '\u2014',
+    amount: parseFloat(S(5).replace(/,/g,'')) || 0, location: S(6), matchType: S(7), assignedVia: assignedViaLabel(S(8)),
+    pushedAt: fmtCell(a[9]), pushedBy: S(10) };
+}
+function setHistStatus(mode, info){
+  const el = $('#infoHist');
+  el.textContent = info || '';
+  el.className = 'v ' + (mode === 'ok' ? 'ok' : mode === 'off' ? 'warn' : '');
+}
+async function loadHist(){
+  clearTimeout(state.histTimer);
+  try{
+    let raw = await AP2CacheWatcher.readKey('ap2_salikDump');
+    if (!raw) raw = (await scanAllStoresForKey('ap2_salikDump')).value;
+    state.histCache = normalizeArr(raw, 'ap2_salikDump').map(normaliseHistRow).filter(Boolean);
+    state.histLoaded = true;
+    setHistStatus('ok', state.histCache.length + ' saved trips');
+    rebuildHist();
+    if (typeof AP2CacheWatcher.subscribe === 'function' && !state.histSub){
+      state.histSub = true;
+      AP2CacheWatcher.subscribe((key) => { if (key === 'ap2_salikDump') loadHist(); });
+    }
+  }catch(err){
+    state.histLoaded = false;
+    setHistStatus('off', 'Not available yet \u2014 ' + err.message);
+    rebuildHist();
+    state.histTimer = setTimeout(loadHist, 5000);
+  }
+}
+// cache rows + rows saved from this page that the cache has not caught up with yet
+function rebuildHist(){
+  const seen = new Set(state.histCache.map(r => txKey(r.transactionId)));
+  state.hist = state.histCache.concat(state.savedRows.filter(r => !seen.has(txKey(r.transactionId))));
+  state.histMap = new Map(state.hist.map(r => [txKey(r.transactionId), r]));
+  applyLabels();
+  recompute();
+}
+// updates the Assigned via column on every Fleet Log row that matches a key from the uploaded label map (state.labelMatchField); rows with no match keep whatever Assigned via already had
+function applyLabels(){
+  if (!state.labelMap.size) return;
+  const field = state.labelMatchField;
+  state.hist.forEach(r => {
+    const v = state.labelMap.get(String(r[field] == null ? '' : r[field]).trim().toLowerCase());
+    if (v) r.assignedVia = v;
+  });
+}
+// month-wise, per rider; a rider with two bikes in a month shows both plates, comma-separated
+function buildHistSummary(rows){
+  const map = new Map();
+  rows.forEach(r => {
+    const k = r.month + '|' + r.riderId;
+    let g = map.get(k);
+    if (!g){ g = { month: r.month, riderId: r.riderId || '\u2014', plateSet: new Set(), count: 0, totalAmount: 0 }; map.set(k, g); }
+    if (r.plate) g.plateSet.add(r.plate);
+    g.count++; g.totalAmount += r.amount;
+  });
+  return Array.from(map.values())
+    .map(g => ({ month: g.month, riderId: g.riderId, riderName: state.employeeMap.get(String(g.riderId).trim()) || '',
+      plates: Array.from(g.plateSet).sort().join(', '), count: g.count, totalAmount: g.totalAmount }))
+    .sort((a,b) => b.count - a.count);
+}
+
+/* ===================== RIDER NAMES (ap2_employee cache) ===================== */
+// Normalises one ap2_employee row — array form [Emp ID, Name, ...] or object form keyed by header —
+// into { id, name }. Only Rider ID -> Name lookups are needed here, nothing else from that cache.
+function normaliseEmployeeRow(r){
+  if (!r) return null;
+  if (Array.isArray(r)){
+    const id = String(r[0] == null ? '' : r[0]).trim();
+    if (!id || id === 'Emp ID') return null;
+    const name = String(r[1] == null ? '' : r[1]).trim();
+    if (!name) return null;
+    return { id, name };
+  }
+  const id = String(r['Emp ID'] ?? r.EmpID ?? r.empId ?? r.EID ?? r.ID ?? '').trim();
+  const name = String(r['Name'] ?? r.name ?? '').trim();
+  if (!id || !name) return null;
+  return { id, name };
+}
+async function loadEmployees(){
+  clearTimeout(state.empTimer);
+  try{
+    let raw = await AP2CacheWatcher.readKey('ap2_employee');
+    if (!raw) raw = (await scanAllStoresForKey('ap2_employee')).value;
+    const arr = normalizeArr(raw, 'ap2_employee');
+    const map = new Map();
+    arr.forEach(r => { const e = normaliseEmployeeRow(r); if (e) map.set(e.id, e.name); });
+    state.employeeMap = map;
+    recompute();
+    if (typeof AP2CacheWatcher.subscribe === 'function' && !state.empSub){
+      state.empSub = true;
+      AP2CacheWatcher.subscribe((key) => { if (key === 'ap2_employee') loadEmployees(); });
+    }
+  }catch(err){
+    // ap2_employee cache not available yet \u2014 Name just stays blank; keep checking quietly
+    state.empTimer = setTimeout(loadEmployees, 5000);
+  }
+}
+
+// Reconciliation batches: salikDump has no batch id column, so one save = one batch = rows sharing Pushed At + Pushed By.
+function buildBatches(rows){
+  const map = new Map();
+  rows.forEach(r => {
+    const k = r.pushedAt + '|' + r.pushedBy;
+    let b = map.get(k);
+    if (!b){ b = { pushedAt: r.pushedAt, pushedBy: r.pushedBy, ts: parseHistTs(r.pushedAt), total: 0, zero: 0, proper: 0, exceptions: 0, records: 0, amount: 0, minTs: 0, maxTs: 0, via: new Map(), rows: [] }; map.set(k, b); }
+    b.records++; b.amount += r.amount;
+    if (r.amount > 0) b.total++; else b.zero++;
+    if (r.matchType === 'Proper') b.proper++; else if (r.matchType === 'Exception') b.exceptions++;
+    if (r.tripTs){ if (!b.minTs || r.tripTs < b.minTs) b.minTs = r.tripTs; if (r.tripTs > b.maxTs) b.maxTs = r.tripTs; }
+    if (r.assignedVia) b.via.set(r.assignedVia, (b.via.get(r.assignedVia) || 0) + 1);
+    b.rows.push(r);
+  });
+  return Array.from(map.values()).sort((a,b) => b.ts - a.ts);
+}
+// Checkout Sessions in the default view: every item type (bikes, cars, ...), Salik Trips = saved trips inside the session window
+function buildSessionRows(){
+  const tripsByItem = new Map();
+  state.hist.forEach(h => { if (!h.tripTs) return; const k = String(h.itemId).trim(); if (!tripsByItem.has(k)) tripsByItem.set(k, []); tripsByItem.get(k).push(h.tripTs); });
+  return state.sessions.map(s => {
+    let n = 0;
+    (tripsByItem.get(String(s.itemId).trim()) || []).forEach(t => { if (t >= s.checkOutTs && t <= s.checkInTs) n++; });
+    return { itemId: s.itemId, itemType: s.itemType, riderId: s.riderId, checkOutTs: s.checkOutTs, checkInTs: s.checkInTs, tripsMatched: n, open: s.open, note: s.note };
+  }).sort((a,b) => b.checkOutTs - a.checkOutTs);
+}
+
+/* ===================== STEP 2: PDF parsing ===================== */
+async function parsePdf(file){
+  const buf = await file.arrayBuffer();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+
+  let fullText = '';
+  let meta = { accountNo: null, periodFrom: null, periodTo: null, totalTrips: null, totalAmount: null };
+
+  for (let p = 1; p <= pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    const items = content.items.map(it => ({ str: it.str, x: it.transform[4], y: it.transform[5] }));
+    const lines = {};
+    items.forEach(it => { const key = Math.round(it.y); (lines[key] = lines[key] || []).push(it); });
+    const sortedYs = Object.keys(lines).map(Number).sort((a,b) => b - a);
+    sortedYs.forEach(y => {
+      const lineItems = lines[y].sort((a,b) => a.x - b.x);
+      const lineText = lineItems.map(li => li.str).join(' ').replace(/\s+/g,' ').trim();
+      if (lineText) fullText += lineText + '\n';
+    });
+
+    if (p === 1){
+      const accMatch = fullText.match(/Account No:\s*(\d+)/);
+      if (accMatch) meta.accountNo = accMatch[1];
+      const periodMatch = fullText.match(/From\s+(\d{2}-\d{2}-\d{4})\s+To\s+(\d{2}-\d{2}-\d{4})/);
+      if (periodMatch){ meta.periodFrom = periodMatch[1]; meta.periodTo = periodMatch[2]; }
+    }
+  }
+
+  const totalsMatch = fullText.match(/TotalTrips:\s*([\d,]+)\s+TotalAmount\(AED\):\s*([\d,.]+)/);
+  if (totalsMatch){
+    meta.totalTrips = parseInt(totalsMatch[1].replace(/,/g,''), 10);
+    meta.totalAmount = parseFloat(totalsMatch[2].replace(/,/g,''));
+  }
+
+  const rowRe = /(\d{11})\s+(\d{2} \w{3} \d{4})\s+(\d{2}:\d{2}:\d{2} [AP]M)\s+(\d{2} \w{3} \d{4})\s+(.+?)\s+(\d+)\s+(\S+)\s+([\d.]+)(?=\s|$)/g;
+  const rows = [];
+  let m;
+  while ((m = rowRe.exec(fullText)) !== null){
+    const [_, txId, tripDateStr, tripTimeStr, postDateStr, location, tagNumber, plate, amountStr] = m;
+    const tripDt = parseSalikDateTime(tripDateStr, tripTimeStr);
+    rows.push({ transactionId: txId, tripDateStr, tripTimeStr, tripTs: tripDt.getTime(), postDateStr,
+      location: location.trim(), tagNumber, plate: plate.trim(), amount: parseFloat(amountStr) });
+  }
+
+  const seen = new Set();
+  const deduped = rows.filter(r => { if (seen.has(r.transactionId)) return false; seen.add(r.transactionId); return true; });
+
+  return { rows: deduped, meta };
+}
+
+function parseSalikDateTime(dateStr, timeStr){
+  const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const [d, monStr, y] = dateStr.split(' ');
+  const tm = timeStr.match(/(\d{2}):(\d{2}):(\d{2}) ([AP]M)/);
+  let [_, hh, mm, ss, ap] = tm;
+  hh = parseInt(hh, 10);
+  if (ap === 'AM'){ if (hh === 12) hh = 0; } else { if (hh !== 12) hh += 12; }
+  return new Date(parseInt(y,10), months[monStr], parseInt(d,10), hh, parseInt(mm,10), parseInt(ss,10));
+}
+
+/* ===================== reconciliation + views ===================== */
+function recompute(){
+  if (state.cioRaw){
+    const w = $('#fillWindow').value;
+    const r = reconcile(state.sessions, state.salikRows, {
+      itemTypeFilter: $('#itemTypeFilter').value,
+      fillMethod: $('#fillMethod').value,                       // 'up' = latest person | 'down' = old person
+      windowMs: w === 'whole' ? null : parseInt(w, 10) * 60000  // null = whole (no limit)
+    });
+    r.details.forEach(d => { d.dup = state.histMap.has(txKey(d.transactionId)); });
+    state.results.details = r.details;
+    state.results.exceptions = r.exceptions;
+  }
+  state.results.log = state.hist;
+  state.results.summary = buildHistSummary(state.hist);
+  state.results.recon = buildBatches(state.hist);
+  state.results.sessions = buildSessionRows();
+  renderResults();
+}
+function reconcileNow(){
+  recompute();
+  if (state.salikRows.length) showToast('Reconciled \u2014 ' + state.results.details.length + ' matched, ' + state.results.exceptions.filter(e => e.status === 'Unclassified').length + ' unclassified.', 'success');
+}
+
+// Pure function: sessions + Salik trips + options -> { details, exceptions, sessions }.
+// PROPER    = trip falls inside a recorded check-out -> check-in window (no grace).
+// EXCEPTION = any other trip on a plate that has sessions. Its rider is filled like Power Query:
+//   fill down = OLD person: rider of the session that ended most recently BEFORE the trip.
+//   fill up   = LATEST person: rider of the session that starts next AFTER the trip.
+// opts.windowMs caps the gap to that check-in (down) / check-out (up); null = whole (no limit).
+// Trips that cannot be filled stay UNCLASSIFIED (listed in Exceptions, not uploaded).
+function reconcile(allSessions, salikRows, opts){
+  const itemTypeFilter = opts.itemTypeFilter || 'ALL';
+  const fillDown = opts.fillMethod === 'down';
+  const windowMs = opts.windowMs == null ? null : opts.windowMs;
+
+  let sessions = allSessions.slice();
+  if (itemTypeFilter !== 'ALL') sessions = sessions.filter(s => s.itemType === itemTypeFilter);
+  const sessionsByPlate = {};
+  sessions.forEach(s => { const key = String(s.itemId).trim(); (sessionsByPlate[key] = sessionsByPlate[key] || []).push(s); });
+  const tripsByPlate = {};
+  salikRows.forEach(t => { (tripsByPlate[t.plate] = tripsByPlate[t.plate] || []).push(t); });
+
+  const seenTxIds = new Set(), details = [], sessionTripCounts = new Map();
+  function pushDetail(s, trip, matchType, fillDirection){
+    seenTxIds.add(trip.transactionId);
+    const sKey = s.checkOutRef + '|' + s.itemId;
+    sessionTripCounts.set(sKey, (sessionTripCounts.get(sKey)||0) + 1);
+    details.push({ riderId: s.riderId, plate: trip.plate, itemId: s.itemId, transactionId: trip.transactionId,
+      tripTs: trip.tripTs, amount: trip.amount, location: trip.location,
+      checkOutTs: s.checkOutTs, checkInTs: s.checkInTs, sessionOpen: s.open,
+      matchType, fillDirection: fillDirection || '' });
+  }
+
+  // PASS 1 - Proper
+  sessions.forEach(s => {
+    (tripsByPlate[String(s.itemId).trim()] || []).forEach(trip => {
+      if (seenTxIds.has(trip.transactionId)) return;
+      if (trip.tripTs >= s.checkOutTs && trip.tripTs <= s.checkInTs) pushDetail(s, trip, 'proper');
+    });
+  });
+
+  // PASS 2 - Exceptions: fill down / fill up, else Unclassified
+  const exceptions = [];
+  salikRows.forEach(trip => {
+    if (seenTxIds.has(trip.transactionId)) return;
+    const base = { transactionId: trip.transactionId, plate: trip.plate, tripTs: trip.tripTs, amount: trip.amount, location: trip.location };
+    const list = sessionsByPlate[trip.plate];
+    if (!list){ exceptions.push({ ...base, status: 'Unclassified', riderId: '', fillDirection: '', gapMin: '', reason: 'No checkout session for this plate' }); return; }
+    let chosen = null, gap = 0, reason = '';
+    if (fillDown){
+      list.forEach(s => { if (s.checkInTs < trip.tripTs && (!chosen || s.checkInTs > chosen.checkInTs)) chosen = s; });
+      if (chosen) gap = trip.tripTs - chosen.checkInTs; else reason = 'No earlier check-in to fill down from';
+    } else {
+      list.forEach(s => { if (s.checkOutTs > trip.tripTs && (!chosen || s.checkOutTs < chosen.checkOutTs)) chosen = s; });
+      if (chosen) gap = chosen.checkOutTs - trip.tripTs; else reason = 'No later check-out to fill up from';
+    }
+    if (chosen && windowMs != null && gap > windowMs){
+      reason = 'Outside the ' + Math.round(windowMs/60000) + '-min window (' + Math.round(gap/60000) + ' min gap)';
+      chosen = null;
+    }
+    if (chosen){
+      const dir = fillDown ? 'fill down' : 'fill up';
+      pushDetail(chosen, trip, 'exception', dir);
+      exceptions.push({ ...base, status: 'Assigned', riderId: chosen.riderId, fillDirection: dir, gapMin: Math.round(gap/60000), reason: '' });
+    } else {
+      exceptions.push({ ...base, status: 'Unclassified', riderId: '', fillDirection: '', gapMin: '', reason });
+    }
+  });
+
+  const sessionRows = sessions.map(s => {
+    const sKey = s.checkOutRef + '|' + s.itemId;
+    return { itemId: s.itemId, itemType: s.itemType, riderId: s.riderId, checkOutTs: s.checkOutTs, checkInTs: s.checkInTs,
+      open: s.open, tripsMatched: sessionTripCounts.get(sKey) || 0, note: s.note };
+  }).sort((a,b) => b.checkOutTs - a.checkOutTs);
+
+  return { details, exceptions, sessions: sessionRows };
+}
+
+/* ===================== RENDERING ===================== */
+const fillLabel = v => v === 'fill down' ? 'Fill down \u00b7 old person' : v === 'fill up' ? 'Fill up \u00b7 latest person' : '\u2014';
+const TAB_DEFS = {
+  log: { sheet: 'salikDump', cols: [
+    {key:'transactionId', label:'Transaction ID'}, {key:'riderId', label:'Rider ID'}, {key:'plate', label:'Plate No'},
+    {key:'tripTs', label:'Trip Date/Time', fmt: v => v ? fmtTripTs(v) : '\u2014'},
+    {key:'amount', label:'Amount (AED)', num:true, fmt: v => v.toFixed(2)}, {key:'location', label:'Location'},
+    {key:'matchType', label:'Match', fmt: v => v || '\u2014', badge: v => v === 'Proper' ? 'ok' : v === 'Exception' ? 'warn' : ''},
+    {key:'assignedVia', label:'Assigned via', fmt: v => v || '\u2014'}
+  ]},
+  summary: { cols: [
+    {key:'month', label:'Month', fmt: monthLabel}, {key:'riderId', label:'Rider ID'},
+    {key:'riderName', label:'Name', fmt: v => v || '\u2014'}, {key:'plates', label:'Plate(s)'},
+    {key:'count', label:'Salik (Count)', num:true},
+    {key:'totalAmount', label:'Amount (AED)', num:true, fmt: v => v.toFixed(2)}
+  ]},
+  details: { cols: [
+    {key:'riderId', label:'Rider ID'}, {key:'plate', label:'Plate'}, {key:'itemId', label:'Item ID'},
+    {key:'transactionId', label:'Transaction ID'}, {key:'tripTs', label:'Trip Date/Time', fmt: v => fmtTripTs(v)},
+    {key:'amount', label:'Amount (AED)', num:true, fmt: v => v.toFixed(2)}, {key:'location', label:'Location'},
+    {key:'matchType', label:'Match', fmt: v => v === 'proper' ? 'Proper' : 'Exception', badge: v => v === 'proper' ? 'ok' : 'warn'},
+    {key:'fillDirection', label:'Assigned via', fmt: fillLabel},
+    {key:'dup', label:'Status', fmt: v => v ? 'Duplicate' : 'New', badge: v => v ? 'bad' : 'ok'}
+  ]},
+  exceptions: { cols: [
+    {key:'status', label:'Status', badge: v => v === 'Assigned' ? 'warn' : 'bad'},
+    {key:'riderId', label:'Rider ID', fmt: v => v || '\u2014'}, {key:'plate', label:'Plate'},
+    {key:'transactionId', label:'Transaction ID'}, {key:'tripTs', label:'Trip Date/Time', fmt: v => fmtTripTs(v)},
+    {key:'amount', label:'Amount (AED)', num:true, fmt: v => v.toFixed(2)}, {key:'location', label:'Location'},
+    {key:'fillDirection', label:'Assigned via', fmt: fillLabel},
+    {key:'gapMin', label:'Gap (min)', num:true, fmt: v => v === '' ? '\u2014' : v},
+    {key:'reason', label:'Reason', fmt: v => v || '\u2014'}
+  ]},
+  sessions: { cols: [
+    {key:'itemId', label:'Item ID'}, {key:'itemType', label:'Type'}, {key:'riderId', label:'Rider ID'},
+    {key:'checkOutTs', label:'Check Out', fmt: v => fmtTs(v)}, {key:'checkInTs', label:'Check In', fmt: v => fmtTs(v)},
+    {key:'tripsMatched', label:'Salik Trips', num:true},
+    {key:'open', label:'Status', fmt: v => v ? 'still out' : 'closed', badge: v => v ? 'warn' : 'ok'}
+  ]}
+};
+
+function fmtTs(ts){
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
+// same as fmtTs but keeps seconds \u2014 used for the merged Trip Date/Time column, since the
+// source Salik PDF timestamps are precise to the second.
+function fmtTripTs(ts){
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+
+function updateSaveBtn(){ const b = $('#btnSaveSheet'); if (b) b.disabled = !state.results.details.length; }
+
+function renderResults(){
+  [['Log','log'],['Summary','summary'],['Sessions','sessions'],['Recon','recon'],['Details','details'],['Exceptions','exceptions']]
+    .forEach(([id,k]) => { $('#cnt' + id).textContent = state.results[k].length; });
+  updateSaveBtn();
+  renderTable(state.activeTab, $('#searchBox').value);
+  if (state.upOpen) renderUpload();
+  renderMeta();
+  sizeCapsule();
+}
+
+function renderMeta(){
+  let left;
+  if (state.activeTab === 'sessions') left = state.logRows.length + ' fleet log entries \u00b7 ' + state.sessions.length + ' checkout sessions';
+  else if (state.activeTab === 'recon') left = state.results.recon.length + ' batches \u00b7 ' + state.hist.length + ' saved trips';
+  else left = state.hist.length + ' saved trips in salikDump \u00b7 ' + state.results.summary.length + ' rider-month rows';
+  $('#metaLeft').textContent = left;
+  $('#metaRight').textContent = 'Updated ' + new Date().toLocaleString();
+}
+
+// upload panel: Trip Details / Exceptions preview + status line
+function renderUpload(){
+  $('#upDrawer').classList.toggle('has-pdf', state.salikRows.length > 0);
+  if (!state.salikRows.length){ sizeUpDrawerToTable(); return; } // nothing else to draw until a PDF is loaded
+  renderTable(state.upTab, $('#upSearch').value);
+  const unc = state.results.exceptions.filter(e => e.status === 'Unclassified').length;
+  const dups = state.results.details.filter(d => d.dup).length;
+  $('#upStatus').textContent = state.salikRows.length + ' trips from PDF \u00b7 ' + state.results.details.length + ' matched \u00b7 ' + unc + ' unclassified \u00b7 ' + dups + ' already in salikDump';
+  sizeUpDrawerToTable();
+}
+// the drawer widens/narrows to fit however wide the currently-shown table naturally is (clamped to a sane min/max)
+function sizeUpDrawerToTable(){
+  const drawer = $('#upDrawer');
+  const table = $('#upTable table');
+  if (!table){ drawer.style.width = ''; return; }
+  const natural = table.scrollWidth + 56; // account for .up-body padding/scrollbar
+  const w = Math.max(480, Math.min(natural, Math.floor(window.innerWidth * 0.96)));
+  drawer.style.width = w + 'px';
+}
+window.addEventListener('resize', () => { if (state.upOpen) sizeUpDrawerToTable(); });
+
+// same idea as sizeUpDrawerToTable, for the data-preview modals (label preview / upload preview / batch):
+// the modal box widens/narrows to fit however wide its inner table naturally is, clamped to [minW, 96vw]
+// so a 3-column preview doesn't open as wide as a 10-column one.
+function sizeModalToContent(modalBackSel, hostSel, minW){
+  const modalBack = $(modalBackSel);
+  if (!modalBack || !modalBack.classList.contains('show')) return;
+  const modal = modalBack.querySelector('.modal');
+  const table = document.querySelector(hostSel + ' table');
+  const maxW = Math.floor(window.innerWidth * 0.96);
+  if (!table){ modal.style.width = Math.min(minW, maxW) + 'px'; return; }
+  const natural = table.scrollWidth + 40; // account for modal-body padding
+  modal.style.width = Math.max(minW, Math.min(natural, maxW)) + 'px';
+}
+window.addEventListener('resize', () => {
+  sizeModalToContent('#labelModal', '#labelPreview', 480);
+  sizeModalToContent('#dupModal', '#dupTable', 480);
+  sizeModalToContent('#batchModal', '#batchTable', 560);
+});
+
+// where each tab draws: upload-panel tabs into the panel, everything else into the main panel
+function tabCtx(tab){
+  return UP_TABS.includes(tab)
+    ? { host: $('#upTable'), search: $('#upSearch'), count: $('#upCount') }
+    : { host: $('#tableHost'), search: $('#searchBox'), count: $('#rowCountLabel') };
+}
+
+function tableHtml(cols, rows, sortState, tabName, baseRows){
+  let html = '<table class="log-table"><thead><tr>';
+  cols.forEach(c => {
+    let arrow = '';
+    if (sortState && sortState.key === c.key) arrow = sortState.dir === 'asc' ? '&uarr;' : '&darr;';
+    let filterBtn = '';
+    if (c.filterKey){
+      const activeVal = state.logFilters[c.filterKey];
+      filterBtn = `<button type="button" class="th-filter${activeVal && activeVal !== 'all' ? ' active' : ''}" data-filter-key="${c.filterKey}" title="Filter ${escapeHtml(c.label)}" aria-label="Filter ${escapeHtml(c.label)}"><i class="ti ti-filter"></i></button>`;
+    }
+    html += `<th data-key="${c.key}" data-tab="${tabName || ''}"><span class="th-label">${c.label}<span class="arrow">${arrow}</span></span>${filterBtn}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+  rows.forEach(r => {
+    html += '<tr>';
+    cols.forEach(c => {
+      let v = r[c.key];
+      let display = c.fmt ? c.fmt(v) : v;
+      if (c.badge){
+        html += `<td><span class="badge ${c.badge(v)}">${escapeHtml(String(display))}</span></td>`;
+      } else {
+        html += `<td class="${c.num?'num':''}">${escapeHtml(String(display ?? ''))}</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  return html + '</tbody></table>';
+}
+
+// Fleet Log toolbar filters (Pushed by / From-To date) — shared by the table render and the
+// Assigned-via update modal, so "update" always targets exactly what's on screen.
+function applyLogFilters(rows){
+  if (state.logFilters.pushedBy.length) rows = rows.filter(r => state.logFilters.pushedBy.includes(r.pushedBy));
+  if (state.logFilters.fromDate) rows = rows.filter(r => fmtDay(r.tripTs) >= state.logFilters.fromDate);
+  if (state.logFilters.toDate) rows = rows.filter(r => fmtDay(r.tripTs) <= state.logFilters.toDate);
+  return rows;
+}
+function applySearchFilter(rows, def, searchTerm){
+  if (!searchTerm) return rows;
+  const s = searchTerm.toLowerCase();
+  return rows.filter(r => def.cols.some(c => String(c.fmt ? c.fmt(r[c.key]) : r[c.key]).toLowerCase().includes(s)));
+}
+
+function renderTable(tabName, searchTerm){
+  if (tabName === 'recon') return renderRecon(searchTerm);
+  const def = TAB_DEFS[tabName], ctx = tabCtx(tabName);
+  const baseRows = state.results[tabName]; // unfiltered, used to populate column-filter option lists
+  let rows = baseRows.slice();
+  if (tabName === 'exceptions' && state.excFilter !== 'all') rows = rows.filter(r => r.status === state.excFilter);
+  if (tabName === 'log') rows = applyLogFilters(rows);
+  if (tabName === 'summary' && state.logFilters.summaryMonth.length) rows = rows.filter(r => state.logFilters.summaryMonth.includes(monthLabel(r.month)));
+
+  if (state.hideZeroAmount && UP_TABS.includes(tabName)){
+    const amtCol = def.cols.find(c => c.label === 'Amount (AED)');
+    if (amtCol) rows = rows.filter(r => Number(r[amtCol.key]) !== 0);
+  }
+
+  rows = applySearchFilter(rows, def, searchTerm);
+
+  const sortState = state.sort[tabName];
+  if (sortState){
+    rows.sort((a,b) => {
+      const av = a[sortState.key], bv = b[sortState.key];
+      let cmp;
+      if (typeof av === 'number' && typeof bv === 'number') cmp = av - bv;
+      else cmp = String(av).localeCompare(String(bv));
+      return sortState.dir === 'asc' ? cmp : -cmp;
+    });
+  }
+
+  state.lastRendered[tabName] = rows; // what's actually on screen right now, for e.g. Export
+
+  ctx.count.textContent = rows.length + ' row' + (rows.length===1?'':'s');
+  if (tabName === 'log'){
+    const assignedN = rows.filter(r => r.assignedVia).length;
+    $('#assignedViaCountLabel').innerHTML = '\u00b7 <span class="' + (assignedN > 0 ? 'assigned-warn' : '') + '">' + assignedN + ' assigned</span> \u00b7 ' + (rows.length - assignedN) + ' empty';
+  }
+
+  if (rows.length === 0){
+    let msg;
+    if (searchTerm) msg = 'No rows match "' + escapeHtml(searchTerm) + '".';
+    else if (['log','summary'].includes(tabName) && !state.histLoaded) msg = state.histLoaded === null ? 'Checking for the salikDump trip history\u2026' : 'salikDump trip history not available yet \u2014 open the fleet app in this browser. This page keeps checking.';
+    else if (tabName === 'sessions' && !state.cioRaw) msg = 'Waiting for the fleet log\u2026';
+    else if (['details','exceptions'].includes(tabName) && state.salikRows.length === 0) msg = state.addMode === 'ok' ? 'Press Upload PDF to add the Salik PDF.' : 'Waiting for the fleet log\u2026';
+    else if (tabName === 'exceptions' && state.excFilter !== 'all') msg = 'No ' + state.excFilter.toLowerCase() + ' trips.';
+    else msg = 'No rows yet.';
+    ctx.host.innerHTML = '<div class="empty-state"><i class="ti ti-mood-empty"></i>' + msg + '</div>';
+    return;
+  }
+
+  ctx.host.innerHTML = tableHtml(def.cols, rows, sortState, tabName, baseRows);
+
+  ctx.host.querySelectorAll('thead th').forEach(th => {
+    th.addEventListener('click', (e) => {
+      if (e.target.closest('.th-filter')) return; // filter icon handles its own click
+      const key = th.dataset.key, tab = th.dataset.tab;
+      const cur = state.sort[tab];
+      let dir = 'asc';
+      if (cur && cur.key === key && cur.dir === 'asc') dir = 'desc';
+      state.sort[tab] = { key, dir };
+      renderTable(tab, tabCtx(tab).search.value);
+    });
+  });
+
+  ctx.host.querySelectorAll('.th-filter').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const key = btn.dataset.filterKey;
+      const pop = $('#filterPop');
+      if (pop.classList.contains('show') && pop.dataset.filterKey === key && pop.dataset.tab === tabName){
+        closeFilterPopover(); return; // second click on the same filter icon closes it
+      }
+      const col = def.cols.find(c => c.filterKey === key);
+      if (!col) return;
+      openFilterPopover(btn, key, col.filterValues(baseRows), state.logFilters[key], tabName);
+    });
+  });
+}
+
+/* column-filter popover: shared by every filterable column (Fleet Log: Pushed By, Trip Date/Time).
+   multi=true renders checkboxes and lets the user pick more than one value; the popover then stays
+   open across individual picks and only closes on "All" or on an outside click (see below). */
+function openFilterPopover(anchorEl, filterKey, options, current, tabName, multi){
+  closeAllSearchToggles(); // opening this popover should close any open search/date dropdown too
+  const pop = $('#filterPop');
+  pop.dataset.filterKey = filterKey;
+  pop.dataset.tab = tabName;
+  pop.dataset.multi = multi ? '1' : '';
+  const sel = multi ? (current || []) : current;
+  const isChecked = (o) => multi ? sel.includes(o) : o === sel;
+  pop.innerHTML = '<div class="fp-item' + ((multi ? sel.length === 0 : current === 'all') ? ' active' : '') + '" data-v="all">All</div>' +
+    options.map(o => '<div class="fp-item' + (isChecked(o) ? ' active' : '') + '" data-v="' + escapeHtml(o) + '">' +
+      (multi ? '<i class="ti ti-' + (isChecked(o) ? 'square-check' : 'square') + '"></i>' : '') + escapeHtml(o) + '</div>').join('');
+  const r = anchorEl.getBoundingClientRect();
+  pop.style.display = 'flex'; // measure before final positioning
+  const popW = pop.offsetWidth || 200;
+  pop.style.top = Math.min(r.bottom + 6, window.innerHeight - 20) + 'px';
+  pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - popW - 8)) + 'px';
+  pop.classList.add('show');
+  filterHovering = true; // the click that opened it means the pointer is on the trigger right now
+  cancelFilterAutoClose();
+}
+function closeFilterPopover(){
+  const pop = $('#filterPop');
+  pop.classList.remove('show');
+  pop.style.display = ''; // openFilterPopover sets an inline display to measure width before
+                           // positioning; clear it here or the popover stays visible forever,
+                           // since an inline style always wins over the .show CSS rule.
+  cancelFilterAutoClose();
+  filterHovering = false;
+}
+/* the popover closes on a click outside it, 3s after the pointer is no longer over the
+   filter icon or the popover itself, or immediately on an explicit "All"/single-value pick. */
+let filterAutoCloseTimer = null, filterHovering = false;
+function cancelFilterAutoClose(){ clearTimeout(filterAutoCloseTimer); filterAutoCloseTimer = null; }
+function scheduleFilterAutoClose(){ cancelFilterAutoClose(); filterAutoCloseTimer = setTimeout(closeFilterPopover, 3000); }
+function isOverFilterTrigger(el){ return !!(el && el.closest && (el.closest('.filter-pop') || el.closest('.th-filter') || el.closest('#pushedByFilterBtn') || el.closest('#summaryMonthFilterBtn'))); }
+document.addEventListener('mouseover', (e) => {
+  if (!$('#filterPop').classList.contains('show')) return;
+  const over = isOverFilterTrigger(e.target);
+  if (over && !filterHovering){ filterHovering = true; cancelFilterAutoClose(); }
+  else if (!over && filterHovering){ filterHovering = false; scheduleFilterAutoClose(); }
+});
+/* also close on a click anywhere outside the popover / its trigger buttons */
+document.addEventListener('click', (e) => {
+  if (!$('#filterPop').classList.contains('show')) return;
+  if (!isOverFilterTrigger(e.target)) closeFilterPopover();
+});
+$('#filterPop').addEventListener('click', (e) => {
+  const item = e.target.closest('.fp-item');
+  if (!item) return;
+  const pop = $('#filterPop'), key = pop.dataset.filterKey, tab = pop.dataset.tab, multi = pop.dataset.multi === '1';
+  if (multi){
+    if (item.dataset.v === 'all'){
+      state.logFilters[key] = [];
+    } else {
+      const arr = state.logFilters[key];
+      const idx = arr.indexOf(item.dataset.v);
+      if (idx === -1) arr.push(item.dataset.v); else arr.splice(idx, 1);
+    }
+  } else {
+    state.logFilters[key] = item.dataset.v;
+  }
+  closeFilterPopover(); // any selection — single or multi — closes the dropdown
+  updateLogFilterUI();
+  renderTable(tab, tabCtx(tab).search.value);
+});
+
+/* ===================== RECONCILIATION (batches) ===================== */
+const fmtDay = ts => ts ? fmtTripTs(ts).slice(0, 10) : '\u2014';
+const fmtAed = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function batchViaText(b){ return b.via.size ? Array.from(b.via, ([k, n]) => k + ' (' + n + ')').join(' \u00b7 ') : '\u2014'; }
+function batchStatsHtml(b){
+  const stat = (v, l, cls) => '<span><span class="st-v ' + (cls || '') + '">' + l + ': ' + v + '</span></span>';
+  return '<div class="bc-stats">' + stat(b.total, 'Total', '') + stat(b.proper, 'Proper', 'ok') +
+    stat(b.exceptions, 'Exceptions', 'warn') + stat(b.zero, 'Zero', '') + '</div>';
+}
+function batchRowHtml(b, i){
+  return '<div class="batch-card" data-i="' + i + '" tabindex="0" role="button">' +
+    '<div class="bc-icon"><i class="ti ti-stack-2"></i></div>' +
+    '<div class="bc-body">' +
+      '<div class="bc-col">' +
+        '<div class="bc-title-row">' +
+          '<span class="bc-name">' + escapeHtml(b.pushedAt || 'Unknown') + '</span>' +
+          '<span class="badge ok"><i class="ti ti-check"></i> Saved</span>' +
+        '</div>' +
+        '<div class="bc-meta-row">' +
+          '<span>' + fmtDay(b.minTs) + ' \u2192 ' + fmtDay(b.maxTs) + '</span>' +
+          '<span>' + b.records + ' record' + (b.records === 1 ? '' : 's') + '</span>' +
+          '<span class="bc-amount">AED ' + fmtAed(b.amount) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bc-col">' +
+        '<div class="bc-uploaded">Pushed by <b>' + escapeHtml(b.pushedBy || '\u2014') + '</b> &middot; <span class="bk" style="margin-right:0;">Assigned via</span> ' + escapeHtml(batchViaText(b)) + '</div>' +
+        batchStatsHtml(b) +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+function renderRecon(searchTerm){
+  const s = (searchTerm || '').toLowerCase();
+  let list = state.results.recon;
+  if (s) list = list.filter(b => (b.pushedAt + ' ' + b.pushedBy + ' ' + Array.from(b.via.keys()).join(' ')).toLowerCase().includes(s));
+  state.reconShown = list;
+  $('#rowCountLabel').textContent = list.length + ' batch' + (list.length === 1 ? '' : 'es');
+  if (!list.length){
+    let msg;
+    if (s) msg = 'No batches match "' + escapeHtml(searchTerm) + '".';
+    else if (!state.histLoaded) msg = state.histLoaded === null ? 'Checking for the salikDump trip history\u2026' : 'salikDump trip history not available yet \u2014 open the fleet app in this browser. This page keeps checking.';
+    else msg = 'No batches yet \u2014 save Trip Details from the + panel.';
+    $('#tableHost').innerHTML = '<div class="empty-state"><i class="ti ti-stack-2"></i>' + msg + '</div>';
+    return;
+  }
+  $('#tableHost').innerHTML = '<div class="batches-list">' + list.map(batchRowHtml).join('') + '</div>';
+}
+function openBatch(i){
+  const b = state.reconShown[i];
+  if (!b) return;
+  $('#batchTitle').textContent = 'Batch \u2014 ' + (b.pushedAt || 'Unknown');
+  $('#batchMeta').innerHTML = '<div class="modal-note" style="margin-bottom:10px;">Pushed by <b>' + escapeHtml(b.pushedBy || '\u2014') + '</b> \u00b7 Assigned via <b>' + escapeHtml(batchViaText(b)) + '</b> \u00b7 ' + fmtDay(b.minTs) + ' \u2192 ' + fmtDay(b.maxTs) + '</div>' + batchStatsHtml(b);
+  $('#batchTable').innerHTML = tableHtml(TAB_DEFS.log.cols.slice(0, 9), b.rows.slice().sort((x, y) => y.tripTs - x.tripTs), null, '');
+  $('#batchModal').classList.add('show');
+  sizeModalToContent('#batchModal', '#batchTable', 560);
+}
+function closeBatch(){ $('#batchModal').classList.remove('show'); }
+
+/* ===================== UPLOAD PANEL ===================== */
+function openUpload(){
+  state.upOpen = true;
+  $('#upBack').classList.add('show');
+  $('#upDrawer').classList.add('show');
+  $('#upDrawer').setAttribute('aria-hidden', 'false');
+  toggleInfo(false);
+  closeFilterPopover();
+  renderUpload();
+}
+function closeUpload(){
+  state.upOpen = false;
+  $('#upBack').classList.remove('show');
+  $('#upDrawer').classList.remove('show');
+  $('#upDrawer').setAttribute('aria-hidden', 'true');
+  closeFilterPopover();
+}
+
+/* ===================== SAVE DATA =====================
+ * Same method as dedEngine.html's saveBatch(): session from sessionStorage('ap_session'),
+ * Web App URL from the shared API_URL (apiConfig.js), rows sent as arrays in the fixed
+ * column order of the 'salikDump' tab:
+ *   Transaction ID | Rider ID | Plate | Item ID | Trip Date/Time | Amount (AED) |
+ *   Location | Match | Assigned via | Pushed At | Pushed By
+ * Trip Details rows whose Transaction ID is already in salikDump are never sent: the
+ * preview dialog lists them and only the new rows are uploaded.
+ */
+function getSession() {
+  try { return JSON.parse(sessionStorage.getItem('ap_session') || '{}'); } catch (_) { return {}; }
+}
+
+const SALIK_GS = { SHEET_NAME: 'salikDump', webAppUrl: (typeof API_URL !== 'undefined' ? API_URL : '') };
+
+function saveToSheet(){
+  if (!SALIK_GS.webAppUrl){ showToast('API_URL is not available \u2014 check that apiConfig.js loaded.', 'error'); return; }
+  const rows = state.results.details;
+  if (!rows.length){ showToast('No Trip Details rows to save \u2014 add the Salik PDF first.', 'error'); return; }
+  const fresh = rows.filter(r => !r.dup), dups = rows.filter(r => r.dup);
+  if (dups.length || !state.histLoaded){ openUploadPreview(fresh, dups); return; }
+  uploadRows(fresh);
+}
+
+function openUploadPreview(fresh, dups){
+  state.pendingUpload = fresh;
+  $('#dupTitle').textContent = dups.length ? 'Duplicate Transaction IDs found' : 'Upload preview';
+  let note = '<div class="modal-note"><b>' + fresh.length + '</b> new trip(s) will be uploaded' +
+    (dups.length ? ' \u00b7 <b>' + dups.length + '</b> already in salikDump and will be skipped' : '') + '.</div>';
+  if (!state.histLoaded) note += '<div class="modal-note warn">The trip history is not loaded, so duplicates could not be checked against saved records.</div>';
+  $('#dupSummary').innerHTML = note;
+  $('#dupTable').innerHTML = !dups.length ? '' : '<table class="log-table"><thead><tr><th>Transaction ID</th><th>Plate</th><th>Trip Date/Time</th><th>Amount (AED)</th><th>Saved at</th><th>Saved by</th></tr></thead><tbody>' +
+    dups.map(d => { const h = state.histMap.get(txKey(d.transactionId)) || {};
+      return '<tr><td>' + escapeHtml(d.transactionId) + '</td><td>' + escapeHtml(d.plate) + '</td><td>' + fmtTripTs(d.tripTs) + '</td><td class="num">' + d.amount.toFixed(2) + '</td><td>' + escapeHtml(h.pushedAt || '') + '</td><td>' + escapeHtml(h.pushedBy || '') + '</td></tr>'; }).join('') + '</tbody></table>';
+  const ok = $('#dupConfirm');
+  ok.textContent = fresh.length ? 'Upload ' + fresh.length + ' new row' + (fresh.length === 1 ? '' : 's') : 'Nothing new to upload';
+  ok.disabled = !fresh.length;
+  $('#dupModal').classList.add('show');
+  sizeModalToContent('#dupModal', '#dupTable', 480);
+}
+function closeUploadPreview(){ $('#dupModal').classList.remove('show'); state.pendingUpload = null; }
+
+async function uploadRows(rows){
+  const session = getSession();
+  const pushedAt = new Date().toLocaleString('en-GB', { hour12:false, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' }).replace(',', '');
+  const pushedBy = session.email || session.name || '';
+
+  const gridRows = rows.map(r => [
+    r.transactionId || '',
+    r.riderId || '',
+    r.plate || '',
+    r.itemId || '',
+    fmtTripTs(r.tripTs),
+    typeof r.amount === 'number' ? r.amount : parseFloat(r.amount) || 0,
+    r.location || '',
+    r.matchType === 'proper' ? 'Proper' : 'Exception',
+    r.fillDirection ? fillLabel(r.fillDirection) : '',
+    pushedAt,
+    pushedBy
+  ]);
+
+  const payload = {
+    action:    'appendRows',
+    type:      SALIK_GS.SHEET_NAME,
+    sheetName: SALIK_GS.SHEET_NAME,
+    sessionId: session.sessionId || '',
+    token:     session.token || '',
+    rows:      gridRows
+  };
+
+  const btn = $('#btnSaveSheet');
+  const origHtml = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader spin"></i>';
+  try{
+    const res = await fetch(SALIK_GS.webAppUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const rawText = await res.text();
+    if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}: ${rawText.slice(0,200)}`);
+    let data;
+    try { data = JSON.parse(rawText); }
+    catch (e) { throw new Error('Apps Script returned non-JSON: ' + rawText.slice(0,300)); }
+    if (data.status !== 'ok' && data.success !== true) throw new Error(data.message || data.error || JSON.stringify(data));
+
+    // these rows are now in the sheet: show them under Loading data and flag them Duplicate here
+    gridRows.forEach(g => { const h = normaliseHistRow(g); if (h) state.savedRows.push(h); });
+    rebuildHist();
+    showToast('\u2713 Saved ' + gridRows.length + ' Trip Details row(s)', 'success');
+  }catch(err){
+    showToast('Save failed: ' + err.message, 'error');
+  }finally{
+    btn.innerHTML = origHtml; updateSaveBtn();
+  }
+}
+
+/* ===================== EVENTS ===================== */
+$('#pdfInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = ''; // lets the same file be picked again
+  if (!file) return;
+  showToast('Parsing PDF\u2026 this can take a few seconds for large reports.');
+  try{
+    const { rows, meta } = await parsePdf(file);
+    state.salikRows = rows;
+    state.pdfMeta = meta;
+    $('#pdfRow').style.display = 'flex';
+    const ip = $('#infoPdf');
+    ip.textContent = file.name + ' \u2014 ' + rows.length + ' trips parsed' + (meta.totalTrips ? ' (PDF reports ' + meta.totalTrips + ')' : '');
+    ip.className = 'v ' + (rows.length === meta.totalTrips ? 'ok' : 'warn');
+    if (meta.accountNo){
+      $('#acctRow').style.display = 'flex';
+      $('#acctBadge').textContent = 'Acct ' + meta.accountNo + (meta.periodFrom ? ' \u00b7 ' + meta.periodFrom + '\u2013' + meta.periodTo : '');
+    }
+    $('#upFile').textContent = file.name + ' \u2014 ' + rows.length + ' trips';
+    activateUpTab('details');
+    reconcileNow();
+  }catch(err){
+    showToast('Could not parse PDF: ' + err.message, 'error');
+  }
+});
+
+// changing the reconciliation options re-runs automatically too
+['#fillMethod', '#fillWindow', '#itemTypeFilter'].forEach(sel => {
+  $(sel).addEventListener('change', reconcileNow);
+});
+
+// default-view modules (capsule)
+// the capsule is pinned to a fixed width \u2014 whichever tab needs the most room when it's the
+// active (icon + label) one, e.g. "Checkout Sessions" \u2014 so it never resizes as the user clicks
+// between tabs; the active tab then grows (flex:1) to fill that fixed width.
+function sizeCapsule(){
+  const capsule = $('#capsule');
+  if (!capsule) return;
+  const buttons = $$('.cap-btn', capsule);
+  if (!buttons.length) return;
+  const current = buttons.find(b => b.classList.contains('active')) || buttons[0];
+  capsule.style.width = 'auto';
+  let max = 0;
+  buttons.forEach(btn => {
+    buttons.forEach(b => b.classList.toggle('active', b === btn));
+    max = Math.max(max, capsule.scrollWidth);
+  });
+  buttons.forEach(b => b.classList.toggle('active', b === current));
+  capsule.style.width = max + 'px';
+}
+function activateTab(name){
+  state.activeTab = name;
+  closeFilterPopover(); // a column filter is specific to the table it was opened on
+  $$('.cap-btn').forEach(t => { const on = t.dataset.tab === name; t.classList.toggle('active', on); t.setAttribute('aria-selected', String(on)); });
+  $('#searchBox').value = '';
+  $('#searchWrap').classList.remove('open');
+  $('#searchToggle').classList.remove('active');
+  $('#logDateFilters').style.display = name === 'log' ? 'inline-flex' : 'none';
+  $('#labelUploadBtn').style.display = name === 'log' ? 'inline-flex' : 'none'; // Assigned via updater is Fleet Log-only
+  $('#assignedViaCountLabel').style.display = name === 'log' ? '' : 'none'; // assigned/empty counts are Fleet Log-only
+  $('#summaryMonthFilterBtn').style.display = name === 'summary' ? 'inline-flex' : 'none'; // month multi-select is Summary-only
+  $('#exportSummaryBtn').style.display = name === 'summary' ? 'inline-flex' : 'none'; // Export as Excel is Summary-only
+  renderTable(name, '');
+  renderMeta();
+}
+// upload-panel tabs
+function activateUpTab(name){
+  state.upTab = name;
+  closeFilterPopover();
+  $$('#upTabs .tab-btn').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  $('#upSearch').value = '';
+  $('#upSearchWrap').classList.remove('open');
+  $('#upSearchToggle').classList.remove('active');
+  $('#excFilter').style.display = name === 'exceptions' ? '' : 'none';
+  $('#upDrawer').classList.toggle('up-tab-exceptions', name === 'exceptions');
+  renderTable(name, '');
+  sizeUpDrawerToTable();
+}
+sizeCapsule();
+window.addEventListener('resize', sizeCapsule);
+document.fonts && document.fonts.ready && document.fonts.ready.then(sizeCapsule);
+$$('.cap-btn').forEach(tab => tab.addEventListener('click', () => activateTab(tab.dataset.tab)));
+$$('#upTabs .tab-btn').forEach(tab => tab.addEventListener('click', () => activateUpTab(tab.dataset.tab)));
+
+$('#searchBox').addEventListener('input', (e) => { renderTable(state.activeTab, e.target.value); });
+$('#upSearch').addEventListener('input', (e) => { renderTable(state.upTab, e.target.value); });
+
+/* search boxes collapse to a plain icon; clicking the icon reveals the input.
+   Once open, it closes on a click anywhere outside it, or 3s after the pointer
+   stops hovering it (matching the column-filter popover behaviour below).
+   Every wrap's close function is registered so any dropdown can close the others. */
+const searchToggleClosers = [];
+function closeAllSearchToggles(){ searchToggleClosers.forEach(fn => fn()); }
+function bindSearchToggle(wrapSel, toggleSel, inputSel){
+  const wrap = $(wrapSel), toggle = $(toggleSel), input = $(inputSel);
+  let closeTimer = null, hovering = false;
+  function cancelClose(){ clearTimeout(closeTimer); closeTimer = null; }
+  function scheduleClose(){ cancelClose(); closeTimer = setTimeout(closeWrap, 3000); }
+  function closeWrap(){
+    wrap.classList.remove('open');
+    if (!input.value) toggle.classList.remove('active');
+    cancelClose(); hovering = false;
+  }
+  searchToggleClosers.push(closeWrap);
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeFilterPopover(); // opening this dropdown must close the column-filter popover too —
+                           // stopPropagation() above means the document-level click-to-close
+                           // listener for it never runs, so it has to be closed explicitly here.
+    searchToggleClosers.forEach(fn => { if (fn !== closeWrap) fn(); }); // and any other open dropdown
+    const open = wrap.classList.toggle('open');
+    toggle.classList.toggle('active', open);
+    if (open){ input.focus(); hovering = true; cancelClose(); } else cancelClose();
+  });
+  input.addEventListener('blur', () => { if (!input.value) closeWrap(); });
+  document.addEventListener('mouseover', (e) => {
+    if (!wrap.classList.contains('open')) return;
+    const over = wrap.contains(e.target);
+    if (over && !hovering){ hovering = true; cancelClose(); }
+    else if (!over && hovering){ hovering = false; scheduleClose(); }
+  });
+  document.addEventListener('click', (e) => {
+    if (!wrap.classList.contains('open')) return;
+    if (!wrap.contains(e.target)) closeWrap();
+  });
+}
+bindSearchToggle('#searchWrap', '#searchToggle', '#searchBox');
+bindSearchToggle('#upSearchWrap', '#upSearchToggle', '#upSearch');
+bindSearchToggle('#fromDateWrap', '#fromDateToggle', '#fromDateInput');
+bindSearchToggle('#toDateWrap', '#toDateToggle', '#toDateInput');
+
+/* Fleet Log: From/To date range + Pushed By filter (toolbar, next to search) */
+function updateLogFilterUI(){
+  $('#fromDateToggle').classList.toggle('active', !!state.logFilters.fromDate);
+  $('#toDateToggle').classList.toggle('active', !!state.logFilters.toDate);
+  $('#pushedByFilterBtn').classList.toggle('active', state.logFilters.pushedBy.length > 0);
+  $('#summaryMonthFilterBtn').classList.toggle('active', state.logFilters.summaryMonth.length > 0);
+  updateLabelUploadBtnState();
+}
+// Safety gate: "Update Assigned via" bulk-writes to every row currently on screen. Without both
+// a From and a To date chosen, "currently on screen" could silently mean the WHOLE sheet, and one
+// click would overwrite Assigned via on rows nobody meant to touch. So the button stays disabled
+// until the rows it will act on are a deliberately bounded, dated slice \u2014 never the full history.
+function assignViaDatesReady(){ return !!(state.logFilters.fromDate && state.logFilters.toDate); }
+function updateLabelUploadBtnState(){
+  const btn = $('#labelUploadBtn');
+  const ready = assignViaDatesReady();
+  btn.disabled = !ready;
+  btn.title = ready
+    ? "Set Assigned via (by month) on the filtered rows that don't have one yet"
+    : 'Pick a From and To date filter first \u2014 required so this only ever updates that bounded date range, never the whole sheet.';
+}
+$('#fromDateInput').addEventListener('change', (e) => {
+  state.logFilters.fromDate = e.target.value;
+  updateLogFilterUI();
+  renderTable('log', $('#searchBox').value);
+});
+$('#toDateInput').addEventListener('change', (e) => {
+  state.logFilters.toDate = e.target.value;
+  updateLogFilterUI();
+  renderTable('log', $('#searchBox').value);
+});
+// clicking a filter icon a second time (while its own popover is already open) closes it instead
+// of re-opening the same list \u2014 shared by Pushed By and the Summary rider filter below.
+function toggleFilterPopover(anchorEl, filterKey, options, current, tabName, multi){
+  const pop = $('#filterPop');
+  if (pop.classList.contains('show') && pop.dataset.filterKey === filterKey && pop.dataset.tab === tabName){
+    closeFilterPopover();
+    return;
+  }
+  openFilterPopover(anchorEl, filterKey, options, current, tabName, multi);
+}
+$('#pushedByFilterBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const values = Array.from(new Set(state.results.log.map(r => r.pushedBy).filter(Boolean))).sort();
+  toggleFilterPopover(e.currentTarget, 'pushedBy', values, state.logFilters.pushedBy, 'log', true);
+});
+$('#summaryMonthFilterBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  // newest month first, and shown as "Dec 2026" (the filter matches on that same formatted label)
+  const months = Array.from(new Set(state.results.summary.map(r => r.month).filter(m => m && m !== '\u2014'))).sort().reverse();
+  const values = months.map(monthLabel);
+  toggleFilterPopover(e.currentTarget, 'summaryMonth', values, state.logFilters.summaryMonth, 'summary', true);
+});
+// Clear filter: resets search + every column/toolbar filter for every tab, then re-renders the current one
+function clearFilters(){
+  $('#searchBox').value = '';
+  $('#fromDateInput').value = '';
+  $('#toDateInput').value = '';
+  state.logFilters.pushedBy = [];
+  state.logFilters.fromDate = '';
+  state.logFilters.toDate = '';
+  state.logFilters.summaryMonth = [];
+  updateLogFilterUI();
+  closeFilterPopover();
+  renderTable(state.activeTab, '');
+}
+$('#clearFilterBtn').addEventListener('click', clearFilters);
+// Summary: Export as Excel \u2014 exports exactly the rows currently on screen (search + rider filter applied)
+function exportSummaryToExcel(){
+  const rows = state.lastRendered.summary || [];
+  if (!rows.length){ showToast('No rows to export.', 'error'); return; }
+  if (typeof XLSX === 'undefined'){ showToast('Excel export library did not load.', 'error'); return; }
+  const cols = TAB_DEFS.summary.cols;
+  const aoa = [cols.map(c => c.label)];
+  rows.forEach(r => aoa.push(cols.map(c => { const v = r[c.key]; return c.fmt ? c.fmt(v) : v; })));
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Summary');
+  XLSX.writeFile(wb, 'salik-summary-' + new Date().toISOString().slice(0,10) + '.xlsx');
+}
+$('#exportSummaryBtn').addEventListener('click', exportSummaryToExcel);
+$('#btnSaveSheet').addEventListener('click', saveToSheet);
+function setHideZeroAmt(val){
+  state.hideZeroAmount = val;
+  $('#btnHideZeroAmt').classList.toggle('active', val);
+  $('#btnHideZeroAmt').setAttribute('aria-pressed', String(val));
+  if (state.upOpen) renderTable(state.upTab, $('#upSearch').value);
+}
+$('#btnHideZeroAmt').addEventListener('click', () => setHideZeroAmt(!state.hideZeroAmount));
+$('#btnUpload').addEventListener('click', () => $('#pdfInput').click());
+$('#upClose').addEventListener('click', closeUpload);
+$('#upBack').addEventListener('click', closeUpload);
+$('#excFilter').addEventListener('change', (e) => { state.excFilter = e.target.value; renderTable('exceptions', $('#upSearch').value); });
+$('#tableHost').addEventListener('click', (e) => { const c = e.target.closest('.batch-card'); if (c) openBatch(+c.dataset.i); });
+$('#tableHost').addEventListener('keydown', (e) => { if (e.key !== 'Enter' && e.key !== ' ') return; const c = e.target.closest('.batch-card'); if (c){ e.preventDefault(); openBatch(+c.dataset.i); } });
+$('#batchClose').addEventListener('click', closeBatch);
+$('#batchDone').addEventListener('click', closeBatch);
+$('#batchModal').addEventListener('click', (e) => { if (e.target.id === 'batchModal') closeBatch(); });
+$('#dupClose').addEventListener('click', closeUploadPreview);
+$('#dupCancel').addEventListener('click', closeUploadPreview);
+$('#dupModal').addEventListener('click', (e) => { if (e.target.id === 'dupModal') closeUploadPreview(); });
+$('#dupConfirm').addEventListener('click', () => { const rows = state.pendingUpload || []; closeUploadPreview(); if (rows.length) uploadRows(rows); });
+
+/* ===================== FLEET LOG: LABEL UPLOAD ===================== */
+// tiny CSV parser: handles quoted fields (incl. embedded commas/newlines) and "" escapes
+function parseCsv(text){
+  const rows = []; let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (inQuotes){
+      if (c === '"'){ if (text[i + 1] === '"'){ field += '"'; i++; } else inQuotes = false; }
+      else field += c;
+    } else if (c === '"') inQuotes = true;
+    else if (c === ','){ row.push(field); field = ''; }
+    else if (c === '\r'){ /* skip */ }
+    else if (c === '\n'){ row.push(field); rows.push(row); row = []; field = ''; }
+    else field += c;
+  }
+  if (field.length || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+function renderLabelPreview(){
+  const pf = state.pendingLabelFile;
+  if (!pf) return;
+  const keyI = +$('#labelKeyCol').value, valI = +$('#labelValCol').value;
+  const head = '<table class="log-table"><thead><tr><th>' + escapeHtml(pf.headers[keyI] || 'Key') +
+    '</th><th>' + escapeHtml(pf.headers[valI] || 'Label') + '</th></tr></thead><tbody>' +
+    pf.rows.slice(0, 20).map(r => '<tr><td>' + escapeHtml(r[keyI] || '') + '</td><td>' + escapeHtml(r[valI] || '') + '</td></tr>').join('') +
+    '</tbody></table>';
+  $('#labelPreview').innerHTML = head;
+  $('#labelSummary').innerHTML = '<div class="modal-note">Previewing ' + Math.min(20, pf.rows.length) + ' of ' + pf.rows.length + ' row' + (pf.rows.length === 1 ? '' : 's') + '&hellip;</div>';
+  sizeModalToContent('#labelModal', '#labelPreview', 480);
+}
+function openLabelModal(headers, rows, fileName){
+  state.pendingLabelFile = { headers, rows };
+  $('#labelFileName').textContent = fileName;
+  $('#labelRowCount').textContent = rows.length + ' row' + (rows.length === 1 ? '' : 's');
+  const opts = headers.map((h, i) => '<option value="' + i + '">' + escapeHtml(h || ('Column ' + (i + 1))) + '</option>').join('');
+  $('#labelKeyCol').innerHTML = opts;
+  $('#labelValCol').innerHTML = opts;
+  if (headers.length > 1) $('#labelValCol').value = '1';
+  $('#labelMatchField').value = state.labelMatchField;
+  renderLabelPreview();
+  $('#labelModal').classList.add('show');
+}
+function closeLabelModal(){
+  $('#labelModal').classList.remove('show');
+  state.pendingLabelFile = null;
+  $('#labelFileInput').value = '';
+}
+$('#labelUploadBtn').addEventListener('click', () => {
+  if (!assignViaDatesReady()){
+    showToast('Pick a From and To date filter first \u2014 needed so this can\u2019t accidentally overwrite Assigned via on the whole sheet.', 'error');
+    return;
+  }
+  openAssignViaModal();
+});
+$('#labelFileInput').addEventListener('change', async (e) => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = ''; // allow re-picking the same file later
+  if (!file) return;
+  try{
+    const text = await file.text();
+    const grid = parseCsv(text).filter(r => r.length > 1 || (r.length === 1 && String(r[0]).trim() !== ''));
+    if (!grid.length){ showToast('That file has no rows.', 'error'); return; }
+    const headers = grid[0];
+    const rows = grid.slice(1);
+    if (!rows.length){ showToast('That file has no data rows.', 'error'); return; }
+    openLabelModal(headers, rows, file.name);
+  }catch(err){
+    showToast('Could not read file \u2014 ' + err.message, 'error');
+  }
+});
+$('#labelKeyCol').addEventListener('change', renderLabelPreview);
+$('#labelValCol').addEventListener('change', renderLabelPreview);
+$('#labelModalClose').addEventListener('click', closeLabelModal);
+$('#labelModalCancel').addEventListener('click', closeLabelModal);
+$('#labelModal').addEventListener('click', (e) => { if (e.target.id === 'labelModal') closeLabelModal(); });
+$('#labelModalApply').addEventListener('click', () => {
+  const pf = state.pendingLabelFile;
+  if (!pf) return;
+  const keyI = +$('#labelKeyCol').value, valI = +$('#labelValCol').value, field = $('#labelMatchField').value;
+  const map = new Map();
+  pf.rows.forEach(r => {
+    const k = String(r[keyI] == null ? '' : r[keyI]).trim().toLowerCase();
+    if (k) map.set(k, String(r[valI] == null ? '' : r[valI]).trim());
+  });
+  state.labelMap = map;
+  state.labelMatchField = field;
+  try{ localStorage.setItem('ap2_salikLabelMap', JSON.stringify({ field, entries: Array.from(map.entries()) })); }catch(_){}
+  applyLabels();
+  renderTable('log', $('#searchBox').value);
+  closeLabelModal();
+  showToast('Updated Assigned via for ' + map.size + ' matching row' + (map.size === 1 ? '' : 's') + '.', 'success');
+});
+/* ===================== FLEET LOG: UPDATE "ASSIGNED VIA" BY MONTH =====================
+ * Sets Assigned via to the picked month on every Fleet Log row that is currently visible
+ * under the active search / Pushed by / date-range filters AND has no Assigned via yet —
+ * i.e. exactly the rows applyLogFilters()+applySearchFilter() would put on screen right now. */
+// current month, 1 month back, and the 4 months after — in that chronological order
+function assignViaMonthOptions(){
+  const now = new Date();
+  const opts = [];
+  for (let i = -1; i <= 4; i++){
+    const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    const value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    opts.push({ value, label: monthLabel(value) + (i === 0 ? ' (current)' : '') });
+  }
+  return opts;
+}
+// Overwrite mode is confirmed with two chained toggles in the SAME modal (no native
+// confirm() popups): ticking "Overwrite" reveals a red confirm panel with a second
+// "Yes, overwrite these rows" toggle; only once BOTH are on does assignViaTargetRows()
+// include already-assigned rows, and the Update button only enables once there's
+// something real to do. Turning either one off, changing the month, or the filtered
+// rows changing all fall back to the safe default (empty rows only).
+function isAssignViaOverrideOn(){ return $('#assignViaOverride').checked; }
+function isOverwriteConfirmed(){ return $('#assignViaOverrideConfirm').checked; }
+function assignViaFilteredRows(){
+  let rows = applyLogFilters(state.results.log.slice());
+  return applySearchFilter(rows, TAB_DEFS.log, $('#searchBox').value);
+}
+function assignViaTargetRows(){
+  const rows = assignViaFilteredRows();
+  const already = rows.filter(r => r.assignedVia).length;
+  const confirmed = isAssignViaOverrideOn() && already > 0 && isOverwriteConfirmed();
+  return confirmed ? rows : rows.filter(r => !r.assignedVia);
+}
+function refreshAssignViaSummary(){
+  const filtered = assignViaFilteredRows();
+  const total = filtered.length;
+  const already = filtered.filter(r => r.assignedVia).length;
+  const empty = total - already;
+  const overrideOn = isAssignViaOverrideOn();
+  const confirmed = overrideOn && already > 0 && isOverwriteConfirmed();
+  const willUpdate = confirmed ? total : empty;
+  const month = escapeHtml(monthLabel($('#assignViaMonth').value));
+
+  // show/hide the 2nd-toggle confirm panel and keep its warning text current
+  const showPanel = overrideOn && already > 0;
+  $('#overrideConfirmPanel').style.display = showPanel ? 'flex' : 'none';
+  if (!showPanel){
+    $('#assignViaOverrideConfirm').checked = false;
+    $('#overrideConfirmLabel').classList.remove('override-active');
+  } else {
+    $('#overrideConfirmText').innerHTML = 'This will overwrite the existing Assigned via value on <b>' + already +
+      '</b> row' + (already === 1 ? '' : 's') + ' with "<b>' + month + '</b>". This can\u2019t be undone.';
+  }
+
+  const stats = '<div class="assign-via-stats">' +
+      '<span><b>' + total + '</b> total filtered</span>' +
+      '<span><b>' + empty + '</b> empty</span>' +
+      '<span' + (confirmed && already ? ' class="warn"' : '') + '><b>' + already + '</b> already assigned</span>' +
+    '</div>';
+  let action;
+  if (!total) action = 'No filtered rows to update.';
+  else if (overrideOn && already > 0 && !confirmed) action = 'Turn on "Yes, overwrite these rows" below to confirm overwriting ' + already + ' row' + (already === 1 ? '' : 's') + '.';
+  else if (!willUpdate) action = 'No filtered row is missing an Assigned via value \u2014 nothing to update.';
+  else action = 'Will set <b>' + willUpdate + '</b> row' + (willUpdate === 1 ? '' : 's') + ' to "<b>' + month + '</b>"' +
+      (confirmed && already ? ', overwriting <b>' + already + '</b> existing value' + (already === 1 ? '' : 's') : '') + '.';
+  $('#assignViaSummary').innerHTML = stats + '<div class="assign-via-action">' + action + '</div>';
+  $('#assignViaApply').disabled = !willUpdate;
+}
+$('#assignViaMonth').addEventListener('change', () => { resetAssignViaOverride(); refreshAssignViaSummary(); });
+$('#assignViaOverride').addEventListener('change', () => {
+  $('#overrideLabel').classList.toggle('override-active', $('#assignViaOverride').checked);
+  refreshAssignViaSummary(); // hides/resets the 2nd toggle automatically when this turns off
+});
+$('#assignViaOverrideConfirm').addEventListener('change', () => {
+  $('#overrideConfirmLabel').classList.toggle('override-active', $('#assignViaOverrideConfirm').checked);
+  refreshAssignViaSummary();
+});
+function resetAssignViaOverride(){
+  $('#assignViaOverride').checked = false;
+  $('#overrideLabel').classList.remove('override-active');
+  $('#assignViaOverrideConfirm').checked = false;
+  $('#overrideConfirmLabel').classList.remove('override-active');
+  $('#overrideConfirmPanel').style.display = 'none';
+}
+function openAssignViaModal(){
+  const opts = assignViaMonthOptions();
+  $('#assignViaMonth').innerHTML = opts.map(o => '<option value="' + o.value + '">' + escapeHtml(o.label) + '</option>').join('');
+  $('#assignViaMonth').value = opts[1].value; // i = 0 → current month
+  resetAssignViaOverride(); // start every open with both toggles off
+  refreshAssignViaSummary();
+  $('#assignViaModal').classList.add('show');
+}
+function closeAssignViaModal(){ $('#assignViaModal').classList.remove('show'); }
+$('#assignViaClose').addEventListener('click', closeAssignViaModal);
+$('#assignViaCancel').addEventListener('click', closeAssignViaModal);
+$('#assignViaModal').addEventListener('click', (e) => { if (e.target.id === 'assignViaModal') closeAssignViaModal(); });
+
+// Same POST convention as uploadRows() below: Web App URL from apiConfig.js, session from
+// sessionStorage('ap_session'). Matches existing salikDump rows by Transaction ID and sets
+// their Assigned via cell. NOTE: adjust the "action" name / payload shape here if the Apps
+// Script web app expects a different contract for updating existing rows (this file only
+// had an "appendRows" action to go on) \u2014 everything else (matching, local state, re-render)
+// is independent of that.
+async function updateAssignedViaOnSheet(rows, label){
+  const session = getSession();
+  const payload = {
+    action:       'updateCells',
+    type:         SALIK_GS.SHEET_NAME,
+    sheetName:    SALIK_GS.SHEET_NAME,
+    sessionId:    session.sessionId || '',
+    token:        session.token || '',
+    matchColumn:  'Transaction ID',
+    updateColumn: 'Assigned via',
+    updates:      rows.map(r => ({ match: r.transactionId, value: label }))
+  };
+  const res = await fetch(SALIK_GS.webAppUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  const rawText = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}: ${rawText.slice(0,200)}`);
+  let data;
+  try { data = JSON.parse(rawText); }
+  catch (e) { throw new Error('Apps Script returned non-JSON: ' + rawText.slice(0,300)); }
+  if (data.status !== 'ok' && data.success !== true) throw new Error(data.message || data.error || JSON.stringify(data));
+}
+$('#assignViaApply').addEventListener('click', async () => {
+  if (!SALIK_GS.webAppUrl){ showToast('API_URL is not available \u2014 check that apiConfig.js loaded.', 'error'); return; }
+  const rows = assignViaTargetRows();
+  if (!rows.length){ showToast('No rows to update.', 'error'); return; }
+  const label = monthLabel($('#assignViaMonth').value);
+
+  const btn = $('#assignViaApply');
+  const origHtml = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader spin"></i>';
+  try{
+    await updateAssignedViaOnSheet(rows, label);
+    rows.forEach(r => { r.assignedVia = label; }); // these are the same objects backing state.hist
+    resetAssignViaOverride();
+    closeAssignViaModal();
+
+    recompute();
+    showToast('\u2713 Updated Assigned via for ' + rows.length + ' row' + (rows.length === 1 ? '' : 's'), 'success');
+  }catch(err){
+    showToast('Update failed: ' + err.message, 'error');
+  }finally{
+    btn.innerHTML = origHtml; btn.disabled = !assignViaTargetRows().length;
+  }
+});
+// re-check the eligible count whenever the filters or search behind the Fleet Log table change,
+// so the summary in an already-open modal always matches the current filter state
+['#searchBox','#fromDateInput','#toDateInput'].forEach(sel => {
+  const el = $(sel);
+  if (el) el.addEventListener('input', () => {
+    if (!$('#assignViaModal').classList.contains('show')) return;
+    resetAssignViaOverride(); // target rows just changed \u2014 don't carry a stale overwrite confirmation into them
+    refreshAssignViaSummary();
+  });
+});
+$('#filterPop').addEventListener('click', () => {
+  if (!$('#assignViaModal').classList.contains('show')) return;
+  resetAssignViaOverride();
+  refreshAssignViaSummary();
+});
+
+// restore a label map uploaded in an earlier session
+try{
+  const savedLabels = JSON.parse(localStorage.getItem('ap2_salikLabelMap') || 'null');
+  if (savedLabels && Array.isArray(savedLabels.entries)){
+    state.labelMap = new Map(savedLabels.entries);
+    state.labelMatchField = savedLabels.field || 'transactionId';
+  }
+}catch(_){}
+
+/* re-check for the cache when the user comes back to this tab */
+window.addEventListener('focus', () => { if (state.addMode === 'off') probeCache(); if (state.histLoaded === false) loadHist(); if (!state.employeeMap.size) loadEmployees(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && state.addMode === 'off') probeCache(); if (!document.hidden && state.histLoaded === false) loadHist(); if (!document.hidden && !state.employeeMap.size) loadEmployees(); });
+
+/* info popover */
+const infoBtn = $('#btnInfo'), infoPop = $('#infoPop');
+function toggleInfo(force){
+  const show = force !== undefined ? force : !infoPop.classList.contains('show');
+  infoPop.classList.toggle('show', show);
+  infoBtn.setAttribute('aria-expanded', String(show));
+}
+infoBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleInfo(); });
+document.addEventListener('click', (e) => { if (!infoPop.contains(e.target)) toggleInfo(false); });
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  toggleInfo(false);
+  closeFilterPopover();
+  if ($('#assignViaModal').classList.contains('show')) closeAssignViaModal();
+  else if ($('#labelModal').classList.contains('show')) closeLabelModal();
+  else if ($('#dupModal').classList.contains('show')) closeUploadPreview();
+  else if ($('#batchModal').classList.contains('show')) closeBatch();
+  else if (state.upOpen) closeUpload();
+});
+
+/* ═══════════════════════════════════════════════════════
+ *  INIT
+ * ═══════════════════════════════════════════════════════ */
+async function init(){
+  setCacheStatus('checking', 'Checking\u2026');
+  renderResults();
+  loadHist();
+  loadEmployees(); // Rider ID -> Name, for the Summary tab
+  await probeCache(); // "+" becomes active once the fleet log cache is available
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

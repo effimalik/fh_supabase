@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Add Bike</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<script src="https://effimalik.github.io/Testing/shared/auth.js"></script>
+  
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+/* ── Design tokens ── */
+:root,[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --surface:#21262d;--surface2:#2d333b;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent-dim:rgba(88,166,255,.12);--accent-glow:rgba(88,166,255,.28);
+  --teal:#39d353;--teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341;--amber-dim:rgba(227,179,65,.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7;--purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e;--orange-dim:rgba(240,136,62,.12);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:0 4px 16px rgba(0,0,0,.5);
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#ffffff;--bg3:#e8ecf0;
+  --surface:#ffffff;--surface2:#e2e7ed;
+  --border:#c8d0d9;--border2:#9aa5b1;
+  --text:#0d1117;--text2:#3d454f;--text3:#5a6370;
+  --accent:#0550ae;--accent-dim:rgba(5,80,174,.12);--accent-glow:rgba(5,80,174,.22);
+  --teal:#116329;--teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00;--amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b;--red-dim:rgba(168,17,27,.11);
+  --purple:#6639c8;--purple-dim:rgba(102,57,200,.13);
+  --orange:#953800;--orange-dim:rgba(149,56,0,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.10);
+  --shadow-md:0 4px 16px rgba(0,0,0,.12);
+}
+
+html,body{
+  height:100%;
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--text);
+  font-size:14px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── Page wrapper ── */
+.page{
+  min-height:100%;
+  padding:24px;
+  overflow-y:auto;
+}
+
+/* ── Page header ── */
+.page-header{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:24px;padding-bottom:18px;
+  border-bottom:1px solid var(--border);
+}
+.page-header-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--teal-dim);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--teal);font-size:20px;flex-shrink:0;
+}
+.page-header-title{font-size:16px;font-weight:700;color:var(--text);}
+.page-header-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+
+/* ── Form card ── */
+.form-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-xl);
+  padding:28px;
+  max-width:900px;
+}
+
+/* ── Section title ── */
+.form-section-title{
+  display:flex;align-items:center;gap:9px;
+  font-size:12px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text3);
+  padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:22px;
+}
+.form-section-title i{font-size:15px;color:var(--teal);}
+
+/* ── Grid ── */
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:16px 20px;
+  margin-bottom:28px;
+}
+
+/* ── Field ── */
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{
+  font-size:11.5px;font-weight:600;
+  color:var(--text2);letter-spacing:.02em;
+}
+.field input,
+.field select{
+  height:38px;
+  padding:0 12px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:13px;
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+  appearance:none;-webkit-appearance:none;
+}
+.field input:focus,
+.field select:focus{
+  border-color:var(--teal);
+  box-shadow:0 0 0 3px var(--teal-dim);
+}
+.field input::placeholder{color:var(--text3);}
+.field input[type="date"]::-webkit-calendar-picker-indicator{
+  filter:invert(.5);cursor:pointer;
+}
+/* select arrow */
+.field select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  padding-right:32px;
+  cursor:pointer;
+}
+.field select option{background:var(--bg2);color:var(--text);}
+
+/* ── Actions ── */
+.form-actions{
+  display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+}
+
+.tb-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:0 18px;height:36px;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text2);
+  font-family:var(--font);font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.tb-btn i{font-size:15px;}
+.tb-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+
+.tb-btn.primary{
+  background:var(--teal);color:#0d1117;border-color:var(--teal);
+}
+.tb-btn.primary:hover{
+  filter:brightness(1.1);
+  box-shadow:0 0 12px rgba(57,211,83,.3);
+}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  display:flex;align-items:center;gap:10px;
+  padding:12px 18px;
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);
+  font-size:13px;font-weight:500;color:var(--text);
+  opacity:0;transform:translateY(8px);
+  transition:opacity .2s,transform .2s;
+  pointer-events:none;z-index:999;
+}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast i{font-size:17px;}
+.toast.success i{color:var(--teal);}
+.toast.error   i{color:var(--red);}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-header-icon"><i class="ti ti-motorbike"></i></div>
+    <div>
+      <div class="page-header-title">Register Bike</div>
+      <div class="page-header-sub">Add a new vehicle to the fleet</div>
+    </div>
+  </div>
+
+  <!-- Form card -->
+  <div class="form-card">
+
+    <div class="form-section-title">
+      <i class="ti ti-motorbike"></i> Vehicle Information
+    </div>
+
+    <!-- Silent submit target -->
+    <iframe name="hidden_bike_iframe" id="hidden_bike_iframe" style="display:none;"
+      onload="if(window._submitted){showToast('Bike registered successfully!','success');clearForm();window._submitted=false;}">
+    </iframe>
+
+    <form id="bikeForm"
+      action="https://docs.google.com/forms/d/e/1FAIpQLSc8UUpeV1Ac1vMjLVCvijvSQ2GgjHfrKdzoR2lPSI4CYpzYSg/formResponse"
+      method="POST"
+      target="hidden_bike_iframe"
+      onsubmit="window._submitted=true;">
+
+      <!-- Hidden Bike ID (auto-generated) -->
+      <input type="hidden" name="entry.354020397" id="bf-bike-id"/>
+
+      <div class="form-grid">
+
+        <!-- Plate Number -->
+        <div class="field">
+          <label>Plate Number (UAE) *</label>
+          <input type="text" name="entry.1249091876" id="bf-plate"
+            placeholder="e.g. A 12345 Dubai" required/>
+        </div>
+
+        <!-- Chassis / VIN -->
+        <div class="field">
+          <label>Chassis / VIN Number</label>
+          <input type="text" name="entry.1168599508" id="bf-chassis"
+            placeholder="17-char VIN"/>
+        </div>
+
+        <!-- Make / Brand -->
+        <div class="field">
+          <label>Make / Brand</label>
+          <input type="text" name="entry.1333703377" id="bf-make"
+            placeholder="e.g. Yamaha, Honda"/>
+        </div>
+
+        <!-- Model -->
+        <div class="field">
+          <label>Model</label>
+          <input type="text" name="entry.1241869390" id="bf-model"
+            placeholder="e.g. NMAX 155"/>
+        </div>
+
+        <!-- Emirate -->
+        <div class="field">
+          <label>Emirate Registered</label>
+          <select name="entry.2125370088" id="bf-emirate">
+            <option value="">Select emirate…</option>
+            <option>Dubai</option>
+            <option>Abu Dhabi</option>
+            <option>Sharjah</option>
+            <option>Ras Al Khaimah</option>
+            <option>Ajman</option>
+            <option>Fujairah</option>
+            <option>Umm Al Quwain</option>
+          </select>
+        </div>
+
+        <!-- Mulkiya Expiry -->
+        <div class="field">
+          <label>Mulkiya (Registration) Expiry</label>
+          <input type="date" name="entry.829713354" id="bf-mulkiya-exp"/>
+        </div>
+
+        <!-- Insurance Expiry -->
+        <div class="field">
+          <label>Insurance Expiry</label>
+          <input type="date" name="entry.1516692229" id="bf-ins-exp"/>
+        </div>
+
+        <!-- Driving Licence Expiry -->
+        <div class="field">
+          <label>Driving Licence Expiry</label>
+          <input type="date" name="entry.1136128876" id="bf-lic-exp"/>
+        </div>
+
+      </div><!-- /.form-grid -->
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="submit" class="tb-btn primary">
+          <i class="ti ti-device-floppy"></i> Save Bike
+        </button>
+        <button type="button" class="tb-btn" onclick="clearForm()">
+          <i class="ti ti-refresh"></i> Clear
+        </button>
+      </div>
+
+    </form>
+  </div><!-- /.form-card -->
+
+</div><!-- /.page -->
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <i id="toast-icon" class="ti ti-circle-check"></i>
+  <span id="toast-msg">Saved</span>
+</div>
+
+<script>
+'use strict';
+
+/* ── Auto-generate Bike ID ── */
+function genId() {
+  const now = new Date();
+  const yy  = String(now.getFullYear()).slice(-2);
+  const mm  = String(now.getMonth() + 1).padStart(2, '0');
+  const dd  = String(now.getDate()).padStart(2, '0');
+  const rnd = String(Math.floor(Math.random() * 9000) + 1000);
+  return `BIKE-${yy}${mm}${dd}-${rnd}`;
+}
+
+document.getElementById('bf-bike-id').value = genId();
+
+/* ── Clear form ── */
+function clearForm() {
+  document.getElementById('bikeForm').reset();
+  document.getElementById('bf-bike-id').value = genId();
+}
+
+/* ── Toast ── */
+function showToast(msg, type) {
+  const t  = document.getElementById('toast');
+  const ic = document.getElementById('toast-icon');
+  const ms = document.getElementById('toast-msg');
+  t.className = 'toast ' + (type || 'success');
+  ic.className = type === 'error' ? 'ti ti-circle-x' : 'ti ti-circle-check';
+  ms.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* ── Sync theme with parent frame ── */
+(function syncTheme() {
+  try {
+    const parentTheme = window.parent.document.documentElement
+      .getAttribute('data-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', parentTheme);
+  } catch(e) {}
+
+  try {
+    const observer = new MutationObserver(() => {
+      const t = window.parent.document.documentElement.getAttribute('data-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    });
+    observer.observe(window.parent.document.documentElement, {
+      attributes: true, attributeFilter: ['data-theme']
+    });
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

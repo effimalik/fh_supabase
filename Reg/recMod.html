@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Recovery Module — AdminPro UAE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css"/>
+<script src="https://effimalik.github.io/Testing/shared/auth.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/dataLayer.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --surface:#21262d;--surface2:#2d333b;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent-dim:rgba(88,166,255,.12);
+  --teal:#39d353;--teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341;--amber-dim:rgba(227,179,65,.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7;--purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e;--orange-dim:rgba(240,136,62,.12);
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+  --radius:8px;--radius-lg:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:0 4px 16px rgba(0,0,0,.5);
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:60px;flex-shrink:0;position:sticky;top:0;z-index:50;
+}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--teal),#27b845);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;box-shadow:0 0 10px rgba(57,211,83,.25);}
+.topbar-title{font-size:15px;font-weight:600;}
+.topbar-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;font-size:12px;font-family:var(--font);font-weight:500;transition:all .15s;white-space:nowrap;}
+.btn:hover{background:var(--surface2);}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.btn.primary:hover{filter:brightness(1.1);}
+.btn.success{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.btn.success:hover{background:var(--teal);color:#000;}
+.btn.purple{background:var(--purple-dim);border-color:var(--purple);color:var(--purple);}
+.btn.purple:hover{background:var(--purple);color:#fff;}
+.btn.amber{background:var(--amber-dim);border-color:var(--amber);color:var(--amber);}
+.btn.orange{background:var(--orange-dim);border-color:var(--orange);color:var(--orange);}
+.btn.orange:hover{background:var(--orange);color:#fff;}
+.btn i{font-size:14px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+
+/* ── CACHE STATUS ── */
+.cache-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:10.5px;font-family:var(--mono);color:var(--text3);border:1px solid var(--border);background:var(--bg3);}
+.cache-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;}
+.cache-pill.fresh .dot{background:var(--teal);box-shadow:0 0 5px var(--teal);}
+.cache-pill.stale .dot{background:var(--amber);}
+
+/* ── CONTENT ── */
+.content{padding:16px 24px;max-width:1700px;margin:0 auto;}
+
+/* ── CONTROL ROW (stats + filters combined) ── */
+.control-row{display:flex;align-items:stretch;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+
+/* ── STATS STRIP ── */
+.stats-strip{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;min-width:120px;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.blue::before{background:var(--accent);}
+.stat-card.green::before{background:var(--teal);}
+.stat-card.amber::before{background:var(--amber);}
+.stat-card.red::before{background:var(--red);}
+.stat-card.purple::before{background:var(--purple);}
+.stat-label{font-size:9.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
+.stat-val{font-size:19px;font-weight:700;font-family:var(--mono);line-height:1.2;}
+.stat-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+
+/* ── FILTER BAR ── */
+.filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap;}
+.filter-group{display:flex;align-items:center;gap:7px;}
+.filter-label{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+.filter-select{padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:12px;outline:none;cursor:pointer;transition:border-color .15s;}
+.filter-select:focus{border-color:var(--accent);}
+.search-wrap{position:relative;display:inline-flex;align-items:center;flex:1;min-width:160px;}
+.search-wrap i{position:absolute;left:9px;font-size:13px;color:var(--text3);pointer-events:none;}
+.search-wrap input{width:100%;padding:6px 10px 6px 29px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:12px;outline:none;transition:border-color .15s;}
+.search-wrap input:focus{border-color:var(--accent);}
+.filter-divider{width:1px;height:24px;background:var(--border);flex-shrink:0;}
+
+/* ── TABLE CARD ── */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;}
+.table-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;}
+.table-title i{color:var(--teal);}
+.table-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead th{position:sticky;top:0;z-index:2;background:var(--bg3);text-align:left;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:9px 12px;border-bottom:2px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+thead th:hover{color:var(--text2);}
+thead th .sort-icon{margin-left:4px;opacity:.4;font-size:10px;}
+thead th.asc .sort-icon::after{content:'↑';}
+thead th.desc .sort-icon::after{content:'↓';}
+thead th:not(.asc):not(.desc) .sort-icon::after{content:'↕';}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr{transition:background .1s;}
+tbody tr:hover td{background:var(--bg3);}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);}
+.empty-state i{font-size:36px;display:block;margin-bottom:8px;opacity:.35;}
+.empty-state p{font-size:13px;}
+
+/* ── PAGINATION ── */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);background:var(--bg3);gap:10px;flex-wrap:wrap;}
+.page-info{font-size:11.5px;color:var(--text2);font-family:var(--mono);}
+.page-controls{display:flex;align-items:center;gap:6px;}
+.page-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-size:12px;transition:all .15s;}
+.page-btn:hover:not(:disabled){background:var(--surface2);color:var(--text);}
+.page-btn:disabled{opacity:.3;cursor:not-allowed;}
+.page-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.page-nums{display:flex;gap:4px;}
+.per-page-wrap{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--text2);}
+.per-page-select{padding:4px 8px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--mono);font-size:11px;outline:none;}
+
+/* ── CELL HELPERS ── */
+.cell-stack{display:flex;flex-direction:column;gap:1px;}
+.cell-main{font-size:12px;font-weight:600;color:var(--text);}
+.cell-sub{font-size:10.5px;color:var(--text3);font-family:var(--mono);}
+.ref-tag{font-family:var(--mono);font-size:10px;color:var(--text3);}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:600;white-space:nowrap;}
+.badge.green{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(57,211,83,.3);}
+.badge.amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(227,179,65,.3);}
+.badge.red{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.3);}
+.badge.blue{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(88,166,255,.3);}
+.badge.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(163,113,247,.3);}
+.badge.gray{background:rgba(110,118,129,.15);color:var(--text2);border:1px solid rgba(110,118,129,.25);}
+
+/* ── INSTALLMENT PILL ── */
+.inst-pill{display:inline-flex;align-items:center;gap:3px;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:2px 9px;font-family:var(--mono);font-size:10.5px;color:var(--accent);}
+.inst-pill .frac{color:var(--text2);font-size:9.5px;}
+
+/* ── PROGRESS BAR ── */
+.mini-progress{display:flex;align-items:center;gap:7px;}
+.mini-track{flex:1;height:4px;background:var(--border);border-radius:3px;overflow:hidden;min-width:55px;}
+.mini-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+.mini-fill.green{background:var(--teal);}
+.mini-fill.amber{background:var(--amber);}
+.mini-fill.red{background:var(--red);}
+.mini-pct{font-size:10.5px;font-family:var(--mono);color:var(--text2);min-width:28px;}
+
+/* ── MONTH CHIP ── */
+.month-chip{display:inline-block;padding:2px 7px;border-radius:var(--radius);background:var(--purple-dim);color:var(--purple);font-size:10.5px;font-weight:600;border:1px solid rgba(163,113,247,.25);}
+
+/* ── OVERDUE ROW ── */
+tr.overdue td{background:rgba(248,81,73,.05)!important;}
+tr.overdue td:first-child{border-left:2px solid var(--red);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:10px 15px;display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:500;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:999;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast i{font-size:15px;color:var(--teal);}
+.toast.warn i{color:var(--amber);}
+.toast.error i{color:var(--red);}
+
+/* ── LOADING ── */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(13,17,23,.7);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+.loading-overlay.show{display:flex;}
+.spinner{width:38px;height:38px;border:3px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:13px;color:var(--text2);}
+.loading-sub{font-size:11px;color:var(--text3);}
+
+/* ── PULSE ── */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.pulse{animation:pulse 1.2s ease-in-out infinite;}
+
+/* ── INFO BOX ── */
+.info-box{display:flex;align-items:flex-start;gap:9px;padding:10px 13px;border-radius:var(--radius);background:var(--accent-dim);border:1px solid rgba(88,166,255,.2);color:var(--text2);font-size:12px;margin-bottom:12px;}
+.info-box i{font-size:15px;color:var(--accent);flex-shrink:0;margin-top:1px;}
+
+/* ── SKELETON ── */
+.skel{display:inline-block;border-radius:4px;background:linear-gradient(90deg,var(--surface) 25%,var(--surface2) 50%,var(--surface) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+@media(max-width:900px){
+  .content{padding:12px;}
+  .control-row{flex-direction:column;}
+  .filter-bar{flex-wrap:wrap;}
+  .stats-strip{display:grid;grid-template-columns:repeat(3,1fr);width:100%;}
+  .topbar-right .btn span{display:none;}
+}
+@media(max-width:480px){
+  .stats-strip{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Loading recovery data…</div>
+  <div class="loading-sub" id="loading-sub"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><i id="toast-icon" class="ti ti-circle-check"></i><span id="toast-msg">Done</span></div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo-icon"><i class="ti ti-refresh-alert"></i></div>
+    <div>
+      <div class="topbar-title">Recovery Module</div>
+      <div class="topbar-sub">Advance Salary — Installment Schedule</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="cache-pill" id="cache-pill" title="Cache status"><span class="dot"></span><span id="cache-label">—</span></div>
+    <button class="btn" onclick="loadData(false)"><i class="ti ti-refresh"></i><span>Sync</span></button>
+    <button class="btn" onclick="loadData(true)"><i class="ti ti-rotate-clockwise-2"></i><span>Force Refresh</span></button>
+    <button class="btn success" onclick="exportXLSX()"><i class="ti ti-file-spreadsheet"></i><span>Excel</span></button>
+    <button class="btn purple" onclick="exportCSVFile()"><i class="ti ti-file-download"></i><span>CSV</span></button>
+    <button class="btn orange" onclick="exportFilteredView()"><i class="ti ti-file-text"></i><span>Filtered View</span></button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="content">
+
+  <!-- Info -->
+  <div class="info-box" id="info-box" style="display:none;">
+    <i class="ti ti-info-circle"></i>
+    <div id="info-text"></div>
+  </div>
+
+  <!-- Control Row: Stats + Filters on same line -->
+  <div class="control-row">
+    <!-- Stats Strip -->
+    <div class="stats-strip">
+      <div class="stat-card blue">
+        <div class="stat-label">Total Loans</div>
+        <div class="stat-val" id="s-total">—</div>
+        <div class="stat-sub">Disbursed records</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Installments</div>
+        <div class="stat-val" id="s-inst">—</div>
+        <div class="stat-sub">All rows</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-label">Pending</div>
+        <div class="stat-val" id="s-pending">—</div>
+        <div class="stat-sub">Not deducted</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Overdue</div>
+        <div class="stat-val" id="s-overdue">—</div>
+        <div class="stat-sub">Past due date</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">Total Amount</div>
+        <div class="stat-val" id="s-amount" style="font-size:14px;">—</div>
+        <div class="stat-sub">All advances</div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label"><i class="ti ti-filter" style="font-size:11px;"></i> Month</span>
+        <select class="filter-select" id="f-month" onchange="applyFilters()">
+          <option value="">All Months</option>
+        </select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-group">
+        <span class="filter-label">Status</span>
+        <select class="filter-select" id="f-status" onchange="applyFilters()">
+          <option value="">All</option>
+          <option value="pending">Pending</option>
+          <option value="overdue">Overdue</option>
+          <option value="paid">Paid</option>
+        </select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-group">
+        <span class="filter-label">Employee</span>
+        <select class="filter-select" id="f-emp" onchange="applyFilters()">
+          <option value="">All</option>
+        </select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter-group" style="flex:1;">
+        <div class="search-wrap">
+          <i class="ti ti-search"></i>
+          <input type="text" id="f-search" placeholder="Search REF, name, EID…" oninput="applyFilters()"/>
+        </div>
+      </div>
+      <button class="btn amber" onclick="clearFilters()"><i class="ti ti-x"></i>Clear</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <div class="table-title"><i class="ti ti-calendar-repeat"></i>Installment Recovery Schedule</div>
+      <div class="table-actions">
+        <span class="badge blue" id="row-count">0 rows</span>
+        <span class="badge gray" id="page-badge">Page 1</span>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="recovery-table">
+        <thead>
+          <tr>
+            <th data-col="#" style="width:36px;">#<span class="sort-icon"></span></th>
+            <th data-col="empId">Emp ID / EID<span class="sort-icon"></span></th>
+            <th data-col="name">Employee Name<span class="sort-icon"></span></th>
+            <th data-col="ref">Advance REF<span class="sort-icon"></span></th>
+            <th data-col="instNo">Installment<span class="sort-icon"></span></th>
+            <th data-col="dueKey">Due Month<span class="sort-icon"></span></th>
+            <th data-col="dueDate">Due Date<span class="sort-icon"></span></th>
+            <th data-col="instAmt">Inst Amount (AED)<span class="sort-icon"></span></th>
+            <th data-col="totalAmt">Total Advance (AED)<span class="sort-icon"></span></th>
+            <th data-col="pct">Recovery Progress<span class="sort-icon"></span></th>
+            <th data-col="status">Status<span class="sort-icon"></span></th>
+          </tr>
+        </thead>
+        <tbody id="recovery-tbody">
+          <tr><td colspan="11"><div class="empty-state"><i class="ti ti-loader pulse"></i><p>Loading data…</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Pagination -->
+    <div class="pagination" id="pagination">
+      <div class="per-page-wrap">
+        <span>Rows per page</span>
+        <select class="per-page-select" id="per-page" onchange="changePerPage()">
+          <option value="10" selected>10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="0">All</option>
+        </select>
+      </div>
+      <div class="page-info" id="page-info">Showing 0–0 of 0</div>
+      <div class="page-controls" id="page-controls"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════
+const GAS_URL = API_BASE
+const _AP2_CACHE_KEY = 'ap2_recovery';
+const CACHE_TTL      = 6 * 60 * 60 * 1000; // 6 hours in ms
+
+// ── IndexedDB helpers ────────────────────────────────────────
+function _getDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('ap2_fleet_cache',1);
+    req.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains('datasets'))db.createObjectStore('datasets');};
+    req.onsuccess=e=>res(e.target.result);
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+async function _idbGet(key){
+  const db=await _getDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('datasets','readonly');
+    const req=tx.objectStore('datasets').get(key);
+    req.onsuccess=e=>res(e.target.result??null);
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+async function _idbSet(key,value){
+  const db=await _getDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('datasets','readwrite');
+    const req=tx.objectStore('datasets').put(value,key);
+    req.onsuccess=()=>res();
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+async function _idbDel(key){
+  const db=await _getDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('datasets','readwrite');
+    const req=tx.objectStore('datasets').delete(key);
+    req.onsuccess=()=>res();
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+
+const EMPLOYEES = [
+  { empId:1, name:'Ahmed Al Mansoori', eid:'784199995170001' },
+  { empId:2, name:'Mohammed Raza',     eid:'784199995170002' },
+  { empId:3, name:'Saif Al Rashidi',   eid:'784199995170003' },
+  { empId:4, name:'Bilal Hussain',     eid:'784199995170004' },
+  { empId:5, name:'Khaled Ibrahim',    eid:'784199995170005' },
+  { empId:6, name:'Tariq Mehmood',     eid:'784199995170006' },
+];
+
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+let allRows  = [];
+let filtered = [];
+let sortedFiltered = [];
+let currentPage = 1;
+let perPage = 10;
+let sortCol = 'dueDate';
+let sortDir = 'asc';
+
+// ══════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════
+const fmt = n => Number(n).toLocaleString('en-AE', {minimumFractionDigits:2, maximumFractionDigits:2});
+const esc = v => v == null ? '' : String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const todayISO = () => new Date().toISOString().slice(0,10);
+
+function addMonths(dateStr, n) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setMonth(d.getMonth() + n);
+  return d.toISOString().slice(0,10);
+}
+function monthLabel(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleString('en-GB', {month:'long', year:'numeric'});
+}
+function monthShort(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleString('en-GB', {month:'short', year:'numeric'});
+}
+function monthKey(iso) { return iso ? iso.slice(0,7) : ''; }
+
+let toastTimer;
+function showToast(msg, icon='ti-circle-check', type='') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').className = 'ti ' + icon;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function setLoading(on, text='Loading recovery data…', sub='') {
+  const el = document.getElementById('loading-overlay');
+  document.getElementById('loading-text').textContent = text;
+  document.getElementById('loading-sub').textContent = sub;
+  el.classList.toggle('show', on);
+}
+
+function formatTimeAgo(ts) {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  return Math.floor(hrs/24) + 'd ago';
+}
+
+function updateCachePill(ts) {
+  const pill = document.getElementById('cache-pill');
+  const lbl  = document.getElementById('cache-label');
+  if (!ts) { lbl.textContent = 'No cache'; pill.className = 'cache-pill'; return; }
+  const age = Date.now() - ts;
+  const fresh = age < CACHE_TTL;
+  lbl.textContent = 'Cache ' + formatTimeAgo(ts);
+  pill.className = 'cache-pill ' + (fresh ? 'fresh' : 'stale');
+  pill.title = fresh
+    ? 'Fresh cache — expires in ' + Math.round((CACHE_TTL - age)/60000) + 'm'
+    : 'Stale cache — will refresh on next Sync';
+}
+
+// ══════════════════════════════════════
+//  INDEXEDDB CACHE (6 hours)
+// ══════════════════════════════════════
+async function saveCache(data) {
+  try { await _idbSet(_AP2_CACHE_KEY, { ts: Date.now(), data }); } catch(e) {}
+}
+
+async function loadCache() {
+  try {
+    const entry = await _idbGet(_AP2_CACHE_KEY);
+    if (!entry || !entry.ts) return null;
+    if (Date.now() - entry.ts > CACHE_TTL) return null;
+    return { data: entry.data, ts: entry.ts };
+  } catch(e) { return null; }
+}
+
+async function clearCache() {
+  try { await _idbDel(_AP2_CACHE_KEY); } catch(e) {}
+}
+
+// ══════════════════════════════════════
+//  FETCH FROM GAS
+// ══════════════════════════════════════
+async function gasCall(action) {
+  const url = GAS_URL + '?action=' + action + '&t=' + Date.now();
+  const res  = await fetch(url, { cache:'no-store' });
+  const json = await res.json();
+  if (!json.success) throw new Error(json.error || 'GAS error');
+  return json.data;
+}
+
+// ══════════════════════════════════════
+//  BUILD INSTALLMENT ROWS
+// ══════════════════════════════════════
+function buildRows(disbursedData) {
+  const rows = [];
+  const today = todayISO();
+
+  disbursedData.forEach(r => {
+    const ref        = String(r[1] || '').trim();
+    const empIdRaw   = parseInt(r[2]) || 0;
+    const amount     = parseFloat(r[3]) || 0;
+    const monthsRaw  = parseInt(r[4]);
+    const isLumpSum  = monthsRaw === 0 || isNaN(monthsRaw);
+    const months     = (isNaN(monthsRaw) || monthsRaw <= 0) ? 1 : monthsRaw;
+    const disbDate   = String(r[9] || '').trim();
+    const dissAmount = parseFloat(r[10]) || amount;
+
+    if (!ref || !empIdRaw || !disbDate) return;
+
+    const emp = EMPLOYEES.find(e => e.empId === empIdRaw) || {
+      empId: empIdRaw, name: 'Emp ' + empIdRaw, eid: '—'
+    };
+
+    const monthly = dissAmount / months;
+
+    for (let i = 0; i < months; i++) {
+      const instNo  = i + 1;
+      const isLast  = i === months - 1;
+      const instAmt = isLast
+        ? dissAmount - Math.round(monthly * 100) / 100 * (months - 1)
+        : Math.round(monthly * 100) / 100;
+
+      const dueDate = addMonths(disbDate, instNo);
+      const dueKey  = monthKey(dueDate);
+      const isOverdue = dueDate < today;
+
+      rows.push({
+        ref, empId: emp.empId, eid: emp.eid, name: emp.name,
+        instNo, total: months,
+        dueDate, dueKey,
+        dueMonth: monthLabel(dueDate),
+        dueMonthShort: monthShort(dueDate),
+        instAmt, totalAmt: dissAmount,
+        pct: Math.round((instNo - 1) / months * 100),
+        status: isOverdue ? 'overdue' : 'pending',
+        isLumpSum, disbDate
+      });
+    }
+  });
+
+  rows.sort((a, b) => a.dueDate.localeCompare(b.dueDate) || a.name.localeCompare(b.name));
+  return rows;
+}
+
+// ══════════════════════════════════════
+//  LOAD DATA (with IDB cache)
+// ══════════════════════════════════════
+async function loadData(forceRefresh = false) {
+  // Try IDB cache first (unless force refresh)
+  if (!forceRefresh) {
+    const cached = await loadCache();
+    if (cached) {
+      setLoading(true, 'Reading cache…', 'Last updated ' + formatTimeAgo(cached.ts));
+      await new Promise(r => setTimeout(r, 150)); // micro-delay for UX
+      allRows = buildRows(cached.data);
+      updateCachePill(cached.ts);
+      finishLoad(true);
+      return;
+    }
+  } else {
+    await clearCache();
+  }
+
+  setLoading(true, 'Fetching from server…', 'Connecting to Google Sheets…');
+  try {
+    const disbursedData = await gasCall('getDisbursedRequests');
+    await saveCache(disbursedData);
+    updateCachePill(Date.now());
+    allRows = buildRows(disbursedData);
+    finishLoad(false);
+  } catch (err) {
+    console.error(err);
+    // Try stale IDB entry as fallback
+    try {
+      const db  = await _getDB();
+      const raw = await new Promise((res,rej)=>{
+        const tx=db.transaction('datasets','readonly');
+        const req=tx.objectStore('datasets').get(_AP2_CACHE_KEY);
+        req.onsuccess=e=>res(e.target.result??null);
+        req.onerror=e=>rej(e.target.error);
+      });
+      if (raw && raw.data && raw.ts) {
+        allRows = buildRows(raw.data);
+        updateCachePill(raw.ts);
+        showInfo('Using stale cache — could not reach server: ' + err.message);
+        showToast('Loaded from stale cache', 'ti-database', 'warn');
+        finishLoad(true);
+        return;
+      }
+    } catch(e2) {}
+    showInfo('Could not load data: ' + err.message);
+    showToast('Failed to load data', 'ti-alert-circle', 'error');
+    setLoading(false);
+  }
+}
+
+function finishLoad(fromCache) {
+  if (!allRows.length) {
+    showInfo('No disbursed records found.');
+  } else {
+    hideInfo();
+  }
+  populateFilters();
+  updateStats();
+  applyFilters();
+  const src = fromCache ? '(from cache)' : '(live)';
+  showToast('Loaded ' + allRows.length + ' installments ' + src, 'ti-circle-check');
+  setLoading(false);
+}
+
+function showInfo(msg) {
+  const el = document.getElementById('info-box');
+  document.getElementById('info-text').textContent = msg;
+  el.style.display = 'flex';
+}
+function hideInfo() { document.getElementById('info-box').style.display = 'none'; }
+
+// ══════════════════════════════════════
+//  POPULATE FILTERS
+// ══════════════════════════════════════
+function populateFilters() {
+  const months = [...new Set(allRows.map(r => r.dueKey))].sort();
+  const mSel = document.getElementById('f-month');
+  const mCur = mSel.value;
+  mSel.innerHTML = '<option value="">All Months</option>' +
+    months.map(m => {
+      const d = new Date(m + '-01T00:00:00');
+      const label = d.toLocaleString('en-GB', {month:'long', year:'numeric'});
+      return `<option value="${m}"${m===mCur?' selected':''}>${label}</option>`;
+    }).join('');
+
+  const emps = [...new Map(allRows.map(r => [r.empId, {empId:r.empId, name:r.name}])).values()]
+    .sort((a,b) => a.name.localeCompare(b.name));
+  const eSel = document.getElementById('f-emp');
+  const eCur = eSel.value;
+  eSel.innerHTML = '<option value="">All</option>' +
+    emps.map(e => `<option value="${e.empId}"${String(e.empId)===eCur?' selected':''}>${e.name}</option>`).join('');
+}
+
+// ══════════════════════════════════════
+//  STATS
+// ══════════════════════════════════════
+function updateStats() {
+  const uniqueRefs = new Set(allRows.map(r => r.ref)).size;
+  const totalInst  = allRows.length;
+  const pending    = allRows.filter(r => r.status === 'pending' || r.status === 'overdue').length;
+  const overdue    = allRows.filter(r => r.status === 'overdue').length;
+  const totalAmt   = [...new Map(allRows.map(r => [r.ref, r.totalAmt])).values()].reduce((s,a)=>s+a,0);
+
+  document.getElementById('s-total').textContent   = uniqueRefs;
+  document.getElementById('s-inst').textContent    = totalInst;
+  document.getElementById('s-pending').textContent = pending;
+  document.getElementById('s-overdue').textContent = overdue;
+  document.getElementById('s-amount').textContent  = 'AED ' + fmt(totalAmt);
+}
+
+// ══════════════════════════════════════
+//  SORTING
+// ══════════════════════════════════════
+function sortRows(rows) {
+  const col = sortCol;
+  const dir = sortDir === 'asc' ? 1 : -1;
+  return [...rows].sort((a, b) => {
+    let va = a[col], vb = b[col];
+    if (col === '#') return 0;
+    if (typeof va === 'number') return (va - vb) * dir;
+    return String(va||'').localeCompare(String(vb||'')) * dir;
+  });
+}
+
+function handleSort(col) {
+  if (col === '#') return;
+  if (sortCol === col) {
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortCol = col;
+    sortDir = 'asc';
+  }
+  // Update header UI
+  document.querySelectorAll('thead th').forEach(th => {
+    th.classList.remove('asc','desc');
+    if (th.dataset.col === col) th.classList.add(sortDir);
+  });
+  renderTable();
+}
+
+// Attach sort listeners
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => handleSort(th.dataset.col));
+});
+
+// ══════════════════════════════════════
+//  FILTERS
+// ══════════════════════════════════════
+function applyFilters() {
+  const fMonth  = document.getElementById('f-month').value;
+  const fStatus = document.getElementById('f-status').value;
+  const fEmp    = document.getElementById('f-emp').value;
+  const fSearch = document.getElementById('f-search').value.toLowerCase().trim();
+
+  filtered = allRows.filter(r => {
+    if (fMonth  && r.dueKey !== fMonth) return false;
+    if (fStatus === 'pending'  && r.status !== 'pending')  return false;
+    if (fStatus === 'overdue'  && r.status !== 'overdue')  return false;
+    if (fStatus === 'paid'     && r.status !== 'paid')     return false;
+    if (fEmp    && String(r.empId) !== fEmp) return false;
+    if (fSearch && !(
+      r.ref.toLowerCase().includes(fSearch) ||
+      r.name.toLowerCase().includes(fSearch) ||
+      r.eid.toLowerCase().includes(fSearch) ||
+      String(r.empId).includes(fSearch)
+    )) return false;
+    return true;
+  });
+
+  currentPage = 1;
+  renderTable();
+}
+
+function clearFilters() {
+  document.getElementById('f-month').value  = '';
+  document.getElementById('f-status').value = '';
+  document.getElementById('f-emp').value    = '';
+  document.getElementById('f-search').value = '';
+  applyFilters();
+}
+
+// ══════════════════════════════════════
+//  PAGINATION
+// ══════════════════════════════════════
+function changePerPage() {
+  perPage = parseInt(document.getElementById('per-page').value) || 0;
+  currentPage = 1;
+  renderTable();
+}
+
+function goToPage(p) {
+  currentPage = p;
+  renderTable();
+}
+
+function renderPagination(total) {
+  const pp = perPage || total || 1;
+  const totalPages = Math.ceil(total / pp) || 1;
+  const start = (currentPage - 1) * pp + 1;
+  const end   = Math.min(currentPage * pp, total);
+
+  document.getElementById('page-info').textContent =
+    total ? `Showing ${start}–${end} of ${total}` : 'No rows';
+  document.getElementById('page-badge').textContent = `Page ${currentPage}/${totalPages}`;
+
+  // Build page number buttons (max 7 shown)
+  const ctrl = document.getElementById('page-controls');
+  let html = `<button class="page-btn" onclick="goToPage(1)" ${currentPage===1?'disabled':''}><i class="ti ti-chevrons-left"></i></button>
+    <button class="page-btn" onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="ti ti-chevron-left"></i></button>
+    <div class="page-nums">`;
+
+  let startP = Math.max(1, currentPage - 3);
+  let endP   = Math.min(totalPages, startP + 6);
+  if (endP - startP < 6) startP = Math.max(1, endP - 6);
+
+  for (let i = startP; i <= endP; i++) {
+    html += `<button class="page-btn${i===currentPage?' active':''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+
+  html += `</div>
+    <button class="page-btn" onclick="goToPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}><i class="ti ti-chevron-right"></i></button>
+    <button class="page-btn" onclick="goToPage(${totalPages})" ${currentPage===totalPages?'disabled':''}><i class="ti ti-chevrons-right"></i></button>`;
+
+  ctrl.innerHTML = html;
+}
+
+// ══════════════════════════════════════
+//  RENDER TABLE
+// ══════════════════════════════════════
+function renderTable() {
+  const tbody = document.getElementById('recovery-tbody');
+  document.getElementById('row-count').textContent = filtered.length + ' rows';
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="11"><div class="empty-state"><i class="ti ti-calendar-off"></i><p>No installments match the current filters.</p></div></td></tr>`;
+    renderPagination(0);
+    return;
+  }
+
+  // Sort
+  sortedFiltered = sortRows(filtered);
+
+  // Paginate
+  const pp = perPage || sortedFiltered.length;
+  const startIdx = (currentPage - 1) * pp;
+  const pageRows = sortedFiltered.slice(startIdx, startIdx + pp);
+
+  // Render rows using DocumentFragment for performance
+  const frag = document.createDocumentFragment();
+  pageRows.forEach((r, idx) => {
+    const globalIdx = startIdx + idx;
+    const tr = document.createElement('tr');
+    if (r.status === 'overdue') tr.className = 'overdue';
+    tr.innerHTML = buildRowHTML(r, globalIdx);
+    frag.appendChild(tr);
+  });
+  tbody.innerHTML = '';
+  tbody.appendChild(frag);
+
+  renderPagination(filtered.length);
+}
+
+function buildRowHTML(r, idx) {
+  let statusBadge;
+  if (r.status === 'overdue') {
+    statusBadge = `<span class="badge red"><i class="ti ti-alert-triangle" style="font-size:9px;"></i>Overdue</span>`;
+  } else if (r.status === 'paid') {
+    statusBadge = `<span class="badge green"><i class="ti ti-circle-check" style="font-size:9px;"></i>Paid</span>`;
+  } else {
+    statusBadge = `<span class="badge amber"><i class="ti ti-clock-hour-4" style="font-size:9px;"></i>Pending</span>`;
+  }
+
+  const pctAfter = Math.round(r.instNo / r.total * 100);
+  const barColor = pctAfter >= 80 ? 'green' : pctAfter >= 40 ? 'amber' : 'red';
+
+  const progressHtml = `<div class="mini-progress">
+    <div class="mini-track"><div class="mini-fill ${barColor}" style="width:${pctAfter}%;"></div></div>
+    <span class="mini-pct">${pctAfter}%</span>
+  </div>`;
+
+  const instPill = `<span class="inst-pill"><span class="frac">#</span>${r.instNo}<span class="frac">/</span>${r.total}</span>`;
+
+  return `
+    <td style="font-size:10.5px;color:var(--text3);font-family:var(--mono);">${idx+1}</td>
+    <td>
+      <div class="cell-stack">
+        <span class="cell-main" style="font-family:var(--mono);">${r.empId}</span>
+        <span class="cell-sub">${esc(r.eid)}</span>
+      </div>
+    </td>
+    <td><strong style="font-size:12.5px;">${esc(r.name)}</strong></td>
+    <td>
+      <div class="cell-stack">
+        <span class="ref-tag">${esc(r.ref)}</span>
+        <span style="font-size:9.5px;color:var(--text3);">Disbursed: ${r.disbDate}</span>
+      </div>
+    </td>
+    <td>${instPill}</td>
+    <td><span class="month-chip">${esc(r.dueMonthShort)}</span></td>
+    <td style="font-family:var(--mono);font-size:11.5px;">${r.dueDate}</td>
+    <td style="font-family:var(--mono);font-weight:700;color:var(--teal);font-size:12px;">AED ${fmt(r.instAmt)}</td>
+    <td style="font-family:var(--mono);color:var(--purple);font-size:11.5px;">AED ${fmt(r.totalAmt)}</td>
+    <td style="min-width:110px;">${progressHtml}</td>
+    <td>${statusBadge}</td>`;
+}
+
+// ══════════════════════════════════════
+//  EXPORT — FULL CSV
+// ══════════════════════════════════════
+function exportCSVFile() {
+  if (!filtered.length) { showToast('No rows to export', 'ti-alert-circle', 'warn'); return; }
+  const headers = [
+    'Row#','Emp ID','EID Number','Employee Name',
+    'Advance REF','Disbursed Date',
+    'Installment No','Total Installments','Installment (Fraction)',
+    'Due Month','Due Date',
+    'Installment Amount (AED)','Total Advance (AED)',
+    'Progress %','Status'
+  ];
+  const rows = sortedFiltered.length ? sortedFiltered : filtered;
+  const csvRows = rows.map((r,i) => [
+    i+1, r.empId, r.eid, r.name,
+    r.ref, r.disbDate,
+    r.instNo, r.total, r.instNo+'/'+r.total,
+    r.dueMonth, r.dueDate,
+    r.instAmt.toFixed(2), r.totalAmt.toFixed(2),
+    Math.round(r.instNo/r.total*100)+'%', r.status
+  ]);
+
+  downloadCSV([headers,...csvRows], 'recovery-full-' + todayISO() + '.csv');
+  showToast('CSV exported — ' + rows.length + ' rows', 'ti-file-download');
+}
+
+// ══════════════════════════════════════
+//  EXPORT — FILTERED VIEW (minimal cols)
+//  Emp ID | Employee Name | Due Month | Installment Amount (AED)
+// ══════════════════════════════════════
+function exportFilteredView() {
+  if (!filtered.length) { showToast('No rows to export', 'ti-alert-circle', 'warn'); return; }
+  if (!window.XLSX) {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload  = _doExportFilteredView;
+    s.onerror = () => { showToast('Excel lib failed — exporting CSV instead', 'ti-alert-circle', 'warn'); _doExportFilteredViewCSV(); };
+    document.head.appendChild(s);
+  } else {
+    _doExportFilteredView();
+  }
+}
+
+function _doExportFilteredView() {
+  const rows = sortedFiltered.length ? sortedFiltered : filtered;
+  const headers = ['Emp ID', 'Employee Name', 'Due Month', 'Installment Amount (AED)'];
+  const data = [
+    headers,
+    ...rows.map(r => [r.empId, r.name, r.dueMonth, r.instAmt])
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(data);
+
+  // Column widths
+  ws['!cols'] = [{wch:8},{wch:26},{wch:22},{wch:24}];
+
+  // Style header row bold
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let C = range.s.c; C <= range.e.c; C++) {
+    const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
+    if (cell) cell.s = {font:{bold:true}};
+  }
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Filtered View');
+  XLSX.writeFile(wb, 'recovery-filtered-' + todayISO() + '.xlsx');
+  showToast('Filtered View exported — ' + rows.length + ' rows', 'ti-file-text');
+}
+
+function _doExportFilteredViewCSV() {
+  const rows = sortedFiltered.length ? sortedFiltered : filtered;
+  const headers = ['Emp ID','Employee Name','Due Month','Installment Amount (AED)'];
+  const csvRows = rows.map(r => [r.empId, r.name, r.dueMonth, r.instAmt.toFixed(2)]);
+  downloadCSV([headers,...csvRows], 'recovery-filtered-' + todayISO() + '.csv');
+  showToast('Filtered View CSV exported — ' + rows.length + ' rows', 'ti-file-text');
+}
+
+// ══════════════════════════════════════
+//  EXPORT — XLSX FULL
+// ══════════════════════════════════════
+function exportXLSX() {
+  if (!filtered.length) { showToast('No rows to export', 'ti-alert-circle', 'warn'); return; }
+  if (window.XLSX) { doExportXLSX(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload  = doExportXLSX;
+  s.onerror = () => showToast('Could not load Excel library — try CSV export', 'ti-alert-circle', 'error');
+  document.head.appendChild(s);
+}
+
+function doExportXLSX() {
+  const headers = [
+    'Row#','Emp ID','EID Number','Employee Name',
+    'Advance REF','Disbursed Date',
+    'Installment No','Total Installments','Installment',
+    'Due Month','Due Date',
+    'Installment Amount (AED)','Total Advance (AED)',
+    'Progress %','Status'
+  ];
+  const rows = sortedFiltered.length ? sortedFiltered : filtered;
+  const data = [
+    headers,
+    ...rows.map((r,i) => [
+      i+1, r.empId, r.eid, r.name,
+      r.ref, r.disbDate,
+      r.instNo, r.total, r.instNo+'/'+r.total,
+      r.dueMonth, r.dueDate,
+      r.instAmt, r.totalAmt,
+      Math.round(r.instNo/r.total*100), r.status
+    ])
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = [
+    {wch:5},{wch:8},{wch:18},{wch:22},
+    {wch:28},{wch:14},
+    {wch:14},{wch:18},{wch:14},
+    {wch:22},{wch:12},
+    {wch:22},{wch:20},
+    {wch:12},{wch:10}
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Recovery Schedule');
+
+  const ws2 = XLSX.utils.aoa_to_sheet(buildSummarySheet());
+  ws2['!cols'] = [{wch:20},{wch:10},{wch:22},{wch:18},{wch:18},{wch:14}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Employee Summary');
+
+  XLSX.writeFile(wb, 'recovery-schedule-' + todayISO() + '.xlsx');
+  showToast('Excel exported — ' + rows.length + ' rows', 'ti-file-spreadsheet');
+}
+
+function buildSummarySheet() {
+  const empMap = {};
+  filtered.forEach(r => {
+    if (!empMap[r.empId]) {
+      empMap[r.empId] = { empId:r.empId, name:r.name, eid:r.eid, refs:new Set(), totalAmt:0, instCount:0, overdueCount:0 };
+    }
+    empMap[r.empId].refs.add(r.ref);
+    empMap[r.empId].totalAmt += r.instAmt;
+    empMap[r.empId].instCount++;
+    if (r.status === 'overdue') empMap[r.empId].overdueCount++;
+  });
+
+  return [
+    ['Emp ID','Employee Name','EID Number','Total Amount Due (AED)','Installments','Overdue'],
+    ...Object.values(empMap).map(e => [e.empId, e.name, e.eid, e.totalAmt.toFixed(2), e.instCount, e.overdueCount])
+  ];
+}
+
+// ══════════════════════════════════════
+//  CSV HELPER
+// ══════════════════════════════════════
+function downloadCSV(rows, filename) {
+  const csv = rows.map(row => row.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════
+//  BACKGROUND WATCHER (IDB poll + preload)
+// ══════════════════════════════════════
+(function _bgWatcher(){
+  let _debounce=null;
+  async function _applyFromIDB(){
+    const entry=await _idbGet(_AP2_CACHE_KEY).catch(()=>null);
+    if(!entry||!entry.ts||!entry.data)return;
+    allRows=buildRows(entry.data);
+    updateCachePill(entry.ts);
+    populateFilters();updateStats();applyFilters();
+  }
+  // Poll every 30 s
+  setInterval(_applyFromIDB,30000);
+  // React to parent cache-updated event (debounced 200 ms)
+  window.addEventListener('message',e=>{
+    if(!e.data)return;
+    if(e.data.type==='ap-cache-preload'){
+      const rows=e.data.datasets&&e.data.datasets.recovery;
+      if(rows){allRows=buildRows(rows);populateFilters();updateStats();applyFilters();}
+      return;
+    }
+    if(e.data.type==='ap-cache-updated'&&e.data.key===_AP2_CACHE_KEY){
+      clearTimeout(_debounce);
+      _debounce=setTimeout(_applyFromIDB,200);
+    }
+  });
+})();
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+(async () => {
+  // Show stale IDB indicator immediately
+  const entry = await _idbGet(_AP2_CACHE_KEY).catch(()=>null);
+  if (entry && entry.ts) updateCachePill(entry.ts);
+  await loadData(false);
+
+  // Refresh cache pill every minute
+  setInterval(async () => {
+    const e = await _idbGet(_AP2_CACHE_KEY).catch(()=>null);
+    if (e && e.ts) updateCachePill(e.ts);
+  }, 60000);
+})();
+</script>
+</body>
+</html>

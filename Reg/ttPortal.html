@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Doc Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<script src="https://effimalik.github.io/Testing/shared/cacheWatcher.js?v=1"></script>
+<script src="https://effimalik.github.io/Testing/shared/accessGuard.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/auth.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/dataLayer.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/devPre.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cioView.js"></script>
+
+<style>
+/* ═══ THEME (unchanged — matches rest of AP2 Fleet) ═══ */
+:root,[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --surface:#21262d;--surface2:#2d333b;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent-dim:rgba(88,166,255,.12);--accent-glow:rgba(88,166,255,.28);
+  --teal:#39d353;--teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341;--amber-dim:rgba(227,179,65,.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7;--purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e;--orange-dim:rgba(240,136,62,.12);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.5);--shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#fff;--bg3:#e8ecf0;
+  --surface:#fff;--surface2:#e2e7ed;
+  --border:#c8d0d9;--border2:#9aa5b1;
+  --text:#0d1117;--text2:#3d454f;--text3:#5a6370;
+  --accent:#0550ae;--accent-dim:rgba(5,80,174,.12);--accent-glow:rgba(5,80,174,.22);
+  --teal:#116329;--teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00;--amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b;--red-dim:rgba(168,17,27,.11);
+  --purple:#6639c8;--purple-dim:rgba(102,57,200,.13);
+  --orange:#953800;--orange-dim:rgba(149,56,0,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.10);--shadow-md:0 4px 16px rgba(0,0,0,.12);--shadow-lg:0 8px 32px rgba(0,0,0,.15);
+}
+[data-theme="purple"]{
+  --bg:#0f0b1e;--bg2:#17112e;--bg3:#1e1840;
+  --surface:#221a3a;--surface2:#2c2250;
+  --border:#3a2e5e;--border2:#5a4890;
+  --text:#e8e0ff;--text2:#a899d4;--text3:#7a6ca8;
+  --accent:#c084fc;--accent-dim:rgba(192,132,252,.14);--accent-glow:rgba(192,132,252,.3);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#c084fc;--purple-dim:rgba(192,132,252,.14);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5);--shadow-md:0 4px 16px rgba(0,0,0,.6);--shadow-lg:0 8px 32px rgba(0,0,0,.7);
+}
+[data-theme="ocean"]{
+  --bg:#071520;--bg2:#0d2035;--bg3:#112840;
+  --surface:#143050;--surface2:#1a3d60;
+  --border:#1e4a72;--border2:#2e6a9e;
+  --text:#d6eeff;--text2:#7db8e8;--text3:#4a87b8;
+  --accent:#38bdf8;--accent-dim:rgba(56,189,248,.14);--accent-glow:rgba(56,189,248,.3);
+  --teal:#34d399;--teal-dim:rgba(52,211,153,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5);--shadow-md:0 4px 16px rgba(0,0,0,.55);--shadow-lg:0 8px 32px rgba(0,0,0,.65);
+}
+[data-theme="slate"]{
+  --bg:#0e1117;--bg2:#1a1f28;--bg3:#222836;
+  --surface:#28303e;--surface2:#313c4e;
+  --border:#3a4556;--border2:#556070;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#60a5fa;--accent-dim:rgba(96,165,250,.13);--accent-glow:rgba(96,165,250,.28);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.45);--shadow-md:0 4px 16px rgba(0,0,0,.5);--shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+/* ═══ LAYOUT ═══ */
+.portal-wrap{display:flex;flex-direction:column;height:100vh;max-width:1600px;margin:0 auto;padding:10px;gap:8px;}
+
+/* ═══ PAGE HEADER ═══ */
+.page-header{display:flex;align-items:center;flex-wrap:wrap;gap:10px clamp(10px,2vw,20px);flex-shrink:0;padding:clamp(8px,1.4vw,12px) clamp(10px,2vw,20px);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow);}
+.page-header-text{display:flex;align-items:center;gap:10px;min-width:0;flex:1 1 160px;}
+.page-title{font-size:clamp(14px,2vw,20px);font-weight:700;display:flex;align-items:center;gap:8px;color:var(--text);flex-shrink:0;white-space:nowrap;}
+.page-title i{color:var(--accent);font-size:clamp(16px,2.4vw,24px);line-height:1;}
+.page-desc{font-size:clamp(11px,1.1vw,12.5px);color:var(--text3);display:flex;align-items:center;gap:6px;min-width:0;padding-left:12px;border-left:1.5px solid var(--border);overflow:hidden;}
+.page-desc i{color:var(--accent);font-size:14px;flex-shrink:0;}
+.page-desc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+@media(max-width:760px){.page-desc{display:none;}}
+.page-header-controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0;margin-left:auto;}
+
+.cache-dot{width:10px;height:10px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background .3s,box-shadow .3s;}
+.cache-dot.ok{background:var(--teal);box-shadow:0 0 6px var(--teal);}
+.cache-dot.warn{background:var(--amber);box-shadow:0 0 6px var(--amber);}
+.cache-dot.loading{background:var(--accent);animation:pulse-dot 1s ease-in-out infinite;}
+@keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.35;}}
+#cache-status{display:inline-flex;align-items:center;cursor:default;padding:4px;gap:6px;font-size:11px;color:var(--text3);}
+
+/* ═══ TOOLBAR / SELECTOR BAR ═══ */
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;}
+.field label span.req{color:var(--red);}
+
+.tab-nav{display:flex;gap:3px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:3px;}
+.tab-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 12px;border-radius:var(--radius);border:none;background:transparent;color:var(--text2);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.tab-btn i{font-size:14px;}
+.tab-btn.active{background:var(--accent);color:#fff;box-shadow:0 0 10px var(--accent-glow);}
+.tab-btn:not(.active):hover{background:var(--surface2);color:var(--text);}
+
+.btn-icon{width:32px;height:32px;border-radius:var(--radius);border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;}
+.btn-icon:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.btn-icon.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.date-filter-select{padding:6px 10px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;max-width:180px;}
+.date-filter-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.search-wrap{position:relative;display:flex;align-items:center;}
+.search-box{display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:50;}
+.search-box.open{display:block;}
+.search-box input{width:220px;padding:8px 11px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:12.5px;box-shadow:var(--shadow-md);}
+.search-box input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+
+/* ═══ BUTTONS ═══ */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);border:1.5px solid;font-family:var(--font);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;line-height:1;}
+.btn i{font-size:15px;flex-shrink:0;}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 10px var(--accent-glow);}
+.btn-primary:hover{filter:brightness(1.1);}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border2);}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);}
+.btn-danger-ghost{background:transparent;color:var(--red);border-color:rgba(248,81,73,.4);}
+.btn-danger-ghost:hover{background:var(--red-dim);}
+.btn-sm{padding:5px 10px;font-size:11.5px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;}
+.btn-block{width:100%;justify-content:center;}
+
+/* ═══ TABLE ═══ */
+.table-wrap{flex:1;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;}
+.table-scroll{overflow:auto;flex:1;}
+.doc-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.doc-table th{padding:9px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border);background:var(--bg3);white-space:nowrap;position:sticky;top:0;z-index:2;}
+.doc-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.doc-table tbody tr{cursor:pointer;transition:background .1s;}
+.doc-table tbody tr:hover{background:var(--surface2);}
+.doc-table tbody tr.selected{background:var(--accent-dim);}
+.doc-table td.chk-col,.doc-table th.chk-col{width:34px;padding-right:0;}
+.doc-table input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;}
+.txn-mono{font-family:var(--mono);font-size:10.5px;color:var(--accent);}
+.portal-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:9.5px;font-weight:700;}
+.portal-badge.transaction{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(88,166,255,.25);}
+.portal-badge.onboarding{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(163,113,247,.25);}
+.doc-tick-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;background:var(--teal-dim);color:var(--teal);border:1px solid rgba(57,211,83,.28);cursor:help;}
+.doc-tick-badge.none{background:var(--bg3);color:var(--text3);border-color:var(--border);}
+.doc-tick-badge i{font-size:11px;}
+.doc-tick-icon{display:inline-flex;}
+.doc-tick-num{margin-left:2px;font-family:var(--mono);min-width:1ch;text-align:left;}
+.table-footer{padding:8px 14px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.empty-row td{text-align:center;padding:40px;color:var(--text3);font-size:12.5px;}
+.empty-row i{font-size:26px;display:block;margin-bottom:8px;opacity:.35;}
+
+/* ═══ SLIDE PANEL (view + upload share this) ═══ */
+.dp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:299;display:none;}
+.dp-overlay.open{display:block;}
+.dp-panel{position:fixed;top:0;right:0;bottom:0;width:420px;max-width:94vw;background:var(--surface);border-left:1px solid var(--border);box-shadow:var(--shadow-lg);z-index:300;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1),width .22s ease;}
+.dp-panel.dp-panel-wide{width:min(62vw,980px);}
+.dp-panel.open{transform:translateX(0);}
+.dp-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.dp-head h3{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:7px;}
+.dp-head h3 i{color:var(--accent);font-size:17px;}
+.dp-close{margin-left:auto;width:28px;height:28px;border-radius:var(--radius);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;flex-shrink:0;}
+.dp-close:hover{background:var(--red-dim);color:var(--red);border-color:var(--red);}
+.dp-body{flex:1;overflow-y:auto;padding:16px;}
+
+/* Meta strip attached under dp-head — inline row on desktop,
+   collapsible dropdown on small screens. */
+#dp-head-meta:empty{display:none;}
+.dp-meta-drop{border-bottom:1px solid var(--border);background:var(--bg3);flex-shrink:0;}
+.dp-meta-summary{display:none;align-items:center;gap:6px;cursor:pointer;padding:9px 16px;font-size:10.5px;font-weight:700;color:var(--text2);list-style:none;user-select:none;}
+.dp-meta-summary::-webkit-details-marker{display:none;}
+.dp-meta-summary i.ti-chevron-down{margin-left:auto;transition:transform .18s;font-size:13px;}
+.dp-meta-drop[open] .dp-meta-summary i.ti-chevron-down{transform:rotate(180deg);}
+.dp-meta-drop .preview-meta{margin:0;border:none;border-radius:0;background:transparent;padding:10px 16px;}
+@media(max-width:760px){
+  .dp-meta-summary{display:flex;}
+}
+@media(min-width:761px){
+  .dp-meta-drop .preview-meta{display:flex !important;}
+}
+
+.confirm-strip{display:flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(88,166,255,.25);border-radius:var(--radius-lg);padding:8px 11px;margin-bottom:12px;}
+.confirm-strip .cn{font-size:12.5px;font-weight:700;color:var(--text);}
+.confirm-strip .cs{font-size:10.5px;color:var(--text3);font-family:var(--mono);}
+
+.doc-type-choice{display:flex;gap:8px;flex-wrap:wrap;}
+.dtc-btn{flex:1;min-width:100px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .16s;}
+.dtc-btn i{font-size:20px;}
+.dtc-btn:hover{border-color:var(--accent);color:var(--accent);}
+.dtc-btn.selected{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+
+.file-upload-zone{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:16px;text-align:center;cursor:pointer;transition:all .18s;background:var(--surface2);position:relative;}
+.file-upload-zone:hover,.file-upload-zone.dragover{border-color:var(--accent);background:var(--accent-dim);}
+.file-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.file-upload-zone i{font-size:22px;color:var(--text3);display:block;margin-bottom:4px;}
+.file-upload-zone p{font-size:11px;color:var(--text3);}
+.file-upload-zone.has-file{border-color:var(--teal);background:var(--teal-dim);}
+.file-upload-zone.has-file i,.file-upload-zone.has-file p{color:var(--teal);}
+.date-input,.text-input{width:100%;padding:8px 11px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:12.5px;}
+.date-input:focus,.text-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.entity-hint{font-size:10.5px;color:var(--text3);margin-top:3px;min-height:14px;}
+.entity-hint.found{color:var(--teal);}
+
+.preview-meta{display:flex;flex-direction:column;gap:8px;margin-top:4px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);}
+.pmi{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.pmi .k{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.pmi .v{font-size:11.5px;font-weight:600;color:var(--text);font-family:var(--mono);text-align:right;}
+
+.gs-status{display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:var(--radius-lg);font-size:11px;font-weight:600;margin-top:10px;}
+.gs-status.loading{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(88,166,255,.3);}
+.gs-status.success{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(57,211,83,.3);}
+.gs-status.error{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.3);}
+
+.hist-list{display:flex;flex-direction:column;gap:8px;}
+.hist-rec{display:flex;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);align-items:center;cursor:pointer;transition:border .12s;}
+.hist-rec:hover{border-color:var(--accent);}
+.hist-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;background:var(--accent-dim);color:var(--accent);}
+.hist-meta{flex:1;min-width:0;}
+.hist-title{font-size:12px;font-weight:700;color:var(--text);}
+.hist-sub{font-size:10.5px;color:var(--text3);margin-top:2px;}
+.ppb img.pi{max-width:100%;border-radius:var(--radius-lg);display:block;margin:0 auto;}
+.ppb iframe.pf{width:100%;height:60vh;min-height:320px;border:none;border-radius:var(--radius-lg);background:var(--bg3);}
+.dp-panel-wide .ppb iframe.pf{height:74vh;}
+.preview-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;}
+
+/* Document gallery — one icon per doc on top row, click to switch preview */
+.doc-gallery-tabs{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--border);}
+.doc-gallery-tab{position:relative;display:flex;align-items:center;gap:6px;padding:8px 13px;border-radius:20px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;}
+.doc-gallery-tab i:not(.warn-dot){font-size:15px;}
+.doc-gallery-tab:hover{border-color:var(--accent);color:var(--accent);}
+.doc-gallery-tab.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+.doc-gallery-tab .warn-dot{position:absolute;top:-4px;right:-4px;font-size:11px;color:var(--red);background:var(--surface);border-radius:50%;}
+@media(max-width:760px){
+  .doc-gallery-tab{padding:9px;border-radius:var(--radius);}
+  .doc-gallery-tab .lbl{display:none;}
+}
+
+.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--surface2);color:var(--text);border:1px solid var(--border2);padding:10px 16px;border-radius:var(--radius-lg);font-size:12.5px;font-weight:500;z-index:999;opacity:0;transform:translateY(10px);transition:all .25s cubic-bezier(.34,1.56,.64,1);pointer-events:none;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow-lg);max-width:340px;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.success{background:var(--teal-dim);color:var(--teal);border-color:rgba(57,211,83,.25);}
+.toast.error{background:var(--red-dim);color:var(--red);border-color:rgba(248,81,73,.25);}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner{animation:spin 1s linear infinite;display:inline-flex;}
+
+@media(max-width:760px){
+  .portal-wrap{padding:8px;gap:7px;}
+  .tab-btn{padding:8px 10px;}
+  .dp-panel{width:100%;max-width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="portal-wrap">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-header-text">
+      <div class="page-title"><i class="ti ti-file-certificate"></i> Doc Portal</div>
+      <p class="page-desc"><i class="ti ti-info-circle"></i><span>Transaction &amp; onboarding documents · ap2_docLog</span></p>
+    </div>
+    <div class="page-header-controls">
+      <div id="cache-status" title="Loading cache…">
+        <div class="cache-dot loading" id="cache-dot"></div>
+        <span id="cache-status-text"></span>
+      </div>
+
+      <div class="tab-nav">
+        <button class="tab-btn active" id="filter-all" title="All" onclick="setPortalFilter('all')"><i class="ti ti-stack-2"></i></button>
+        <button class="tab-btn" id="filter-transaction" title="Transaction" onclick="setPortalFilter('transaction')"><i class="ti ti-receipt"></i></button>
+        <button class="tab-btn" id="filter-onboarding" title="Onboarding" onclick="setPortalFilter('onboarding')"><i class="ti ti-user-plus"></i></button>
+      </div>
+
+      <select id="date-filter" class="date-filter-select" title="Filter by date" onchange="setDateFilter(this.value)">
+        <option value="all">All Dates</option>
+      </select>
+
+      <div class="search-wrap" id="search-wrap">
+        <button class="btn-icon" id="search-toggle" title="Search" onclick="toggleSearch()"><i class="ti ti-search"></i></button>
+        <div class="search-box" id="search-box">
+          <input id="search-input" type="text" placeholder="Search Txn ID or Entity ID…" autocomplete="off"
+            oninput="renderTable()" onblur="setTimeout(closeSearchIfEmpty,150)"/>
+        </div>
+      </div>
+
+      <button class="btn btn-danger-ghost btn-sm" id="btn-clear-cache" onclick="handleClearCache()" title="Clear documents saved via the local cache (does not touch HARDCODED_DOC_LOG)"><i class="ti ti-trash"></i> Clear Cached Uploads</button>
+      <button class="btn btn-primary btn-sm" id="btn-upload-selected" style="display:none;" onclick="openUploadFlow(selectedKey)"><i class="ti ti-upload"></i> Upload Document</button>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table class="doc-table">
+        <thead><tr>
+          <th class="chk-col"></th>
+          <th>Date &amp; Time</th>
+          <th>Portal</th>
+          <th>Entity</th>
+          <th>Documents</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="table-body">
+          <tr class="empty-row"><td colspan="6"><i class="ti ti-loader spinner"></i> Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-footer" id="table-footer"></div>
+  </div>
+
+</div>
+
+<!-- SLIDE PANEL (View / Upload) -->
+<div class="dp-overlay" id="dp-overlay" onclick="closePanel()"></div>
+<div class="dp-panel" id="dp-panel">
+  <div class="dp-head"><h3><i class="ti ti-files" id="dp-icon"></i><span id="dp-title">Panel</span></h3><button class="dp-close" onclick="closePanel()"><i class="ti ti-x"></i></button></div>
+  <div id="dp-head-meta"></div>
+  <div class="dp-body" id="dp-body"></div>
+</div>
+
+<div class="toast" id="toast" role="alert">
+  <i id="toast-icon" class="ti ti-circle-check"></i>
+  <span id="toast-msg">Saved</span>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+ *  DOC TYPE DEFINITIONS
+ *  Transaction  → Receipt
+ *  Onboarding   → ID or Visa
+ * ═══════════════════════════════════════════════════════ */
+const TRANSACTION_DOC_TYPES = [
+  {key:'receipt', label:'Receipt',     icon:'ti-receipt'},
+  {key:'edd',     label:'EDD',         icon:'ti-shield-check'},
+  {key:'source',  label:'Source',      icon:'ti-file-text'},
+];
+const ONBOARDING_DOC_TYPES = [
+  {key:'eid',        label:'EID',         icon:'ti-id-badge-2'},
+  {key:'passport',   label:'Passport',    icon:'ti-passport'},
+  {key:'visa',       label:'Visa',        icon:'ti-globe'},
+  {key:'icp_status', label:'ICP Status',  icon:'ti-file-certificate'},
+];
+function docTypesFor(portal){ return portal==='onboarding' ? ONBOARDING_DOC_TYPES : TRANSACTION_DOC_TYPES; }
+function docTypeInfo(portal,key){ return docTypesFor(portal).find(d=>d.key===key); }
+function docTypeLabel(portal,key){ const f=docTypeInfo(portal,key); return f?f.label:(key||'—'); }
+
+/* Sheet routing: which physical tab a doc row is written to is
+   resolved per-entity in entitySheetName() below (EmpDocuments vs
+   BikeDocuments — same tabs docPortal.html already writes into). */
+
+/* ═══════════════════════════════════════════════════════
+ *  HARDCODED DOC LOG DATA
+ *  This is the dataset baked directly into the page — no network
+ *  call, no Google Sheets round-trip needed to see the portal work.
+ *  Each row matches the sheet's original column order exactly:
+ *  [ Transaction ID, Portal, ID, Doc Type, Doc Link, Exp Date ]
+ * ═══════════════════════════════════════════════════════ */
+const HARDCODED_DOC_LOG = [
+  ['1788907980','Onboarding','2','ID','https://drive.google.com/file/d/1M6zHZz4hTcLA6ZkVgpaOJnnzeKtS4Dx_/view?usp=drivesdk','1788907860'],
+  ['1788907860','Transaction','2','Receipt','',''],
+  ['1788907920','Transaction','2','Receipt','https://drive.google.com/file/d/1IFFE-TR_f__qZTwpwNlqbqT75I9AbC23/view?usp=drivesdk','1788907860'],
+  ['1788908040','Onboarding','2','Visa','https://drive.google.com/file/d/1M6zHZz4hTcLA6ZkVgpaOJnnzeKtS4Dx_/view?usp=drivesdk','1788907860'],
+  ['1788908100','Transaction','260515265325','Receipt','',''],
+  ['1788908160','Transaction','260515265326','Receipt','',''],
+  ['1788908220','Onboarding','96211809','ID','',''],
+  ['1788908280','Onboarding','84166772','Visa','https://drive.google.com/file/d/1M6zHZz4hTcLA6ZkVgpaOJnnzeKtS4Dx_/view?usp=drivesdk','1788907860'],
+  ['1788908340','Transaction','260515265329','Receipt','https://drive.google.com/file/d/1M6zHZz4hTcLA6ZkVgpaOJnnzeKtS4Dx_/view?usp=drivesdk','1788907860'],
+  ['1788908400','Transaction','260515265330','Receipt','','1788907860'],
+  ['1788908460','Onboarding','30545112','ID','','1788907860'],
+  ['1788908520','Onboarding','42269976','Visa','','1788907860'],
+  ['1788908580','Transaction','260515265333','Receipt','','1788907860'],
+  ['1788908640','Transaction','260515265334','Receipt','','1788907860'],
+  ['1788908700','Onboarding','37249783','ID','','1788907860'],
+  ['1788908760','Onboarding','87387731','Visa','https://drive.google.com/file/d/1M6zHZz4hTcLA6ZkVgpaOJnnzeKtS4Dx_/view?usp=drivesdk','1788907860'],
+  ['1788908820','Onboarding','87387731','ID','https://drive.google.com/file/d/1M6zHZz4hTcLA6ZkVgpaOJnnzeKtS4Dx_/view?usp=drivesdk','1788907860'],
+  ['1788908880','Onboarding','87387731','Passport','https://drive.google.com/file/d/1M6zHZz4hTcLA6ZkVgpaOJnnzeKtS4Dx_/view?usp=drivesdk','1788907860'],
+];
+
+/* ═══════════════════════════════════════════════════════
+ *  PRACTICAL CACHE LAYER — localStorage
+ *  This is the real, working replacement for the old "POST to a
+ *  Google Apps Script → write to a Sheet → re-fetch" flow.
+ *  New uploads are appended to this cache the moment the user
+ *  clicks "Confirm Upload" (see submitUpload below), and are read
+ *  back on every load — merged on top of HARDCODED_DOC_LOG.
+ *  This is a genuine browser cache (survives refresh/reopen), not
+ *  a simulated one: open devtools → Application → Local Storage
+ *  → look for LOCAL_CACHE_KEY to see it for yourself.
+ * ═══════════════════════════════════════════════════════ */
+const LOCAL_CACHE_KEY = 'ttportal_doclog_local_cache_v1';
+
+function loadLocalCacheRows(){
+  try{
+    const raw = localStorage.getItem(LOCAL_CACHE_KEY);
+    const rows = raw ? JSON.parse(raw) : [];
+    return Array.isArray(rows) ? rows : [];
+  }catch(e){
+    console.warn('[docPortal] local cache read failed:', e.message);
+    return [];
+  }
+}
+function saveLocalCacheRows(rows){
+  try{
+    localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(rows));
+    return true;
+  }catch(e){
+    console.warn('[docPortal] local cache write failed:', e.message);
+    return false;
+  }
+}
+/* Appends one row and persists it. If storage quota is exceeded
+   (large embedded file), it retries once with the file data
+   stripped from that row so the upload still succeeds and shows
+   up in the table — only the preview is lost, not the record. */
+function addRowToLocalCache(row){
+  const rows = loadLocalCacheRows();
+  rows.push(row);
+  if(saveLocalCacheRows(rows)) return true;
+  rows[rows.length-1] = [row[0],row[1],row[2],row[3],'',row[5]];
+  return saveLocalCacheRows(rows);
+}
+function clearLocalCache(){
+  try{ localStorage.removeItem(LOCAL_CACHE_KEY); return true; }
+  catch(e){ console.warn('[docPortal] local cache clear failed:', e.message); return false; }
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  CACHE — via shared cacheWatcher.js, with a safe fallback
+ *  Used only for employee/bike name lookups now.
+ *  Store: 'datasets'  Keys: ap2_employee | ap2_bike
+ * ═══════════════════════════════════════════════════════ */
+const _AP2_CACHE_KEY_EMP  = 'ap2_employee';
+const _AP2_CACHE_KEY_BIKE = 'ap2_bike';
+
+const _IDB_NAME  = 'ap2_fleet_cache';
+const _IDB_STORE = 'datasets';
+
+if (typeof window.AP2CacheWatcher === 'undefined') {
+  console.warn('[docPortal] cacheWatcher.js did not load — using local fallback');
+  window.AP2CacheWatcher = (function () {
+    let _conn = null;
+    function _open() {
+      if (_conn) return Promise.resolve(_conn);
+      return new Promise((res, rej) => {
+        let done = false;
+        const req = indexedDB.open(_IDB_NAME);
+        const t = setTimeout(() => { if (!done) { done = true; rej(new Error('idb-open-timeout')); } }, 2000);
+        req.onsuccess = e => { if (!done) { done = true; clearTimeout(t); _conn = e.target.result; res(_conn); } };
+        req.onerror   = e => { if (!done) { done = true; clearTimeout(t); rej(e.target.error); } };
+      });
+    }
+    return {
+      init() {},
+      subscribe() { return () => {}; },
+      notifyNow() {},
+      getStatus() { return { healthy: false, mode: 'local-fallback', lastError: 'cacheWatcher.js not loaded' }; },
+      async readKey(key) {
+        try {
+          const db  = await _open();
+          if (!db.objectStoreNames.contains(_IDB_STORE)) return null;
+          const rec = await new Promise((res, rej) => {
+            const r = db.transaction(_IDB_STORE, 'readonly').objectStore(_IDB_STORE).get(key);
+            r.onsuccess = () => res(r.result || null);
+            r.onerror   = () => rej(r.error);
+          });
+          return (rec && rec.data) ? rec.data : null;
+        } catch (e) {
+          if (e && e.name === 'NotFoundError') return null;
+          console.warn('[docPortal] fallback read failed:', e.message);
+          return null;
+        }
+      }
+    };
+  })();
+}
+
+let _idbConn = null;
+function _getDB() {
+  if (_idbConn) return Promise.resolve(_idbConn);
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(_IDB_NAME);
+    req.onsuccess = e => { _idbConn = e.target.result; res(_idbConn); };
+    req.onerror   = e => rej(e.target.error);
+  });
+}
+async function _readRawTs(cacheKey) {
+  try {
+    const db = await _getDB();
+    if (!db.objectStoreNames.contains(_IDB_STORE)) return 0;
+    const rec = await new Promise((res, rej) => {
+      const req = db.transaction(_IDB_STORE, 'readonly').objectStore(_IDB_STORE).get(cacheKey);
+      req.onsuccess = () => res(req.result || null);
+      req.onerror   = () => rej(req.error);
+    });
+    return (rec && rec.ts) ? rec.ts : 0;
+  } catch (e) { return 0; }
+}
+async function _readCache(cacheKey) {
+  const data = await AP2CacheWatcher.readKey(cacheKey);
+  if (!data || !Array.isArray(data) || !data.length) return null;
+  const ts = await _readRawTs(cacheKey);
+  return { ts, data };
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  STATE
+ * ═══════════════════════════════════════════════════════ */
+let employees = [];
+let bikes     = [];
+let logRows   = [];
+let transactions = []; // logRows pivoted into one row per Portal+Entity
+
+let portalFilter  = 'all';   // all | transaction | onboarding
+let dateFilter    = 'all';   // all | 'YYYY-MM-DD'
+let selectedKey   = null;    // "<portal>::<entityId>" of the selected row
+
+const _s = v => (v!==null&&v!==undefined&&v!=='') ? String(v).trim() : '';
+
+/* ═══════════════════════════════════════════════════════
+ *  NORMALISE employee / bike (for entity name lookups only)
+ * ═══════════════════════════════════════════════════════ */
+function normaliseEmp(r,i){
+  if(!r) return null;
+  if(!Array.isArray(r)){
+    if(!r['Name']) return null;
+    return { id:r['Emp ID']||(i+1), name:r['Name'] };
+  }
+  if(_s(r[0])==='Emp ID') return null;
+  const rawId = r[0];
+  const empId = (rawId!==null&&rawId!==undefined&&rawId!=='') ? rawId : (i+1);
+  const name  = _s(r[1]); if(!name) return null;
+  return { id: empId, name };
+}
+function normaliseBike(r,i){
+  if(!r) return null;
+  if(!Array.isArray(r)){
+    const id=_s(r['Bike ID']||r['id']); if(!id) return null;
+    return { id, plate:_s(r['Plate Number']||r['plate']||'') };
+  }
+  const first=_s(r[0]);
+  if(first==='Bike ID'||first==='id'||!first) return null;
+  return { id:first, plate:_s(r[1]) };
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  NORMALISE ap2_docLog ROW
+ *  Portal column now carries 'Transaction' or 'Onboarding'.
+ *  Any other / legacy value (e.g. old 'Employee'/'Bike' rows) is
+ *  filtered OUT of this view entirely — not misclassified.
+ * ═══════════════════════════════════════════════════════ */
+/* Parse ANY raw timestamp (main date col OR expiry col) into epoch ms.
+   Supports:
+     - Unix epoch in seconds (9–10 digit, e.g. 1788907920) or ms (12–13 digit)
+     - compact "ddmmyyyy" (8 digit, no separators)
+     - "dd/mm/yyyy" or "dd/mm/yyyy hh:mm[:ss]" formatted strings
+     - anything else Date() can natively parse                          */
+function parseDocLogDateTime(raw){
+  const s = _s(raw);
+  if(!s) return 0;
+  if(/^\d{9,13}$/.test(s)){                 // pure digits -> unix epoch
+    const num = Number(s);
+    const ms  = s.length <= 10 ? num*1000 : num;   // seconds vs ms
+    return isNaN(ms) ? 0 : ms;
+  }
+  if(/^\d{8}$/.test(s)){                    // compact ddmmyyyy
+    const dd=+s.slice(0,2), mm=+s.slice(2,4), yyyy=+s.slice(4,8);
+    if(dd>=1&&dd<=31&&mm>=1&&mm<=12&&yyyy>=2000&&yyyy<=2099){
+      const d = new Date(yyyy,mm-1,dd);
+      return isNaN(d.getTime()) ? 0 : d.getTime();
+    }
+  }
+  const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if(m){
+    const [,dd,mm,yyyy,hh,mi,ss] = m;
+    const d = new Date(+yyyy,+mm-1,+dd,+(hh||0),+(mi||0),+(ss||0));
+    return isNaN(d.getTime()) ? 0 : d.getTime();
+  }
+  const dt = new Date(s);
+  return isNaN(dt.getTime()) ? 0 : dt.getTime();
+}
+/* Epoch ms -> epoch SECONDS (10-digit unix, e.g. 1788907920).
+   This is the canonical form we store/use for both Transaction ID
+   and Exp Date, per spec. */
+function toEpochSec(ms){ return ms ? Math.floor(ms/1000) : 0; }
+function nowEpochSec(){ return Math.floor(Date.now()/1000); }
+
+const _MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+/* Human-readable render of a unix-seconds value — used everywhere we
+   need to SHOW a Transaction ID / Exp Date, while the underlying value
+   stays a plain unix-seconds integer. */
+function fmtEpochSec(sec, withTime){
+  if(!sec) return '—';
+  const d = new Date(sec*1000);
+  const p = n=>String(n).padStart(2,'0');
+  const datePart = `${p(d.getDate())} ${_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  return withTime===false ? datePart : `${datePart}, ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function _cleanDocLink(raw){
+  const v = _s(raw);
+  return (v.toLowerCase()==='view file' || !v) ? '' : v;
+}
+function _portalFromRaw(raw){
+  const p = _s(raw).toLowerCase();
+  if(p.includes('onboard')) return 'onboarding';
+  if(p.includes('trans'))   return 'transaction';
+  return null; // out of scope for Doc Portal
+}
+
+function normaliseLogRow(r, recTs){
+  if(!r) return null;
+  if(Array.isArray(r)){
+    const col0raw = _s(r[0]);
+    const col1raw = _s(r[1]);
+    if(col1raw.toLowerCase()==='portal'||col1raw.toLowerCase()==='portal type') return null; // header row
+    if(col0raw.toLowerCase()==='date'||col0raw.toLowerCase()==='date time'||col0raw.toLowerCase()==='timestamp') return null; // header row
+    if(!col1raw) return null;
+    const portal = _portalFromRaw(col1raw);
+    if(!portal) return null;
+    const entityId = _s(r[2]); if(!entityId) return null;
+    const docType  = _s(r[3]);
+    const docLink  = _cleanDocLink(r[4]);
+    if(!docType && !docLink) return null; // empty/placeholder row — no actual document, skip it
+    const dtTs   = parseDocLogDateTime(col0raw);
+    const expMs  = parseDocLogDateTime(_s(r[5]));
+    return {
+      txnId:    dtTs ? String(toEpochSec(dtTs)) : (/^\d{9,13}$/.test(col0raw) ? col0raw : ('LOG-'+Math.random().toString(36).slice(2,8).toUpperCase())),
+      portal, entityId,
+      docType,
+      docLink,
+      expiryTs: toEpochSec(expMs),          // unix seconds, e.g. 1788907920
+      ts:       dtTs || recTs || 0,
+    };
+  }
+  const portal = _portalFromRaw(r['Portal']||r['portal']||'');
+  if(!portal) return null;
+  const eId = _s(r['ID']||r['entityId']||r['Emp ID']||r['Bike ID']||'');
+  if(!eId) return null;
+  const docType = _s(r['Doc Type']||r['docType']||'');
+  const docLink = _cleanDocLink(r['Doc Link']||r['docLink']||r['File Link']||'');
+  if(!docType && !docLink) return null; // empty/placeholder row — no actual document, skip it
+  const rawDt = r['Date']||r['Date Time']||r['DateTime']||r['Timestamp']||'';
+  const dtTs  = parseDocLogDateTime(rawDt);
+  const rawTxn= _s(r['Transaction ID']||r['txnId']);
+  const expMs = parseDocLogDateTime(_s(r['Exp Date']||r['expiry']||''));
+  return {
+    txnId:    dtTs ? String(toEpochSec(dtTs)) : (/^\d{9,13}$/.test(rawTxn) ? rawTxn : (rawTxn || ('LOG-'+Math.random().toString(36).slice(2,8).toUpperCase()))),
+    portal, entityId: eId,
+    docType,
+    docLink,
+    expiryTs: toEpochSec(expMs),
+    ts:       dtTs || recTs || 0,
+  };
+}
+
+/* PIVOT: group logRows so that when Portal + Entity ID are the same,
+   every document uploaded for that entity lands in ONE row, with the
+   Documents column showing a running tick count across all of them. */
+function groupKey(portal,entityId){ return portal+'::'+entityId; }
+function buildTransactions(){
+  const map = new Map();
+  logRows.forEach(r=>{
+    const key = groupKey(r.portal,r.entityId);
+    if(!map.has(key)){
+      map.set(key,{key,portal:r.portal,entityId:r.entityId,docs:[],ts:0});
+    }
+    const t = map.get(key);
+    t.docs.push(r);
+    if(r.ts > t.ts) t.ts = r.ts;
+  });
+  transactions = [...map.values()];
+  transactions.forEach(t=>t.docs.sort((a,b)=>b.ts-a.ts)); // newest doc first
+  transactions.sort((a,b)=>b.ts-a.ts);
+  buildDateFilterOptions();
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  DATE / MISC UTILS
+ * ═══════════════════════════════════════════════════════ */
+function fmtDate(d){ if(!d) return '\u2014'; return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); }
+/* Transaction ID is a plain unix-seconds timestamp, e.g. 1788907920 */
+function genTxnId(){ return String(nowEpochSec()); }
+function fileToBase64(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=()=>rej(new Error('Read failed')); r.readAsDataURL(f); }); }
+function resolveEntityName(id){
+  const e=employees.find(x=>String(x.id)===String(id)); if(e) return e.name;
+  const b=bikes.find(x=>String(x.id)===String(id)); if(b) return b.plate||b.id;
+  return '';
+}
+/* Same EmpDocuments/BikeDocuments sheet routing docPortal uses — the
+   physical tab is chosen by whether the entity is an employee or a bike,
+   not by the Onboarding/Transaction portal (that stays in the Portal
+   column so read-back still works the same as before). */
+function entitySheetName(id){
+  const isEmp = employees.some(x=>String(x.id)===String(id));
+  if(isEmp) return 'EmpDocuments';
+  const isBike = bikes.some(x=>String(x.id)===String(id));
+  if(isBike) return 'BikeDocuments';
+  return 'EmpDocuments'; // fallback if entity type can't be resolved
+}
+
+let _tt;
+function toast(msg,type='success'){
+  const el=document.getElementById('toast'), mi=document.getElementById('toast-msg'), ic=document.getElementById('toast-icon');
+  clearTimeout(_tt); el.className='toast';
+  mi.textContent=msg;
+  ic.className = type==='error' ? 'ti ti-x-circle' : 'ti ti-circle-check';
+  requestAnimationFrame(()=>el.classList.add('show',type));
+  _tt = setTimeout(()=>el.classList.remove('show'), 3500);
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  LOAD
+ * ═══════════════════════════════════════════════════════ */
+function _updateCacheStatus(){
+  const dot = document.getElementById('cache-dot');
+  const txt = document.getElementById('cache-status-text');
+  if(!dot) return;
+  if(logRows.length || employees.length || bikes.length){
+    dot.className='cache-dot ok';
+    txt.textContent = `${transactions.length} txns · ${logRows.length} docs`;
+  } else {
+    dot.className='cache-dot warn';
+    txt.textContent = 'Fleet cache unavailable';
+  }
+}
+
+async function loadDocLog(){
+  // HARDCODED_DOC_LOG ships with the page; anything uploaded through
+  // the UI lives in the localStorage cache on top of it. No network
+  // call, no Google Sheets round-trip — this is instant and works
+  // completely offline.
+  const now = Date.now();
+  const rows = [...HARDCODED_DOC_LOG, ...loadLocalCacheRows()];
+  logRows = rows.map(r=>normaliseLogRow(r, now)).filter(Boolean);
+}
+
+async function loadInitialData(){
+  try{
+    const rec = await _readCache(_AP2_CACHE_KEY_EMP);
+    if(rec && rec.data.length) employees = rec.data.map((r,i)=>normaliseEmp(r,i)).filter(Boolean);
+  }catch(e){ console.warn('[docPortal] emp cache:',e.message); }
+
+  try{
+    const rec = await _readCache(_AP2_CACHE_KEY_BIKE);
+    if(rec && rec.data.length) bikes = rec.data.map((r,i)=>normaliseBike(r,i)).filter(Boolean);
+  }catch(e){ console.warn('[docPortal] bike cache:',e.message); }
+
+  await loadDocLog();
+  buildTransactions();
+  _updateCacheStatus();
+  renderTable();
+}
+
+/* Silent refresh on cache change (push / poll) */
+async function _applyFromIDB(){
+  try{
+    const rec = await _readCache(_AP2_CACHE_KEY_EMP);
+    if(rec && rec.data.length) employees = rec.data.map((r,i)=>normaliseEmp(r,i)).filter(Boolean);
+  }catch(e){}
+  try{
+    const rec = await _readCache(_AP2_CACHE_KEY_BIKE);
+    if(rec && rec.data.length) bikes = rec.data.map((r,i)=>normaliseBike(r,i)).filter(Boolean);
+  }catch(e){}
+  await loadDocLog();
+  buildTransactions();
+  _updateCacheStatus();
+  renderTable();
+}
+
+try {
+  AP2CacheWatcher.init();
+  AP2CacheWatcher.subscribe(() => { _applyFromIDB(); });
+} catch (e) {
+  console.warn('[docPortal] cacheWatcher wiring failed, continuing without live updates:', e.message);
+}
+
+function _applyPushedDataset(key, data, ts){
+  if(!data || !Array.isArray(data) || !data.length) return;
+  if(key === _AP2_CACHE_KEY_EMP){
+    const fresh = data.map((r,i)=>normaliseEmp(r,i)).filter(Boolean);
+    if(fresh.length) employees = fresh;
+  } else if(key === _AP2_CACHE_KEY_BIKE){
+    const fresh = data.map((r,i)=>normaliseBike(r,i)).filter(Boolean);
+    if(fresh.length) bikes = fresh;
+  }
+  buildTransactions();
+  _updateCacheStatus();
+  renderTable();
+}
+
+window.addEventListener('message', (e) => {
+  if (!e.data) return;
+  if (e.data.type === 'ap-cache-preload' && e.data.datasets) {
+    _applyPushedDataset(_AP2_CACHE_KEY_EMP,  e.data.datasets[_AP2_CACHE_KEY_EMP],  e.data.ts);
+    _applyPushedDataset(_AP2_CACHE_KEY_BIKE, e.data.datasets[_AP2_CACHE_KEY_BIKE], e.data.ts);
+  }
+  if (e.data.type === 'ap-cache-ready' && e.data.key){
+    _applyPushedDataset(e.data.key, e.data.data, e.data.ts);
+  }
+  if (e.data.type === 'ap-cache-updated'){
+    try { window.parent.postMessage({ type: 'ap-cache-request', key: e.data.key }, '*'); } catch(err){}
+  }
+  if (e.data.type === 'ap-theme' && e.data.theme) {
+    document.documentElement.setAttribute('data-theme', e.data.theme);
+  }
+});
+
+[_AP2_CACHE_KEY_EMP, _AP2_CACHE_KEY_BIKE].forEach(key => {
+  try { window.parent.postMessage({ type: 'ap-cache-request', key }, '*'); } catch (e) {}
+});
+
+/* ═══════════════════════════════════════════════════════
+ *  SEARCH TOGGLE
+ * ═══════════════════════════════════════════════════════ */
+function toggleSearch(){
+  const box = document.getElementById('search-box');
+  const btn = document.getElementById('search-toggle');
+  const open = box.classList.toggle('open');
+  btn.classList.toggle('active', open);
+  if(open) document.getElementById('search-input').focus();
+}
+function closeSearchIfEmpty(){
+  const input = document.getElementById('search-input');
+  if(!input.value.trim()){
+    document.getElementById('search-box').classList.remove('open');
+    document.getElementById('search-toggle').classList.remove('active');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  PORTAL FILTER
+ * ═══════════════════════════════════════════════════════ */
+function setPortalFilter(p){
+  portalFilter = p;
+  ['all','transaction','onboarding'].forEach(k=>document.getElementById('filter-'+k).classList.toggle('active',k===p));
+  renderTable();
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  DATE FILTER (dropdown, only dates that actually have records)
+ * ═══════════════════════════════════════════════════════ */
+function dateKeyFromTs(ts){
+  if(!ts) return '';
+  const d = new Date(ts);
+  const p = n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+function dateLabelFromKey(key){
+  const [y,m,d] = key.split('-');
+  return `${d}/${m}/${y}`;
+}
+function buildDateFilterOptions(){
+  const sel = document.getElementById('date-filter');
+  if(!sel) return;
+  const counts = new Map();
+  transactions.forEach(t=>{
+    const k = dateKeyFromTs(t.ts);
+    if(!k) return;
+    counts.set(k, (counts.get(k)||0)+1);
+  });
+  const keys = [...counts.keys()].sort((a,b)=>b.localeCompare(a)); // newest first
+  const prevValue = sel.value || dateFilter || 'all';
+  sel.innerHTML = `<option value="all">All Dates (${transactions.length})</option>` +
+    keys.map(k=>`<option value="${k}">${dateLabelFromKey(k)} (${counts.get(k)})</option>`).join('');
+  if(prevValue!=='all' && counts.has(prevValue)){
+    sel.value = prevValue;
+    dateFilter = prevValue;
+  } else {
+    sel.value = 'all';
+    dateFilter = 'all';
+  }
+}
+function setDateFilter(v){
+  dateFilter = v;
+  renderTable();
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  TABLE RENDER
+ * ═══════════════════════════════════════════════════════ */
+function docsWithFile(t){ return t.docs.filter(d=>d.docLink); }
+function hasAnyDoc(t){ return t.docs.some(d=>d.docLink); }
+
+/* Documents pivot badge: renders one small icon chip PER document this
+   entity has on file, plus a running count. The chips + number are
+   revealed one tick at a time (animateDocBadge) right after the row
+   is inserted into the DOM, so the count visibly ticks up 0→N and each
+   tick reveals which document it was for. */
+function docsBadge(t){
+  const docs = docsWithFile(t);
+  const n = docs.length;
+  if(!n) return `<span class="doc-tick-badge none" data-key="${t.key}">0 docs</span>`;
+  const typeList = docs.map(d=>docTypeLabel(t.portal,d.docType)).join(', ');
+  const chips = docs.map((d,i)=>{
+    const info = docTypeInfo(t.portal,d.docType);
+    return `<i class="ti ${info?info.icon:'ti-file'} doc-tick-icon" data-idx="${i}" style="opacity:0;transform:scale(.4);" title="${docTypeLabel(t.portal,d.docType)}"></i>`;
+  }).join('');
+  return `<span class="doc-tick-badge" data-key="${t.key}" data-total="${n}" title="${typeList}">`+
+         `${chips}<span class="doc-tick-num" data-target="${n}">0</span></span>`;
+}
+
+/* Animate every doc-tick-badge currently in the table: count 0→N and
+   fade/pop each document's icon in, one tick at a time. */
+function animateAllTicks(){
+  document.querySelectorAll('.doc-tick-badge[data-total]').forEach(badge=>{
+    const total   = +badge.dataset.total || 0;
+    const numEl   = badge.querySelector('.doc-tick-num');
+    const icons   = [...badge.querySelectorAll('.doc-tick-icon')];
+    if(!total || !numEl) return;
+    let tick = 0;
+    const step = ()=>{
+      tick++;
+      numEl.textContent = String(tick);
+      const ic = icons[tick-1];
+      if(ic){ ic.style.transition='opacity .18s ease,transform .18s cubic-bezier(.34,1.56,.64,1)'; ic.style.opacity=1; ic.style.transform='scale(1)'; }
+      if(tick < total) setTimeout(step, 140);
+    };
+    setTimeout(step, 60);
+  });
+}
+
+function renderTable(){
+  const tbody = document.getElementById('table-body');
+  const footer = document.getElementById('table-footer');
+  const q = (document.getElementById('search-input').value||'').toLowerCase().trim();
+
+  let rows = transactions.filter(t=>{
+    if(portalFilter!=='all' && t.portal!==portalFilter) return false;
+    if(dateFilter!=='all' && dateKeyFromTs(t.ts)!==dateFilter) return false;
+    if(q){
+      const hitEntity = String(t.entityId).toLowerCase().includes(q);
+      const hitTxn = t.docs.some(d=>String(d.txnId).toLowerCase().includes(q));
+      if(!hitEntity && !hitTxn) return false;
+    }
+    return true;
+  });
+
+  if(!rows.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6"><i class="ti ti-search-off"></i>No transactions match the current filters</td></tr>`;
+    footer.textContent='';
+    updateSelectionUI();
+    return;
+  }
+
+  tbody.innerHTML = rows.map(t=>{
+    const name = resolveEntityName(t.entityId);
+    const portalBadge = `<span class="portal-badge ${t.portal}"><i class="ti ${t.portal==='onboarding'?'ti-user-plus':'ti-receipt'}" style="font-size:9px;"></i> ${t.portal==='onboarding'?'Onboarding':'Transaction'}</span>`;
+    const checked = selectedKey===t.key ? 'checked' : '';
+    const selCls  = selectedKey===t.key ? 'selected' : '';
+    const viewBtn = hasAnyDoc(t)
+      ? `<button class="btn btn-ghost btn-sm" style="padding:4px 8px;" onclick="event.stopPropagation();openViewPanel('${t.key}')" title="View documents"><i class="ti ti-eye" style="font-size:13px;"></i></button>`
+      : '';
+    return `<tr class="${selCls}" data-key="${t.key}" onclick="rowClicked(event,'${t.key}')">
+      <td class="chk-col"><input type="checkbox" ${checked} onclick="event.stopPropagation();toggleSelect('${t.key}')"/></td>
+      <td><span class="txn-mono">${fmtEpochSec(toEpochSec(t.ts))}</span></td>
+      <td>${portalBadge}</td>
+      <td><span style="font-family:var(--mono);font-size:11px;">${t.entityId}</span>${name?` <span style="color:var(--text3);">· ${name}</span>`:''}</td>
+      <td>${docsBadge(t)}</td>
+      <td>${viewBtn}</td>
+    </tr>`;
+  }).join('');
+
+  footer.innerHTML = `<i class="ti ti-table" style="font-size:13px;"></i> Showing <strong>${rows.length}</strong> of <strong>${transactions.length}</strong> entities`;
+  updateSelectionUI();
+  animateAllTicks();
+}
+
+function rowClicked(e,key){
+  toggleSelect(key);
+}
+
+function toggleSelect(key){
+  selectedKey = (selectedKey===key) ? null : key;
+  renderTable();
+}
+
+function updateSelectionUI(){
+  const btn = document.getElementById('btn-upload-selected');
+  btn.style.display = selectedKey ? 'inline-flex' : 'none';
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  SLIDE PANEL — shared shell for View + Upload
+ * ═══════════════════════════════════════════════════════ */
+function openPanel(iconClass,title,wide){
+  document.getElementById('dp-icon').className = 'ti ' + iconClass;
+  document.getElementById('dp-title').textContent = title;
+  setPanelWide(!!wide);
+  clearHeadMeta();
+  document.getElementById('dp-overlay').classList.add('open');
+  document.getElementById('dp-panel').classList.add('open');
+}
+function setPanelWide(on){
+  document.getElementById('dp-panel').classList.toggle('dp-panel-wide', !!on);
+}
+function setHeadMeta(rowsHtml){
+  document.getElementById('dp-head-meta').innerHTML = `
+    <details class="dp-meta-drop">
+      <summary class="dp-meta-summary"><i class="ti ti-info-circle"></i> Details<i class="ti ti-chevron-down"></i></summary>
+      <div class="preview-meta">${rowsHtml}</div>
+    </details>`;
+}
+function clearHeadMeta(){
+  document.getElementById('dp-head-meta').innerHTML='';
+}
+function closePanel(){
+  document.getElementById('dp-overlay').classList.remove('open');
+  document.getElementById('dp-panel').classList.remove('open');
+  setPanelWide(false);
+  clearHeadMeta();
+}
+
+/* ── VIEW: gallery of docs under a Portal+Entity pivot row.
+   Opens at the SAME wide size the preview uses, with document-type
+   icons in a single row up top — clicking an icon swaps the preview
+   below, no separate list screen / pop-out window. ── */
+function openViewPanel(key){
+  const t = transactions.find(x=>x.key===key);
+  if(!t){ toast('Entity not found','error'); return; }
+  if(!hasAnyDoc(t)){ toast('No documents to view','error'); return; }
+  openPanel('ti-eye','View Documents', true);
+  renderDocGallery(key, 0);
+}
+
+/* Expiry pill: neutral if none set, teal if still valid, red if past due */
+function expiryPill(expiryTs){
+  if(!expiryTs) return '';
+  const expired = expiryTs*1000 < Date.now();
+  const cls = expired ? 'color:var(--red);' : 'color:var(--teal);';
+  return `<span style="font-size:9.5px;font-family:var(--mono);${cls}"><i class="ti ti-calendar-${expired?'x':'check'}" style="font-size:10px;"></i> Exp ${fmtEpochSec(expiryTs,false)}</span>`;
+}
+
+function selectGalleryDoc(key,idx){
+  renderDocGallery(key,idx);
+}
+
+function renderDocGallery(key,activeIdx){
+  const t = transactions.find(x=>x.key===key);
+  const body = document.getElementById('dp-body');
+  if(!t) return;
+  const docs = docsWithFile(t);
+  if(!docs.length){
+    clearHeadMeta();
+    body.innerHTML = `<div style="text-align:center;padding:28px 0;color:var(--text3);font-size:12px;"><i class="ti ti-file-off" style="font-size:28px;display:block;margin-bottom:8px;opacity:.3;"></i>No documents yet for this entity</div>`;
+    return;
+  }
+  const idx = Math.min(Math.max(activeIdx,0), docs.length-1);
+  const d = docs[idx];
+  const info = docTypeInfo(t.portal,d.docType);
+
+  const tabs = docs.map((dd,i)=>{
+    const ii = docTypeInfo(t.portal,dd.docType);
+    return `<button type="button" class="doc-gallery-tab ${i===idx?'active':''}" onclick="selectGalleryDoc('${key}',${i})" title="${docTypeLabel(t.portal,dd.docType)}">
+      <i class="ti ${ii?ii.icon:'ti-file'}"></i><span class="lbl">${docTypeLabel(t.portal,dd.docType)}</span>
+      ${dd.expiryTs && dd.expiryTs*1000<Date.now() ? '<i class="ti ti-alert-triangle warn-dot"></i>' : ''}
+    </button>`;
+  }).join('');
+
+  let mediaHtml;
+  if(d.docLink && d.docLink.startsWith('http')){
+    let previewUrl = d.docLink;
+    const m = d.docLink.match(/\/file\/d\/([^/?]+)/);
+    if(m) previewUrl = `https://drive.google.com/file/d/${m[1]}/preview`;
+    mediaHtml = `<iframe class="pf" src="${previewUrl}" title="Document" allow="autoplay"></iframe>`;
+  } else if(d.docLink && d.docLink.startsWith('data:application/pdf')){
+    // Uploaded straight from the local cache — no Drive link involved.
+    mediaHtml = `<iframe class="pf" src="${d.docLink}" title="Document"></iframe>`;
+  } else if(d.docLink && d.docLink.startsWith('data:image')){
+    mediaHtml = `<img class="pi" src="${d.docLink}" alt="Document preview"/>`;
+  } else {
+    mediaHtml = `<div style="padding:36px 16px;text-align:center;color:var(--text3);background:var(--bg3);border-radius:var(--radius-lg);"><i class="ti ti-file-unknown" style="font-size:34px;display:block;margin-bottom:10px;opacity:.35;"></i><div style="font-size:12px;">No preview available</div></div>`;
+  }
+
+  body.innerHTML = `
+    <div class="doc-gallery-tabs">${tabs}</div>
+    <div class="ppb">${mediaHtml}</div>`;
+
+  setHeadMeta(`
+      <div class="pmi"><span class="k"><i class="ti ${info?info.icon:'ti-file'}"></i> Doc Type</span><span class="v">${docTypeLabel(t.portal,d.docType)}</span></div>
+      <div class="pmi"><span class="k">Upload Date</span><span class="v" style="font-size:10px;">${d.txnId}</span></div>
+      <div class="pmi"><span class="k">Date Creation</span><span class="v">${fmtEpochSec(+d.txnId)}</span></div>
+      ${d.expiryTs?`<div class="pmi"><span class="k">Exp Date</span><span class="v">${fmtEpochSec(d.expiryTs,false)}</span></div>`:''}`);
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  UPLOAD FLOW — Step 1 (form) → Step 2 (confirm) → submit
+ *  Always attached to an already-selected transaction row.
+ * ═══════════════════════════════════════════════════════ */
+let _uploadState = null; // { portal, entityId, docType, file }
+
+function openUploadFlow(key){
+  const t = transactions.find(x=>x.key===key);
+  if(!t){ toast('Select a row first','error'); return; }
+  _uploadState = { portal:t.portal, entityId:t.entityId, docType:null, file:null };
+  openPanel('ti-upload','Upload Document');
+  renderUploadStep1();
+}
+
+function renderUploadStep1(){
+  const s = _uploadState;
+  const body = document.getElementById('dp-body');
+
+  const types = docTypesFor(s.portal);
+  const docTypePicker = `
+    <div class="field" style="margin-bottom:14px;">
+      <label>Document Type <span class="req">*</span></label>
+      <div class="doc-type-choice">
+        ${types.map(dt=>`<button type="button" class="dtc-btn ${s.docType===dt.key?'selected':''}" onclick="setUploadDocType('${dt.key}')"><i class="ti ${dt.icon}"></i>${dt.label}</button>`).join('')}
+      </div>
+    </div>`;
+
+  body.innerHTML = `
+    <div class="confirm-strip">
+      <div>
+        <div class="cn">${s.portal==='onboarding'?'Onboarding':'Transaction'} · ${s.entityId}</div>
+        <div class="cs">${resolveEntityName(s.entityId)||'&nbsp;'}</div>
+      </div>
+    </div>
+    ${docTypePicker}
+    <div class="field" style="margin-bottom:14px;">
+      <label>File — Image or PDF <span class="req">*</span></label>
+      <div class="file-upload-zone" id="upload-file-zone">
+        <input type="file" id="upload-file-input" accept="image/*,.pdf" onchange="handleUploadFile(this)"/>
+        <i class="ti ti-cloud-upload"></i>
+        <p id="upload-file-label">Click or drag &amp; drop<br><span style="font-size:9.5px;opacity:.6;">JPG · PNG · WEBP · PDF · max 8 MB</span></p>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closePanel()"><i class="ti ti-x"></i> Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="goToConfirmStep()"><i class="ti ti-arrow-right"></i> Review Upload</button>
+    </div>`;
+
+  initUploadDropZone();
+}
+
+function setUploadDocType(key){
+  _uploadState.docType = key;
+  renderUploadStep1();
+  // restore chosen file label if a file was already picked
+  if(_uploadState.file){
+    const z=document.getElementById('upload-file-zone'), l=document.getElementById('upload-file-label');
+    if(z&&l){ z.classList.add('has-file'); l.innerHTML=`<strong style="font-size:12px;">${_uploadState.file.name}</strong>`; }
+  }
+}
+function initUploadDropZone(){
+  const z=document.getElementById('upload-file-zone'); if(!z) return;
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('dragover');});
+  z.addEventListener('dragleave',()=>z.classList.remove('dragover'));
+  z.addEventListener('drop',e=>{
+    e.preventDefault();z.classList.remove('dragover');
+    const f=e.dataTransfer.files[0];
+    if(f){ document.getElementById('upload-file-input').files=e.dataTransfer.files; handleUploadFile({files:[f]}); }
+  });
+}
+function handleUploadFile(input){
+  const f=input.files?.[0]; if(!f) return;
+  _uploadState.file = f;
+  const z=document.getElementById('upload-file-zone'), l=document.getElementById('upload-file-label');
+  z.classList.add('has-file');
+  l.innerHTML=`<strong style="font-size:12px;">${f.name}</strong><br><span style="font-size:10px;">${(f.size/1024).toFixed(1)} KB · ${f.type||'unknown type'}</span>`;
+}
+
+function goToConfirmStep(){
+  const s=_uploadState;
+  if(!s.docType){ toast('Select a document type','error'); return; }
+  if(!s.file){ toast('Select a file first','error'); return; }
+  const MAX=8*1024*1024;
+  if(s.file.size>MAX){ toast(`File too large (${(s.file.size/1024/1024).toFixed(1)} MB) — max 8 MB`,'error'); return; }
+  // Freeze the Transaction ID (unix seconds) at review time so the value
+  // shown to the user is exactly what gets saved.
+  s.txnId = genTxnId();
+  // Exp Date is captured automatically (today's date) — no manual input, not shown in the UI.
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  s.expiryTs = toEpochSec(today.getTime());
+  renderConfirmStep();
+}
+
+function renderConfirmStep(){
+  const s=_uploadState;
+  const dtInfo = docTypeInfo(s.portal,s.docType);
+  const name = resolveEntityName(s.entityId);
+  const body = document.getElementById('dp-body');
+  body.innerHTML = `
+    <div style="text-align:center;padding:6px 0 14px;">
+      <i class="ti ${dtInfo.icon}" style="font-size:36px;color:var(--accent);"></i>
+      <div style="font-size:13px;font-weight:700;margin-top:8px;">Confirm this upload?</div>
+    </div>
+    <div class="preview-meta">
+      <div class="pmi"><span class="k">Portal</span><span class="v">${s.portal==='onboarding'?'Onboarding':'Transaction'}</span></div>
+      <div class="pmi"><span class="k">Entity</span><span class="v">${s.entityId}${name?' · '+name:''}</span></div>
+      <div class="pmi"><span class="k">Doc Type</span><span class="v">${dtInfo.label}</span></div>
+      <div class="pmi"><span class="k">File</span><span class="v" style="font-size:10.5px;">${s.file.name}</span></div>
+      <div class="pmi"><span class="k">Txn ID (Unix)</span><span class="v" style="font-size:10px;">${s.txnId}</span></div>
+      <div class="pmi"><span class="k">Upload Date</span><span class="v">${fmtEpochSec(+s.txnId)}</span></div>
+    </div>
+    <div id="upload-gs-status"></div>
+    <div class="form-actions">
+      <button class="btn btn-ghost btn-sm" onclick="renderUploadStep1()"><i class="ti ti-arrow-left"></i> Back</button>
+      <button class="btn btn-primary btn-sm" id="btn-confirm-upload" onclick="submitUpload()"><i class="ti ti-check"></i> Confirm Upload</button>
+    </div>`;
+}
+
+/* Demo control: clears everything written to the local cache by
+   submitUpload(), leaving only HARDCODED_DOC_LOG. Shows the full
+   round trip — write on click, read on load, clear on click. */
+async function handleClearCache(){
+  clearLocalCache();
+  await loadDocLog();
+  buildTransactions();
+  _updateCacheStatus();
+  renderTable();
+  toast('Cached uploads cleared');
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  SUBMIT — practical "save to cache on button click" example.
+ *  Clicking "Confirm Upload" does three real, observable things,
+ *  synchronously in this order:
+ *    1. Reads the picked file into a base64 data URL.
+ *    2. Builds one docLog row and appends it to LOCAL_CACHE_KEY
+ *       in localStorage via addRowToLocalCache() — a genuine
+ *       browser cache write, not a simulated network call.
+ *    3. Reloads logRows from HARDCODED_DOC_LOG + the cache, so the
+ *       table and the document viewer immediately reflect it.
+ *  There is no server round-trip: this is the whole write path.
+ * ═══════════════════════════════════════════════════════ */
+async function submitUpload(){
+  const s=_uploadState;
+  const gs=document.getElementById('upload-gs-status');
+  const confirmBtn=document.getElementById('btn-confirm-upload');
+  confirmBtn.disabled=true;
+  gs.style.display='flex';gs.className='gs-status loading';
+  gs.innerHTML=`<i class="ti ti-loader spinner"></i> Reading file…`;
+
+  let base64, txnId;
+  try{
+    base64 = await fileToBase64(s.file);
+    txnId = s.txnId || genTxnId();     // unix seconds, e.g. 1788907920
+  }catch(err){
+    gs.className='gs-status error';
+    gs.innerHTML=`<i class="ti ti-alert-circle"></i> File read failed: ${err.message}`;
+    confirmBtn.disabled=false; return;
+  }
+
+  gs.innerHTML=`<i class="ti ti-loader spinner"></i> Saving to cache…`;
+
+  // Row shape matches HARDCODED_DOC_LOG exactly:
+  // [ Transaction ID, Portal, ID, Doc Type, Doc Link, Exp Date ]
+  const row = [
+    String(txnId),
+    s.portal==='onboarding' ? 'Onboarding' : 'Transaction',
+    String(s.entityId),
+    s.docType,
+    base64,                       // the file itself, stored + previewed straight from cache
+    String(s.expiryTs||''),
+  ];
+
+  const saved = addRowToLocalCache(row);
+  if(!saved){
+    gs.className='gs-status error';
+    gs.innerHTML=`<i class="ti ti-alert-circle"></i> Could not write to cache (storage blocked or full)`;
+    confirmBtn.disabled=false; return;
+  }
+
+  gs.className='gs-status success';
+  gs.innerHTML=`<i class="ti ti-circle-check"></i> Saved to cache · TXN: ${txnId}`;
+  toast('Document saved to cache');
+  setTimeout(async()=>{
+    await loadDocLog();
+    buildTransactions();
+    selectedKey = groupKey(s.portal,s.entityId);
+    _updateCacheStatus();
+    renderTable();
+    closePanel();
+  },900);
+}
+
+/* ═══════════════════════════════════════════════════════
+ *  INIT
+ * ═══════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', loadInitialData);
+</script>
+</body>
+</html>

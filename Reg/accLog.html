@@ -1,0 +1,1957 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://effimalik.github.io/Testing/shared/auth.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/dataLayer.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/devPre.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cioView.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cacheWatcher.js?v=1"></script>
+
+
+<style>
+/* ═══ THEME — identical tokens across every module ═══ */
+:root,[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --surface:#21262d;--surface2:#2d333b;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent-dim:rgba(88,166,255,.12);--accent-glow:rgba(88,166,255,.28);
+  --teal:#39d353;--teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341;--amber-dim:rgba(227,179,65,.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7;--purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e;--orange-dim:rgba(240,136,62,.12);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.5);--shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#fff;--bg3:#e8ecf0;
+  --surface:#fff;--surface2:#e2e7ed;
+  --border:#c8d0d9;--border2:#9aa5b1;
+  --text:#0d1117;--text2:#3d454f;--text3:#5a6370;
+  --accent:#0550ae;--accent-dim:rgba(5,80,174,.12);--accent-glow:rgba(5,80,174,.22);
+  --teal:#116329;--teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00;--amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b;--red-dim:rgba(168,17,27,.11);
+  --purple:#6639c8;--purple-dim:rgba(102,57,200,.13);
+  --orange:#953800;--orange-dim:rgba(149,56,0,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.10);--shadow-md:0 4px 16px rgba(0,0,0,.12);--shadow-lg:0 8px 32px rgba(0,0,0,.15);
+}
+[data-theme="purple"]{
+  --bg:#0f0b1e;--bg2:#17112e;--bg3:#1e1840;
+  --surface:#221a3a;--surface2:#2c2250;
+  --border:#3a2e5e;--border2:#5a4890;
+  --text:#e8e0ff;--text2:#a899d4;--text3:#7a6ca8;
+  --accent:#c084fc;--accent-dim:rgba(192,132,252,.14);--accent-glow:rgba(192,132,252,.3);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#c084fc;--purple-dim:rgba(192,132,252,.14);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5);--shadow-md:0 4px 16px rgba(0,0,0,.6);--shadow-lg:0 8px 32px rgba(0,0,0,.7);
+}
+[data-theme="ocean"]{
+  --bg:#071520;--bg2:#0d2035;--bg3:#112840;
+  --surface:#143050;--surface2:#1a3d60;
+  --border:#1e4a72;--border2:#2e6a9e;
+  --text:#d6eeff;--text2:#7db8e8;--text3:#4a87b8;
+  --accent:#38bdf8;--accent-dim:rgba(56,189,248,.14);--accent-glow:rgba(56,189,248,.3);
+  --teal:#34d399;--teal-dim:rgba(52,211,153,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5);--shadow-md:0 4px 16px rgba(0,0,0,.55);--shadow-lg:0 8px 32px rgba(0,0,0,.65);
+}
+[data-theme="slate"]{
+  --bg:#0e1117;--bg2:#1a1f28;--bg3:#222836;
+  --surface:#28303e;--surface2:#313c4e;
+  --border:#3a4556;--border2:#556070;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#60a5fa;--accent-dim:rgba(96,165,250,.13);--accent-glow:rgba(96,165,250,.28);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.45);--shadow-md:0 4px 16px rgba(0,0,0,.5);--shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;margin:0;padding:0;background:var(--bg);-webkit-text-size-adjust:100%;}
+#accP *,#accP *::before,#accP *::after{box-sizing:border-box;margin:0;padding:0;}
+#accP{font-family:var(--font);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;background:var(--bg);height:100%;display:flex;flex-direction:column;}
+#accP ::-webkit-scrollbar{width:5px;height:5px;}
+#accP ::-webkit-scrollbar-track{background:transparent;}
+#accP ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+/* ═══ LAYOUT ═══ */
+#accP .portal-wrap{display:flex;flex-direction:column;flex:1;min-height:0;width:100%;max-width:1600px;margin:0 auto;padding:10px;gap:8px;}
+
+/* ═══ VIEW BAR — brand · pill tabs · info/sync popover · add button ═══ */
+#accP .view-bar{position:relative;display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex-shrink:0;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);}
+#accP .vb-brand{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex-shrink:0;border-radius:var(--radius-lg);background:var(--accent-dim);color:var(--accent);border:1px solid var(--border);font-size:16px;}
+#accP .vb-flex-spacer{flex:1 1 auto;}
+#accP .vb-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;}
+#accP .ib{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex-shrink:0;border-radius:var(--radius-lg);background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:15px;line-height:1;cursor:pointer;transition:color .15s,border-color .15s,background .15s;}
+#accP .ib:hover{border-color:var(--accent);color:var(--accent);}
+#accP .ib.sm{width:26px;height:26px;font-size:13px;}
+#accP .ib:disabled{opacity:.4;cursor:not-allowed;}
+#accP .ib-primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 10px var(--accent-glow);}
+#accP .ib-primary:hover{filter:brightness(1.1);border-color:var(--accent);color:#fff;}
+
+/* ═══ MODULE CAPSULE — active module = icon + name, filling the available space; the others are icon-only ═══
+   the capsule's overall width is fixed by JS (sizeCapsule) to whichever single tab needs the most room
+   when active, plus the icon-only width of the rest — so it never changes size when switching tabs. */
+#accP .capsule{display:flex;align-items:center;gap:2px;padding:3px;background:var(--bg3);border:1px solid var(--border);border-radius:999px;width:fit-content;max-width:100%;flex-shrink:0;}
+#accP .cap-btn{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;height:30px;min-width:32px;padding:0 9px;border:none;border-radius:999px;background:transparent;color:var(--text2);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .18s,color .18s,flex-grow .18s,padding .18s;}
+#accP .cap-btn i{font-size:16px;line-height:1;flex-shrink:0;}
+#accP .cap-txt{display:none;align-items:center;gap:6px;margin-left:7px;}
+#accP .cap-btn.active{flex:1 1 auto;justify-content:center;padding:0 14px 0 11px;background:var(--accent);color:#fff;box-shadow:0 0 10px var(--accent-glow);}
+#accP .cap-btn.active .cap-txt{display:inline-flex;}
+#accP .cap-btn .count{font-family:var(--mono);font-weight:500;font-size:10.5px;border-radius:20px;padding:1px 7px;background:rgba(255,255,255,.25);}
+#accP .cap-btn:not(.active) .count{background:var(--surface2);color:var(--text2);}
+#accP .cap-btn:not(.active):hover{background:var(--surface2);color:var(--text);}
+#accP .cap-btn:focus-visible,#accP .ib:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+#accP .vb-actions{position:relative;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+/* info / sync popover (replaces the old sync-strip bar) */
+#accP .sync-wrap{position:relative;}
+#accP .sync-popover{display:none;position:absolute;top:calc(100% + 8px);right:0;width:min(340px,calc(100vw - 28px));flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:14px;z-index:400;}
+#accP .sync-popover.open{display:flex;}
+#accP .info-row{display:flex;flex-direction:column;gap:3px;}
+#accP .info-row .k{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;}
+#accP .info-row .v{font-size:12px;color:var(--text2);word-break:break-word;}
+#accP .info-row .v.ok{color:var(--teal);}
+#accP .info-row .v.warn{color:var(--amber);}
+/* Information icon: no border, ever (still gets the accent color/background on hover/open) */
+#accP #cache-status{border:none;}
+#accP .ib[aria-expanded="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+#accP .spin{animation:spin 1s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+
+/* ═══ FIELD / FORM ═══ */
+#accP .field{display:flex;flex-direction:column;gap:5px;}
+#accP .field label{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;}
+#accP .field label span.req{color:var(--red);}
+#accP .date-input,#accP select.date-input,#accP input.date-input{width:100%;padding:8px 11px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:12.5px;}
+#accP .date-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+
+/* search-to-select */
+#accP .vb-search{display:flex;align-items:center;}
+#accP .vb-search>.ib{position:relative;}
+#accP .vb-search.has-val>.ib,#accP .vb-search:focus-within>.ib{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+#accP .sdw{position:relative;}
+#accP .sdw.vb-search input{width:0;margin-left:0;padding:8px 0;border-width:0;opacity:0;transition:width .2s ease,opacity .15s,margin-left .2s;}
+#accP .sdw.vb-search:focus-within input{width:clamp(190px,30vw,300px);margin-left:6px;padding:7px 30px 7px 11px;border-width:1.5px;opacity:1;}
+#accP .vb-search:not(:focus-within) .clr-btn{display:none!important;}
+#accP .sdw input{width:100%;padding:8px 34px 8px 11px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:12.5px;transition:border .15s,box-shadow .15s;}
+#accP .sdw input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+#accP .sdw input::placeholder{color:var(--text3);}
+#accP .sdw .clr-btn{position:absolute;right:7px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;padding:2px;display:none;font-size:14px;line-height:1;}
+#accP .sdw .clr-btn:hover{color:var(--text);}
+#accP .sdw input:not(:placeholder-shown) ~ .clr-btn{display:flex;}
+#accP .dropdown-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow-lg);z-index:300;max-height:260px;overflow-y:auto;display:none;}
+#accP .dropdown-list.open{display:block;}
+#accP .di{padding:8px 12px;font-size:12.5px;cursor:pointer;transition:background .1s;}
+#accP .di:hover{background:var(--accent-dim);}
+#accP .di .dn{color:var(--text);font-weight:600;}
+#accP .di .dn em{color:var(--accent);font-style:normal;}
+#accP .di .ds{font-family:var(--mono);font-size:10.5px;color:var(--text3);}
+
+#accP .vb-group{display:flex;align-items:center;flex-wrap:nowrap;gap:8px;min-width:0;}
+#accP .confirm-strip{display:none;flex-wrap:nowrap;align-items:center;gap:7px;background:var(--accent-dim);border:1px solid rgba(88,166,255,.25);border-radius:var(--radius-lg);padding:3px 4px 3px 8px;flex-shrink:1;min-width:0;}
+#accP .ca{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;flex-shrink:0;background:var(--accent);color:#fff;}
+#accP .cn{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;}
+#accP .cs{font-size:10px;color:var(--text3);font-family:var(--mono);white-space:nowrap;}
+
+/* ═══ PANELS / CARDS ═══ */
+#accP .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px 16px;box-shadow:var(--shadow);}
+#accP .panel h2{font-size:13px;font-weight:700;margin:0 0 10px;display:flex;align-items:center;gap:7px;}
+#accP .panel h2 i{color:var(--accent);font-size:16px;}
+#accP .panel-hint{font-size:11.5px;color:var(--text2);margin:-4px 0 10px;line-height:1.5;}
+#accP .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;}
+@media(max-width:820px){#accP .grid2{grid-template-columns:1fr;}}
+
+/* ═══ TAB PANELS ═══ */
+#accP .tab-panel{display:none;flex-direction:column;gap:10px;flex:1;min-height:0;}
+#accP .tab-panel.active{display:flex;}
+#accP .tab-scroll{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+
+/* ═══ MANAGE TAB ═══ */
+#accP .manage-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;color:var(--text3);gap:10px;text-align:center;padding:40px;}
+#accP .manage-placeholder i{font-size:36px;opacity:.3;}
+#accP .manage-body{display:none;flex-direction:column;gap:10px;flex:1;min-height:0;}
+/* ═══ MANAGE MAIN-SPLIT: sidebar / center / preview (matches shared module structure) ═══ */
+#accP .main-split{flex:1;display:flex;gap:10px;min-height:0;}
+
+#accP .doc-center{flex:1;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;}
+#accP .doc-center-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;flex-shrink:0;}
+#accP .doc-center-header h3{flex:1;min-width:0;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#accP .doc-center-header h3 i{color:var(--accent);font-size:17px;flex-shrink:0;}
+#accP .dch-count{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--bg3);color:var(--text2);font-size:10.5px;font-weight:800;flex-shrink:0;}
+#accP .doc-center-body{flex:1;overflow-y:auto;padding:14px 16px;}
+
+/* MANAGE — one main toolbar (search + add) above three per-type divs, side by side as columns */
+#accP .manage-toolbar{position:relative;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;padding:8px 12px;background:var(--bg2);border-radius:var(--radius-xl);box-shadow:var(--shadow);}
+#accP .view-bar .manage-toolbar.vb-ctx{padding:0;background:none;box-shadow:none;border-radius:0;flex:1 1 0;min-width:0;gap:8px;}
+#accP .view-bar .vb-ctx #all-export{margin-left:auto;}
+#accP .vb-sel{width:auto;min-width:104px;max-width:150px;padding:6px 9px;height:32px;}
+/* filter = icon + select; on small screens only the icon shows (the select is invisible on top of it, so tapping still opens the picker) */
+#accP .fsel{position:relative;display:inline-flex;align-items:center;flex-shrink:0;}
+#accP .fsel>i{position:absolute;left:10px;font-size:15px;line-height:1;color:var(--text2);pointer-events:none;z-index:1;transition:color .15s;}
+#accP .fsel select.vb-sel{padding-left:31px;}
+#accP .fsel.active>i{color:var(--accent);}
+#accP .fsel.active select.vb-sel{border-color:var(--accent);}
+@media(max-width:700px){
+  #accP .fsel{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);}
+  #accP .fsel>i{left:0;right:0;margin:auto;text-align:center;}
+  #accP .fsel select.vb-sel{position:absolute;inset:0;width:100%;min-width:0;max-width:none;height:100%;padding:0;opacity:0;cursor:pointer;}
+  #accP .fsel.active{border-color:var(--accent);background:var(--accent-dim);}
+}
+@media(max-width:700px) and (pointer:coarse){#accP .fsel{width:40px;height:40px;}}
+#accP .manage-toolbar-count{font-size:11.5px;color:var(--text3);font-weight:600;white-space:nowrap;}
+
+#accP .manage-types{flex:1;min-width:0;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+#accP .manage-types .doc-center{min-height:0;}
+#accP .manage-types .doc-center-body{max-height:none;}
+@media(max-width:1000px){
+  #accP .manage-types{grid-template-columns:1fr;grid-auto-rows:minmax(220px,auto);overflow-y:auto;}
+}
+#accP .doc-center-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:160px;color:var(--text3);gap:10px;text-align:center;padding:24px;}
+#accP .doc-center-placeholder i{font-size:30px;opacity:.3;}
+#accP .doc-center-placeholder span{font-size:12px;}
+
+/* account cards inside each type column — same card language as the Salik batch cards */
+#accP .hist-list{display:flex;flex-direction:column;gap:10px;}
+#accP .hist-rec{display:flex;gap:12px;align-items:flex-start;padding:13px 15px;background:var(--bg3);border-radius:var(--radius-lg);transition:background .12s,box-shadow .12s;cursor:pointer;}
+#accP .hist-rec:hover{background:var(--surface2);}
+#accP .hist-rec.active{background:var(--accent-dim);box-shadow:0 0 0 1px var(--accent);}
+#accP .hist-icon{width:38px;height:38px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;}
+#accP .hist-meta{flex:1;min-width:0;}
+#accP .hist-row1{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+#accP .hist-accno{font-family:var(--mono);font-weight:700;font-size:13.5px;color:var(--text);word-break:break-all;}
+#accP .hist-date{font-size:11px;color:var(--text2);margin-top:6px;display:flex;align-items:center;gap:4px;}
+#accP .hist-detail{font-family:var(--mono);font-weight:700;font-size:12.5px;color:var(--purple);margin-top:6px;}
+#accP .hist-side{margin-left:auto;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+#accP .hist-side .upd{font-size:9.5px;color:var(--text3);white-space:nowrap;}
+
+/* ═══ ACCOUNT HISTORY TIMELINE — added → changed → current, nothing dropped ═══ */
+#accP .hist-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px;}
+#accP .hist-card-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+#accP .hist-card-head .hn{font-weight:700;font-size:13px;color:var(--text);}
+#accP .hist-card-head .hid{font-family:var(--mono);font-size:11px;color:var(--text3);}
+#accP .hev-count{margin-left:auto;font-size:10.5px;color:var(--text3);font-weight:600;white-space:nowrap;}
+#accP .hev-track{display:flex;flex-direction:column;gap:0;}
+#accP .hev{position:relative;padding:0 0 14px 18px;border-left:2px solid var(--border);}
+#accP .hev:last-child{border-left-color:transparent;padding-bottom:0;}
+#accP .hev::before{content:'';position:absolute;left:-6px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--surface);}
+#accP .hev.hev-added::before{background:var(--teal);}
+#accP .hev.hev-frozen::before{background:var(--text3);}
+#accP .hev.hev-current::before{background:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+#accP .hev-title{font-size:12.5px;font-weight:700;color:var(--text);}
+#accP .hev-changes{margin-top:5px;display:flex;flex-direction:column;gap:2px;}
+#accP .hev-change-line{font-size:11px;color:var(--text2);font-family:var(--mono);}
+#accP .hev-change-line b{color:var(--text);font-weight:700;}
+#accP .hev-reason{margin-top:4px;font-size:11px;color:var(--amber);}
+#accP .hev-date{margin-top:6px;font-size:10.5px;color:var(--text3);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+/* frozen events read as a muted, secondary line — smaller text, faded, no bold emphasis */
+#accP .hev.hev-frozen{opacity:.62;}
+#accP .hev.hev-frozen .hev-title{font-size:11px;font-weight:600;font-style:italic;color:var(--text2);}
+#accP .hev.hev-frozen .hev-change-line{font-size:10px;}
+#accP .hev.hev-current .hev-title{font-size:13px;}
+
+#accP .doc-preview-panel{width:0;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:var(--shadow);overflow:hidden;transition:width .26s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+#accP .doc-preview-panel.open{width:340px;}
+#accP .pph{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;flex-shrink:0;}
+#accP .pph h3{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#accP .pph h3 i{color:var(--accent);font-size:16px;flex-shrink:0;}
+#accP .pph-close{margin-left:auto;width:26px;height:26px;border-radius:var(--radius);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0;}
+#accP .pph-close:hover{background:var(--red-dim);color:var(--red);border-color:var(--red);}
+#accP .ppb{flex:1;overflow-y:auto;padding:14px;}
+#accP .preview-meta{display:flex;flex-direction:column;gap:8px;margin-top:12px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);}
+#accP .pmi{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+#accP .pmi .k{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+#accP .pmi .v{font-size:11.5px;font-weight:600;color:var(--text);font-family:var(--mono);text-align:right;}
+#accP .ppf{padding:10px 14px;border-top:1px solid var(--border);flex-shrink:0;display:flex;gap:7px;flex-wrap:wrap;}
+
+@media(max-width:900px){
+  #accP .doc-preview-panel.open{width:100%;position:fixed;inset:0;z-index:300;border-radius:0;}
+}
+@media(max-width:700px){
+  #accP .main-split{flex-direction:column;}
+}
+
+#accP .acc-empty{font-size:11.5px;color:var(--text3);text-align:center;padding:14px 6px;}
+#accP .acc-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 11px;display:flex;flex-direction:column;gap:5px;}
+#accP .acc-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+#accP .acc-cell{font-family:var(--mono);font-weight:700;font-size:12.5px;color:var(--text);word-break:break-all;}
+#accP .acc-card-badges{display:flex;gap:5px;flex-wrap:wrap;}
+#accP .acc-card-detail{font-size:11.5px;color:var(--text2);}
+#accP .acc-card-validity{font-size:10.5px;color:var(--text3);font-family:var(--mono);}
+#accP .acc-card-actions{display:flex;gap:6px;align-items:center;margin-top:2px;}
+#accP .hint-note{font-size:10.5px;color:var(--text3);font-style:italic;}
+#accP .acc-add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:var(--radius-lg);border:1.5px dashed var(--border2);background:transparent;color:var(--text2);font-family:var(--font);font-size:11.5px;font-weight:700;cursor:pointer;transition:all .18s;}
+#accP .acc-add-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+
+#accP .acc-form{background:var(--surface2);border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:11px;display:flex;flex-direction:column;gap:8px;}
+#accP .acc-form-row{display:flex;gap:8px;}
+#accP .acc-form-row>.field{flex:1;min-width:0;}
+#accP .acc-form-actions{display:flex;gap:7px;align-items:center;margin-top:2px;}
+
+/* three-way category picker row inside the add-account form */
+#accP .cat-btn-row{gap:7px;}
+#accP .cat-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:9px 6px;border-radius:var(--radius-lg);border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);font-family:var(--font);font-size:10.5px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:all .15s;}
+#accP .cat-btn i{font-size:17px;color:var(--text3);transition:color .15s;}
+#accP .cat-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+#accP .cat-btn:hover i{color:var(--accent);}
+#accP .cat-btn.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;}
+#accP .cat-btn.active i{color:var(--accent);}
+
+/* ═══ BADGES / BUTTONS ═══ */
+#accP .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);border:1.5px solid;font-family:var(--font);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;line-height:1;}
+#accP .btn i{font-size:15px;flex-shrink:0;}
+#accP .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 10px var(--accent-glow);}
+#accP .btn-primary:hover{filter:brightness(1.1);}
+#accP .btn-ghost{background:transparent;color:var(--text2);border-color:var(--border2);}
+#accP .btn-ghost:hover{background:var(--surface2);color:var(--text);}
+#accP .btn-sm{padding:5px 10px;font-size:11.5px;}
+#accP .btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;}
+#accP .btn-block{width:100%;justify-content:center;}
+
+#accP .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
+#accP .badge i{margin-right:2px;font-size:9px;}
+#accP .badge.active{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(57,211,83,.3);}
+#accP .badge.inactive{background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
+#accP .badge.frozen{background:var(--bg3);color:var(--text3);border:1px solid var(--border2);opacity:.7;font-style:italic;}
+#accP .badge.frozen i{color:var(--text3);}
+#accP .badge.expired{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.3);}
+#accP .badge.upcoming{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(163,113,247,.3);}
+#accP .badge.primary{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(88,166,255,.3);}
+#accP .badge.secondary{background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
+#accP .badge.ambiguous{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(227,179,65,.3);}
+#accP .badge.auto-badge{background:var(--bg2);color:var(--text3);border:1px solid var(--border);}
+#accP .badge.label-wps{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(227,179,65,.3);}
+#accP .badge.label-salary{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(57,211,83,.3);}
+#accP .badge.label-other{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(163,113,247,.3);}
+
+/* ═══ STATS / FILTERS ═══ */
+#accP .stat-row{display:flex;gap:8px;flex-wrap:wrap;flex:0 0 auto;}
+#accP .stat{flex:1;min-width:92px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius-lg);padding:7px 11px;box-shadow:var(--shadow);}
+#accP .stat.s-active{border-left-color:var(--teal);}
+#accP .stat.s-inactive{border-left-color:var(--text3);}
+#accP .stat.s-frozen{border-left-color:var(--text3);opacity:.8;}
+#accP .stat.s-expired{border-left-color:var(--red);}
+#accP .stat.s-upcoming{border-left-color:var(--purple);}
+#accP .stat.s-primary{border-left-color:var(--accent);}
+#accP .stat.s-amber{border-left-color:var(--amber);}
+#accP .stat .n{font-size:17px;font-weight:700;color:var(--text);font-family:var(--mono);}
+#accP .stat .l{font-size:9.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.03em;}
+
+#accP .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:end;flex:0 0 auto;}
+#accP .filters>div{min-width:140px;flex:1;}
+#accP .filters label{margin:0 0 5px;}
+#accP .toolbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;flex:0 0 auto;}
+
+/* ═══ TABLE ═══ */
+#accP .tablewrap{overflow:auto;border-radius:var(--radius-lg);border:1px solid var(--border);}
+#accP table{width:100%;border-collapse:collapse;font-size:12px;}
+#accP th{padding:9px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:2px solid var(--border);background:var(--bg3);white-space:nowrap;position:sticky;top:0;z-index:2;}
+#accP td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+#accP tr:last-child td{border-bottom:none;}
+#accP tbody tr:hover td{background:var(--surface2);}
+#accP .empty{color:var(--text3);font-size:12.5px;padding:22px 4px;text-align:center;}
+#accP .import-drop{border:1.5px dashed var(--border2);border-radius:var(--radius-lg);padding:12px;text-align:center;font-size:12px;color:var(--text2);background:var(--bg3);}
+#accP .import-drop input[type=file]{margin-bottom:8px;color:var(--text2);font-size:11.5px;}
+#accP .btn-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center;}
+#accP .error{color:var(--red);font-size:12px;margin-top:6px;min-height:1px;}
+#accP .small-btn{font-size:10.5px;padding:4px 8px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;}
+#accP .small-btn:hover{color:var(--red);border-color:var(--red);}
+#accP .link-btn{background:none;border:none;color:var(--accent);font-family:var(--font);font-size:11px;font-weight:700;cursor:pointer;padding:0;}
+#accP .link-btn:hover{text-decoration:underline;}
+
+/* ═══ TOAST ═══ */
+#accP .toast{position:fixed;bottom:22px;right:22px;background:var(--surface2);color:var(--text);border:1px solid var(--border2);padding:10px 16px;border-radius:var(--radius-lg);font-size:12.5px;font-weight:500;z-index:999;opacity:0;transform:translateY(10px);transition:all .25s cubic-bezier(.34,1.56,.64,1);pointer-events:none;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow-lg);max-width:340px;}
+#accP .toast.show{opacity:1;transform:translateY(0);}
+#accP .toast.success{background:var(--teal-dim);color:var(--teal);border-color:rgba(57,211,83,.25);}
+#accP .toast.error{background:var(--red-dim);color:var(--red);border-color:rgba(248,81,73,.25);}
+
+@media(max-width:700px){
+  #accP .portal-wrap{padding:8px;gap:7px;}
+  #accP .filters>div{min-width:120px;}
+}
+
+/* view-bar responsive — same behaviour as the Salik view-bar */
+@media(max-width:1280px){
+  #accP .view-bar{gap:8px;padding:8px max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left));padding-top:max(8px,env(safe-area-inset-top));}
+}
+@media(max-width:520px){
+  #accP .vb-brand{display:none;}
+  #accP .view-bar .manage-toolbar.vb-ctx{order:5;flex:1 1 100%;}
+  #accP .vb-flex-spacer{flex:1;}
+}
+@media(pointer:coarse){
+  #accP .ib,#accP .vb-brand{width:40px;height:40px;}
+  #accP .cap-btn{height:36px;min-width:40px;}
+}
+
+/* ═══ MODAL — the "select category" window opened by the manage-toolbar + button ═══ */
+#accP .modal-back{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.55);}
+#accP .modal-back.show{display:flex;}
+#accP .modal{width:min(340px,100%);display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);overflow:hidden;}
+#accP .modal-head{display:flex;align-items:center;gap:9px;padding:12px 14px;border-bottom:1px solid var(--border);}
+#accP .modal-head h3{flex:1;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:7px;}
+#accP .modal-head h3 i{color:var(--accent);font-size:17px;}
+#accP .modal-body{display:flex;flex-direction:column;gap:8px;padding:14px;}
+#accP .cat-choice{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--radius-lg);border:1.5px solid var(--border2);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;text-align:left;}
+#accP .cat-choice i{font-size:19px;color:var(--accent);flex-shrink:0;}
+#accP .cat-choice:hover{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);}
+
+/* ═══ PRIMARY / SECONDARY — two-way switch; the current rank is lit, the other one is the button to change it ═══ */
+#accP .rank-seg{display:inline-flex;padding:2px;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:999px;flex-shrink:0;}
+#accP .rank-seg button{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 9px;border:none;border-radius:999px;background:transparent;color:var(--text2);font-family:var(--font);font-size:9.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s;}
+#accP .rank-seg button i{font-size:11px;line-height:1;}
+#accP .rank-seg button:hover{background:var(--surface2);color:var(--accent);}
+#accP .rank-seg button.on{background:var(--accent);color:#fff;cursor:default;box-shadow:0 0 8px var(--accent-glow);}
+#accP .rank-seg button.on:hover{background:var(--accent);color:#fff;}
+#accP .rank-seg.busy{opacity:.55;pointer-events:none;}
+#accP .rank-badge{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 9px;border-radius:999px;font-size:9.5px;font-weight:700;letter-spacing:.03em;white-space:nowrap;}
+#accP .rank-badge i{font-size:11px;line-height:1;}
+#accP .rank-seg.lg button{height:28px;padding:0 13px;font-size:10.5px;}
+
+/* ═══ SEGMENTED CONTROL + VIEW-BAR BUTTONS (upload toolbar) ═══ */
+#accP .seg{display:inline-flex;align-items:center;gap:2px;padding:2px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);flex-shrink:0;}
+#accP .seg button{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:26px;min-width:30px;padding:0 10px;border:none;border-radius:calc(var(--radius-lg) - 3px);background:transparent;color:var(--text2);font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s;}
+#accP .seg button i{font-size:15px;line-height:1;}
+#accP .seg button:hover{background:var(--surface2);color:var(--text);}
+#accP .seg button.on{background:var(--accent);color:#fff;box-shadow:0 0 8px var(--accent-glow);}
+#accP .vb-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;min-width:32px;padding:0 12px;flex-shrink:0;border-radius:var(--radius-lg);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s,background .15s;}
+#accP .vb-btn i{font-size:16px;line-height:1;}
+#accP .vb-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+#accP .vb-btn.has-file{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+#accP .vb-btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 10px var(--accent-glow);}
+#accP .vb-btn-primary:hover:not(:disabled){filter:brightness(1.1);color:#fff;}
+#accP .vb-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+#accP .up-fname{font-family:var(--mono);font-size:11px;color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#accP .up-fname:empty{display:none;}
+#accP .view-bar .vb-ctx #up-export{margin-left:auto;}
+#accP .vb-actions{margin-left:auto;}
+
+/* upload data view — fills the whole tab now that the upload panels live in the view-bar */
+#accP .up-panel{flex:1;min-height:0;display:flex;flex-direction:column;}
+#accP .up-panel .tablewrap{flex:1;min-height:0;}
+#accP .up-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+#accP .up-head h2{margin:0;}
+#accP .up-head .stat-row{margin-left:auto;flex:0 0 auto;}
+
+/* ═══ SMALL SCREENS — icons only; only the data keeps its words ═══ */
+@media(max-width:700px){
+  #accP .capsule{width:fit-content!important;}
+  #accP .cap-btn.active{flex:0 0 auto;padding:0 9px;}
+  #accP .cap-btn.active .cap-txt{display:none;}
+  #accP .seg-txt,#accP .vb-txt,#accP .up-fname,#accP .manage-toolbar-count{display:none;}
+  #accP .seg button{padding:0;width:32px;}
+  #accP .vb-btn{padding:0;width:32px;}
+  #accP #manage-confirm-name{display:none;}
+  #accP .confirm-strip .cn{max-width:90px;}
+}
+@media(max-width:700px) and (pointer:coarse){
+  #accP .seg button{height:34px;width:38px;}
+  #accP .vb-btn{width:40px;height:40px;}
+}
+@media(pointer:coarse){#accP .vb-btn{height:40px;min-width:40px;}}
+</style>
+
+<div id="accP">
+  <div class="view-bar">
+    <div class="vb-brand" title="Account Portal"><i class="ti ti-building-bank"></i></div>
+    <div class="capsule" id="capsule" role="tablist" aria-label="Account modules">
+      <button type="button" class="cap-btn active" id="tab-manage-btn" data-tab="manage" role="tab" aria-selected="true" title="Manage accounts" aria-label="Manage" onclick="switchPortalTab('manage')"><i class="ti ti-users"></i><span class="cap-txt">Manage <span class="count" id="tab-manage-count">0</span></span></button>
+      <button type="button" class="cap-btn" id="tab-all-btn" data-tab="all" role="tab" aria-selected="false" title="All Accounts" aria-label="All Accounts" onclick="switchPortalTab('all')"><i class="ti ti-list-details"></i><span class="cap-txt">All Accounts <span class="count" id="tab-all-count">0</span></span></button>
+      <button type="button" class="cap-btn" id="tab-history-btn" data-tab="history" role="tab" aria-selected="false" title="Account History" aria-label="History" onclick="switchPortalTab('history')"><i class="ti ti-history"></i><span class="cap-txt">History <span class="count" id="tab-history-count">0</span></span></button>
+      <button type="button" class="cap-btn" id="tab-upload-btn" data-tab="upload" role="tab" aria-selected="false" title="Upload &amp; export" aria-label="Upload" onclick="switchPortalTab('upload')"><i class="ti ti-file-upload"></i><span class="cap-txt">Upload <span class="count" id="tab-upload-count">0</span></span></button>
+    </div>
+    <!-- Manage controls (moved from the Manage panel) -->
+    <div class="manage-toolbar vb-ctx" id="manage-toolbar" data-for="manage">
+          <div class="vb-group" id="selector-manage">
+            <div class="sdw vb-search" id="manage-sdw" style="flex:0 0 auto;">
+              <button class="ib" type="button" title="Search" onclick="openSearch('manage-sdw')"><i class="ti ti-search"></i></button>
+              <input id="manage-search" type="text" placeholder="Search by EID or name…" autocomplete="off"
+                oninput="filterDrop('manage',this.value)"
+                onfocus="filterDrop('manage',this.value)"
+                onkeydown="if(event.key==='Escape')this.blur()"
+                onblur="setTimeout(()=>{if(document.activeElement===this)return;closeDrop('manage');},160)"/>
+              <button class="clr-btn" type="button" tabindex="-1" onclick="document.getElementById('manage-search').value='';openSearch('manage-sdw')"><i class="ti ti-x"></i></button>
+              <div class="dropdown-list" id="manage-dropdown"></div>
+            </div>
+            <div id="manage-confirm" class="confirm-strip">
+              <div class="ca" id="manage-avatar"></div>
+              <div class="cn"><span class="cs" id="manage-confirm-id" style="margin-right:6px;">—</span><span id="manage-confirm-name">—</span></div>
+              <button class="ib sm" type="button" onclick="clearManage()" title="Change"><i class="ti ti-replace"></i></button>
+            </div>
+          </div>
+          <span class="vb-flex-spacer"></span>
+          <span class="manage-toolbar-count" id="manage-toolbar-count"></span>
+    </div>
+    <!-- All Accounts filters (replaces the stat cards + filter row) -->
+    <div class="manage-toolbar vb-ctx" id="all-toolbar" data-for="all" style="display:none;">
+      <div class="fsel"><i class="ti ti-tag"></i><select class="date-input vb-sel" id="f2-label" title="Label" aria-label="Label"><option value="">All labels</option><option value="WPS">WPS</option><option value="Salary">Salary</option><option value="Other">Other</option></select></div>
+      <div class="fsel"><i class="ti ti-circle-check"></i><select class="date-input vb-sel" id="f2-status" title="Status" aria-label="Status"><option value="">All statuses</option><option value="active">Active</option><option value="frozen">Frozen</option><option value="inactive">Inactive</option><option value="expired">Expired</option><option value="upcoming">Upcoming</option></select></div>
+      <div class="fsel"><i class="ti ti-star"></i><select class="date-input vb-sel" id="f2-primary" title="Rank" aria-label="Rank"><option value="">All ranks</option><option value="primary">Primary only</option><option value="secondary">Secondary only</option></select></div>
+      <div class="sdw vb-search" id="f2-sdw" style="flex:0 0 auto;">
+        <button class="ib" type="button" title="Search" onclick="openSearch('f2-sdw')"><i class="ti ti-search"></i></button>
+        <input id="f2-search" type="text" placeholder="EID or name…" autocomplete="off" onkeydown="if(event.key==='Escape')this.blur()"/>
+        <button class="clr-btn" type="button" tabindex="-1" onclick="clearBarSearch('f2-search','f2-sdw')"><i class="ti ti-x"></i></button>
+      </div>
+      <button class="ib" id="all-export" type="button" title="Export CSV"><i class="ti ti-download"></i></button>
+    </div>
+    <!-- History search (moved from the History panel) -->
+    <div class="manage-toolbar vb-ctx" id="history-toolbar" data-for="history" style="display:none;">
+      <div class="sdw vb-search" id="hist-sdw" style="flex:0 0 auto;">
+        <button class="ib" type="button" title="Search" onclick="openSearch('hist-sdw')"><i class="ti ti-search"></i></button>
+        <input id="hist-search" type="text" placeholder="EID, name or account no…" autocomplete="off" onkeydown="if(event.key==='Escape')this.blur()"/>
+        <button class="clr-btn" type="button" tabindex="-1" onclick="clearBarSearch('hist-search','hist-sdw')"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
+    <!-- Upload controls: one shared set of buttons — the target picked on the left decides what Upload / Load / Template do -->
+    <div class="manage-toolbar vb-ctx" id="upload-toolbar" data-for="upload" style="display:none;">
+      <div class="seg" id="up-mode" role="group" aria-label="What are you uploading?">
+        <button type="button" class="on" data-mode="sheet" title="Sheet for this run" aria-label="Sheet for this run"><i class="ti ti-file-spreadsheet"></i><span class="seg-txt">Run sheet</span></button>
+        <button type="button" data-mode="emp" title="Employee master list" aria-label="Employee master list"><i class="ti ti-users"></i><span class="seg-txt">Master list</span></button>
+      </div>
+      <div class="seg" id="up-type" role="group" aria-label="Account type">
+        <button type="button" class="on" data-label="WPS" title="Account type: WPS" aria-label="WPS"><i class="ti ti-briefcase"></i><span class="seg-txt">WPS</span></button>
+        <button type="button" data-label="Salary" title="Account type: Salary" aria-label="Salary"><i class="ti ti-cash"></i><span class="seg-txt">Salary</span></button>
+        <button type="button" data-label="Other" title="Account type: Other" aria-label="Other"><i class="ti ti-dots-circle-horizontal"></i><span class="seg-txt">Other</span></button>
+      </div>
+      <span class="vb-sep"></span>
+      <input type="file" id="up-file" accept=".csv" hidden>
+      <button type="button" class="vb-btn" id="up-pick"><i class="ti ti-upload"></i><span class="vb-txt">Upload</span></button>
+      <span class="up-fname" id="up-fname"></span>
+      <button type="button" class="vb-btn vb-btn-primary" id="up-run" disabled><i class="ti ti-table-import"></i><span class="vb-txt">Load sheet</span></button>
+      <button type="button" class="vb-btn" id="up-tpl"><i class="ti ti-file-download"></i><span class="vb-txt">Template</span></button>
+      <button type="button" class="ib" id="up-clear"><i class="ti ti-trash"></i></button>
+      <button type="button" class="ib" id="up-export" title="Export resolved accounts" aria-label="Export resolved accounts"><i class="ti ti-download"></i></button>
+    </div>
+    <span class="vb-flex-spacer" id="vb-spacer"></span>
+    <div class="sync-wrap vb-actions">
+      <button class="ib" id="cache-status" type="button" title="Information" aria-label="Information" aria-expanded="false" onclick="toggleSyncPopover()"><i class="ti ti-info-circle"></i></button>
+      <div class="sync-popover" id="sync-popover" role="dialog" aria-label="Information">
+        <div class="info-row"><span class="k">Account log</span><span class="v" id="infoAcc">Checking…</span></div>
+        <div class="info-row"><span class="k">Employees</span><span class="v" id="infoEmp">Checking…</span></div>
+        <div class="info-row"><span class="k">Manual entries</span><span class="v" id="infoManual"></span></div>
+        <button class="btn btn-ghost btn-sm btn-block" id="sync-refresh">Refresh</button>
+      </div>
+      <button class="ib ib-primary" id="manage-add-btn" type="button" title="Add account" aria-label="Add account" onclick="openCategoryPicker()"><i class="ti ti-plus"></i></button>
+    </div>
+  </div>
+
+  <div class="portal-wrap">
+
+    <!-- ══════════════ MANAGE ══════════════ -->
+    <div class="tab-panel active" id="tab-manage">
+      <div class="manage-placeholder" id="manage-placeholder">
+        <i class="ti ti-user-search"></i>
+        <span>Search and select an employee above to view and manage their WPS, Salary and Other accounts.</span>
+      </div>
+
+      <div class="manage-body" id="manage-body">
+        <div class="main-split" style="flex:1;min-height:0;">
+          <div class="manage-types" id="manage-types"></div>
+          <div class="doc-preview-panel" id="manage-preview-panel">
+            <div class="pph"><h3><i class="ti ti-file-invoice"></i><span id="manage-preview-title">Account</span></h3><button class="pph-close" onclick="closeManagePreview()"><i class="ti ti-x"></i></button></div>
+            <div class="ppb" id="manage-preview-body"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ ALL ACCOUNTS ══════════════ -->
+    <div class="tab-panel" id="tab-all">
+      <div class="panel tab-scroll" style="flex:1;">
+        <div id="all-table" class="tablewrap"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════ ACCOUNT HISTORY ══════════════ -->
+    <div class="tab-panel" id="tab-history">
+      <div class="panel" style="flex:0 0 auto;">
+        <p class="panel-hint" style="margin:0;">Every recorded change is shown — nothing is filtered out. Each card is one account: when it was added, every AccType / Status / Rank change since, and its state right now. <span class="badge frozen" style="vertical-align:middle;">FROZEN</span> entries are muted and shown in smaller text to set them apart from live changes.</p>
+      </div>
+      <div class="panel tab-scroll" style="flex:1;">
+        <div id="history-list"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════ UPLOAD & EXPORT ══════════════ -->
+    <div class="tab-panel" id="tab-upload">
+      <div class="panel up-panel">
+        <div class="up-head">
+          <h2 id="up-title"><i class="ti ti-file-spreadsheet"></i><span>Sheet for this run</span></h2>
+          <div class="stat-row" id="up-stats"></div>
+        </div>
+        <p class="panel-hint" id="up-hint" style="margin:0 0 8px;"></p>
+        <div id="up-table" class="tablewrap"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast" role="alert">
+    <i id="toast-icon" class="ti ti-circle-check"></i>
+    <span id="toast-msg">Saved</span>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+   CACHE — ap2_accLog (legacy account rows, read-only) + ap2_employee.
+   Shared watcher with safe local fallback + parent postMessage handshake.
+═══════════════════════════════════════════════════════ */
+const _AP2_CACHE_KEY = 'ap2_accLog';
+const _AP2_CACHE_KEY_EMP = 'ap2_employee';
+
+if (typeof window.AP2CacheWatcher === 'undefined') {
+  console.warn('[accPortal] cacheWatcher.js did not load — using local fallback');
+  window.AP2CacheWatcher = (function () {
+    const _IDB_NAME = 'ap2_fleet_cache', _IDB_STORE = 'datasets';
+    let _conn = null;
+    function _open() {
+      if (_conn) return Promise.resolve(_conn);
+      return new Promise((res, rej) => {
+        let done = false;
+        const req = indexedDB.open(_IDB_NAME);
+        const t = setTimeout(() => { if (!done) { done = true; rej(new Error('idb-open-timeout')); } }, 2000);
+        req.onsuccess = e => { if (!done) { done = true; clearTimeout(t); _conn = e.target.result; res(_conn); } };
+        req.onerror   = e => { if (!done) { done = true; clearTimeout(t); rej(e.target.error); } };
+      });
+    }
+    return {
+      init() {}, subscribe() { return () => {}; }, notifyNow() {},
+      getStatus() { return { healthy: false, mode: 'local-fallback' }; },
+      async readKey(key) {
+        try {
+          const db = await _open();
+          if (!db.objectStoreNames.contains(_IDB_STORE)) return null;
+          const rec = await new Promise((res, rej) => {
+            const r = db.transaction(_IDB_STORE, 'readonly').objectStore(_IDB_STORE).get(key);
+            r.onsuccess = () => res(r.result || null);
+            r.onerror   = () => rej(r.error);
+          });
+          return (rec && rec.data) ? rec.data : null;
+        } catch (e) {
+          if (e && e.name === 'NotFoundError') return null;
+          console.warn('[accPortal] fallback read failed:', e.message);
+          return null;
+        }
+      }
+    };
+  })();
+}
+async function _readCache_bareArray(key) { return AP2CacheWatcher.readKey(key); }
+const _IDB_NAME_TS = 'ap2_fleet_cache', _IDB_STORE_TS = 'datasets';
+let _idbConnTs = null;
+function _getDBTs() {
+  if (_idbConnTs) return Promise.resolve(_idbConnTs);
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(_IDB_NAME_TS);
+    req.onsuccess = e => { _idbConnTs = e.target.result; res(_idbConnTs); };
+    req.onerror   = e => rej(e.target.error);
+  });
+}
+async function _readRawTs(key) {
+  try {
+    const db = await _getDBTs();
+    if (!db.objectStoreNames.contains(_IDB_STORE_TS)) return 0;
+    const rec = await new Promise((res, rej) => {
+      const req = db.transaction(_IDB_STORE_TS, 'readonly').objectStore(_IDB_STORE_TS).get(key);
+      req.onsuccess = () => res(req.result || null);
+      req.onerror   = () => rej(req.error);
+    });
+    return (rec && rec.ts) ? rec.ts : 0;
+  } catch (e) { return 0; }
+}
+// Timeout-protected fallback: readKey() only looks in the 'datasets' store. If this browser's copy of the
+// cache uses a differently-named store it keeps returning null, so scan every store for the key —
+// capped with a timeout so a stuck indexedDB.open() can never hang the caller.
+function scanAllStoresForKey(key){
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const req = indexedDB.open(_IDB_NAME_TS);
+    const timer = setTimeout(() => { if (settled) return; settled = true; reject(new Error('idb-scan-timeout')); }, 2000);
+    req.onerror = () => { if (settled) return; settled = true; clearTimeout(timer); reject(new Error('Could not open IndexedDB "' + _IDB_NAME_TS + '".')); };
+    req.onsuccess = (e) => {
+      if (settled) return;
+      settled = true; clearTimeout(timer);
+      const db = e.target.result;
+      const storeNames = Array.from(db.objectStoreNames);
+      if (storeNames.length === 0){ db.close(); reject(new Error('Database exists but has no object stores.')); return; }
+      let found = null, remaining = storeNames.length;
+      const tx = db.transaction(storeNames, 'readonly');
+      storeNames.forEach(storeName => {
+        const getReq = tx.objectStore(storeName).get(key);
+        getReq.onsuccess = () => {
+          if (getReq.result !== undefined && found === null) found = { store: storeName, value: getReq.result };
+          if (--remaining === 0){ db.close(); found ? resolve(found) : reject(new Error('No object store contained key "' + key + '". Checked: ' + storeNames.join(', '))); }
+        };
+        getReq.onerror = () => { if (--remaining === 0){ db.close(); found ? resolve(found) : reject(new Error('Error reading object stores.')); } };
+      });
+    };
+  });
+}
+function normalizeArr(val, key){
+  let arr = null;
+  if (Array.isArray(val)) arr = val;
+  else if (val && Array.isArray(val.data)) arr = val.data;
+  else if (val && val.value && Array.isArray(val.value.data)) arr = val.value.data;
+  if (!arr) throw new Error('Unrecognized ' + key + ' shape — expected an array of rows or {data:[...]}.');
+  return arr;
+}
+// throws when the key isn't available yet — callers show that in the info popover and retry
+async function _readCache(key) {
+  let raw = await AP2CacheWatcher.readKey(key);
+  if (!raw) raw = (await scanAllStoresForKey(key)).value;
+  const data = normalizeArr(raw, key);
+  const ts = (raw && !Array.isArray(raw) && raw.ts) || await _readRawTs(key) || Date.now();
+  return { ts, data };
+}
+
+/* ═══════════════════════════════════════════════════════
+   DATE HELPERS
+═══════════════════════════════════════════════════════ */
+function _parseDdmmyyyyhhmmss(raw) {
+  const s = String(raw).trim();
+  const m = /^(\d{2})(\d{2})(\d{4})(\d{2})(\d{2})(\d{2})$/.exec(s);
+  if (!m) return null;
+  const [, dd, mm, yyyy, hh, mi, ss] = m.map(Number);
+  if (mm < 1 || mm > 12 || dd < 1 || dd > 31 || hh > 23 || mi > 59 || ss > 59) return null;
+  const d = new Date(yyyy, mm - 1, dd, hh, mi, ss);
+  if (d.getFullYear() !== yyyy || d.getMonth() !== mm - 1 || d.getDate() !== dd) return null;
+  return d;
+}
+function _parseDate(raw) {
+  if (raw === undefined || raw === null || raw === '') return null;
+  const ddmmyyyy = _parseDdmmyyyyhhmmss(raw);
+  if (ddmmyyyy) return ddmmyyyy;
+  let d = null;
+  if (raw instanceof Date) { d = raw; }
+  else if (typeof raw === 'number') { d = raw > 1e11 ? new Date(raw) : new Date(Date.UTC(1899, 11, 30) + raw * 86400000); }
+  else { const s = String(raw).trim(); const parsed = new Date(s); d = isNaN(parsed.getTime()) ? null : parsed; }
+  return (!d || isNaN(d.getTime())) ? null : d;
+}
+function pad2(n){ return String(n).padStart(2,'0'); }
+function toISO(d){ return d ? `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}` : ''; }
+function todayISO(){ return toISO(new Date()); }
+function fmtTs(ms){
+  if(!ms) return '—';
+  return new Date(ms).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+const LABELS = ['WPS','Salary','Other'];
+let AUTO_ACCOUNTS = [];   // live, read-only, mapped from ap2_accLog
+let ACCOUNTS = [];        // manual accounts, persisted locally — the ones this portal manages
+let AUTO_EMPLOYEES = [];  // live, read-only, from ap2_employee
+let EMPLOYEES = [];       // manual employee list, persisted locally (fallback only)
+let BATCH_SHEET = [];     // this run's {eid,name} list, persisted locally
+let ROW_LABEL = {};       // per-EID account-type override chosen in the Upload table, session-only
+let loaded = false;
+let cacheReady = false, empCacheReady = false;
+
+let activePortalTab = 'manage';
+let manageEid = null, manageName = '';
+let selectedAccountId = null;   // row shown read-only in the preview panel
+let manageAddOpen = null;       // holds the account-type label (WPS/Salary/Other) when its add-form is open in the preview panel
+let editingAccountId = null;    // edit-form shown in the preview panel
+
+/* ═══════════════════════════════════════════════════════
+   BACKEND WRITE BRIDGE
+   This iframe never holds a login form or the raw session token itself —
+   it asks the parent frame for one, the same way it already asks the
+   parent for cache data (see the 'ap-cache-request' messages above).
+   ASSUMPTION: the parent listens for 'ap-session-request' and replies
+   with { type:'ap-session-ready', sessionId, token, email }. If your
+   parent portal does something different, only getSession() below
+   needs to change — everything that calls apiPost() stays the same.
+═══════════════════════════════════════════════════════ */
+const APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHZnQa4elV-ChUslHoci1UhWZnTuBPhLIlrI_-TsOX6ysamVvUDrpkpS3pRVMEoWeP/exec';
+let AP2_SESSION = null;
+window.addEventListener('message', (e)=>{
+  if(e.data && e.data.type === 'ap-session-ready'){
+    AP2_SESSION = { sessionId: e.data.sessionId, token: e.data.token, email: e.data.email };
+  }
+});
+try{ window.parent.postMessage({ type:'ap-session-request' }, '*'); }catch(e){}
+
+function _currentSession(){
+  // Same session the doc portal reads before every write — checked here first so
+  // this portal's writes pass the backend auth gate the same way theirs do.
+  let s = {};
+  try{ s = JSON.parse(sessionStorage.getItem('ap_session') || '{}'); }catch(e){}
+  if(s.sessionId || s.token) return { sessionId: s.sessionId||'', token: s.token||'', email: s.email||'' };
+  if(AP2_SESSION) return AP2_SESSION; // fallback: parent-frame handshake, for when this portal is embedded cross-origin
+  return null;
+}
+async function apiPost(action, payload){
+  const body = { action, payload };
+  const session = _currentSession();
+  if(!session || (!session.sessionId && !session.token)){
+    showToast('You must be logged in to save changes','error');
+    return { success:false, error:'Not logged in' };
+  }
+  body.sessionId = session.sessionId; body.token = session.token;
+  const res = await fetch(APPSCRIPT_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' }, // avoids a CORS preflight Apps Script can't answer
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+/** After a successful write, ask the parent to refetch ap2_accLog so AUTO_ACCOUNTS reflects it. */
+function requestAccLogRefresh(){
+  try{ window.parent.postMessage({ type:'ap-cache-request', key:_AP2_CACHE_KEY, force:true }, '*'); }catch(e){}
+}
+
+function uid(){ return 'r_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function esc(s){ return (s??'').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function normLabel(t){
+  const s = (t||'').trim();
+  const found = LABELS.find(l=>l.toLowerCase()===s.toLowerCase());
+  return found || 'Other';
+}
+
+/* ═══════════════════════════════════════════════════════
+   EMPLOYEE HELPERS
+═══════════════════════════════════════════════════════ */
+function allEmployees(){
+  const byId = {};
+  EMPLOYEES.forEach(e=>{ if(e.empid) byId[e.empid]=e; });
+  AUTO_EMPLOYEES.forEach(e=>{ if(e.empid) byId[e.empid]=e; }); // live cache wins on collision
+  return Object.values(byId);
+}
+function nameForEid(eid){
+  const a = AUTO_EMPLOYEES.find(x=>x.empid===eid); if(a) return a.name;
+  const e = EMPLOYEES.find(x=>x.empid===eid); return e ? e.name : '';
+}
+function initialsFor(name, eid){
+  const s = (name||eid||'??').trim();
+  return s.slice(0,2).toUpperCase();
+}
+
+/* ═══════════════════════════════════════════════════════
+   ACCOUNT MODEL + BUSINESS LOGIC
+   Each account: {id, eid, label(WPS/Salary/Other), accountNo, addDetail,
+     isPrimary, active, hasExpiry, startDate, expDate, createdAt, updatedAt, source}
+   - Active/Inactive is a direct switch on every account.
+   - Primary is unique per EID+label among manual accounts (setting one
+     Primary silently demotes the others in that same EID+label group).
+   - Expiry is optional; when present, an account outside its window is
+     "expired" / "upcoming" for resolution purposes even if still Active.
+═══════════════════════════════════════════════════════ */
+function allAccounts(){ return AUTO_ACCOUNTS.concat(ACCOUNTS); }
+function accountsForEid(eid){ return allAccounts().filter(a=>a.eid===eid); }
+function accountsForEidLabel(eid,label){ return allAccounts().filter(a=>a.eid===eid && a.label===label); }
+function distinctEIDs(){ return [...new Set(allAccounts().map(a=>a.eid))].filter(Boolean).sort(); }
+
+function statusOf(acc){
+  if(acc.frozen) return 'frozen';
+  if(!acc.active) return 'inactive';
+  if(acc.hasExpiry){
+    const t = todayISO();
+    if(acc.expDate && acc.expDate < t) return 'expired';
+    if(acc.startDate && acc.startDate > t) return 'upcoming';
+  }
+  return 'active';
+}
+/* The exact status word as it currently stands (Active / Frozen / Inactive) —
+   distinct from statusOf(), which also folds in expiry (expired/upcoming). */
+function rawStatusLabel(acc){
+  if(acc.frozen) return 'Frozen';
+  return acc.active ? 'Active' : 'Inactive';
+}
+function isLive(acc){ return statusOf(acc)==='active'; }
+function statusBadgeHtml(s){
+  const map = {
+    active:'<span class="badge active"><i class="ti ti-check"></i>ACTIVE</span>',
+    inactive:'<span class="badge inactive">INACTIVE</span>',
+    frozen:'<span class="badge frozen"><i class="ti ti-snowflake"></i>FROZEN</span>',
+    expired:'<span class="badge expired">EXPIRED</span>',
+    upcoming:'<span class="badge upcoming">UPCOMING</span>'
+  };
+  return map[s] || map.inactive;
+}
+function labelBadgeHtml(label){
+  const cls = { WPS:'label-wps', Salary:'label-salary', Other:'label-other' }[label] || 'label-other';
+  return `<span class="badge ${cls}">${esc(label).toUpperCase()}</span>`;
+}
+
+function applyPrimaryFlag(acc, wantPrimary){
+  if(wantPrimary){
+    ACCOUNTS.filter(a=>a.eid===acc.eid && a.label===acc.label && a.id!==acc.id).forEach(a=>a.isPrimary=false);
+    acc.isPrimary = true;
+  } else {
+    acc.isPrimary = false;
+  }
+}
+async function setRank(id, rank, btnEl){
+  const acc = allAccounts().find(a=>a.id===id);
+  if(!acc) return;
+  if(!!acc.isPrimary === (rank==='Primary')) return;   // already that rank — only the other side is clickable
+  const wrap = btnEl && btnEl.closest('.rank-seg');
+  if(wrap) wrap.classList.add('busy');
+  try{
+    const data = await apiPost('setAccLogStatus', { timestamp: acc.timestamp, rank });
+    if(!data.success){ showToast(data.error || 'Could not save', 'error'); if(wrap) wrap.classList.remove('busy'); return; }
+    requestAccLogRefresh();
+    showToast('Marked as ' + rank.toLowerCase(),'success');
+  }catch(e){ showToast('Could not save: ' + e.message, 'error'); if(wrap) wrap.classList.remove('busy'); }
+}
+function setPrimary(id){ return setRank(id,'Primary'); }
+async function toggleActive(id){
+  const acc = allAccounts().find(a=>a.id===id);
+  if(!acc) return;
+  try{
+    const newStatus = acc.active ? 'Inactive' : 'Active';
+    const data = await apiPost('setAccLogStatus', { timestamp: acc.timestamp, status: newStatus });
+    if(!data.success){ showToast(data.error || 'Could not save', 'error'); return; }
+    requestAccLogRefresh();
+    showToast(acc.active?'Account deactivated':'Account activated','success');
+  }catch(e){ showToast('Could not save: ' + e.message, 'error'); }
+}
+/* No backend delete action — AccLog is an audit log, not a table you erase from.
+   Deactivating (above) is the supported way to retire an account; its full
+   history stays visible in the History panel. */
+function deleteAccount(id){
+  showToast('Accounts can\'t be deleted — use Deactivate to retire one instead.','error');
+}
+
+/* Resolve the account to use for a given EID + account type:
+     'ok'        -> a single live account is the Primary (or the only live one)
+     'missing'   -> no live account of this type for this EID
+     'ambiguous' -> more than one live account, none flagged Primary */
+function resolvePrimary(eid, label){
+  const group = accountsForEidLabel(eid, label);
+  const live = group.filter(isLive);
+  if(!live.length) return { status:'missing' };
+  let primary = live.find(a=>a.isPrimary);
+  if(!primary){
+    if(live.length === 1) primary = live[0];
+    else return { status:'ambiguous', group: live };
+  }
+  return { status:'ok', rec: primary };
+}
+
+/* ---- mapping legacy ap2_accLog cache rows into the account model ---- */
+function mapAutoAccountRow(row, idx, cacheTs){
+  if(!Array.isArray(row) || row.length < 2) return null;
+  // getAccountLog() now returns: [Timestamp, EID, AccType, AccountNo, AddDetail, Status, StartDate, ExpDate, Rank]
+  const [ts, eid, accType, accountNo, addDetail, status, startRaw, expRaw, rank] = row;
+  if(!accountNo && accountNo !== 0) return null;
+  if(!accType) return null;
+  const sd = _parseDate(startRaw);
+  const ed = _parseDate(expRaw);
+  const tsNum = Number(ts) || (cacheTs || Date.now()) + idx;
+  // Status can come back as Active / Inactive / Frozen (or freeze/freezed variants).
+  // Frozen must NOT collapse into "active" just because it isn't literally "inactive".
+  const statusRaw = String(status || 'Active').trim().toLowerCase();
+  const isFrozen = statusRaw === 'frozen' || statusRaw === 'freeze' || statusRaw === 'freezed' || statusRaw === 'frozen account';
+  return {
+    id: 'auto_' + tsNum,
+    timestamp: tsNum,             // the exact key updateAccLog/setAccLogStatus need back
+    eid: (eid === undefined || eid === null) ? '' : String(eid),
+    label: normLabel(accType),
+    accountNo: String(accountNo),
+    addDetail: (addDetail ?? '').toString().trim(),
+    isPrimary: String(rank || '').toLowerCase() === 'primary',
+    frozen: isFrozen,
+    active: !isFrozen && statusRaw !== 'inactive',
+    hasExpiry: !!(sd && ed),
+    startDate: sd ? toISO(sd) : '',
+    expDate: ed ? toISO(ed) : '',
+    createdAt: tsNum,
+    updatedAt: tsNum,
+    source: 'auto'
+  };
+}
+function applyCacheData(payload){
+  const data = Array.isArray(payload) ? payload : (payload && payload.data);
+  const ts = Array.isArray(payload) ? Date.now() : (payload && payload.ts) || Date.now();
+  if(!Array.isArray(data)) return false;
+  AUTO_ACCOUNTS = data.map((row,i)=>mapAutoAccountRow(row,i,ts)).filter(Boolean);
+  cacheReady = true;
+  setSyncStatus('acc', 'ok', AUTO_ACCOUNTS.length + ' account entries');
+  return true;
+}
+const _s = v => (v!==null && v!==undefined && v!=='') ? String(v).trim() : '';
+function normaliseEmp(r, i){
+  if(!r) return null;
+  if(!Array.isArray(r)){
+    if(!r['Name']) return null;
+    return { empid: String(r['Emp ID'] || (i+1)), name: r['Name'] };
+  }
+  if(_s(r[0])==='Emp ID') return null; // header row
+  const rawId = r[0];
+  const empid = String((rawId!==null && rawId!==undefined && rawId!=='') ? rawId : (i+1));
+  const name  = _s(r[1]); if(!name) return null;
+  return { empid, name };
+}
+function applyEmpCacheData(data){
+  if(!Array.isArray(data) || !data.length) return false;
+  const fresh = data.map(normaliseEmp).filter(Boolean);
+  if(!fresh.length) return false;
+  AUTO_EMPLOYEES = fresh;
+  empCacheReady = true;
+  setSyncStatus('emp', 'ok', AUTO_EMPLOYEES.length + ' employees');
+  return true;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LOCAL PERSISTENCE
+═══════════════════════════════════════════════════════ */
+async function loadLocal(){
+  try{ const r = await window.storage.get('ap2acc-accounts'); if(r && r.value) ACCOUNTS = JSON.parse(r.value); }catch(e){}
+  try{ const r = await window.storage.get('ap2acc-employees'); if(r && r.value) EMPLOYEES = JSON.parse(r.value); }catch(e){}
+  try{ const r = await window.storage.get('ap2acc-batchsheet'); if(r && r.value) BATCH_SHEET = JSON.parse(r.value); }catch(e){}
+}
+async function saveAccounts(){ try{ await window.storage.set('ap2acc-accounts', JSON.stringify(ACCOUNTS)); }catch(e){ alert('Could not save — please try again.'); } }
+async function saveEmployees(){ try{ await window.storage.set('ap2acc-employees', JSON.stringify(EMPLOYEES)); }catch(e){ alert('Could not save employee list — please try again.'); } }
+async function saveBatchSheet(){ try{ await window.storage.set('ap2acc-batchsheet', JSON.stringify(BATCH_SHEET)); }catch(e){} }
+
+/* ═══════════════════════════════════════════════════════
+   SYNC BAR + CACHE LOAD
+═══════════════════════════════════════════════════════ */
+const SYNC = { acc:{ mode:'checking', info:'Checking…', busy:false, sub:false, timer:null }, emp:{ mode:'checking', info:'Checking…', busy:false, sub:false, timer:null } };
+function setSyncStatus(which, mode, info){
+  SYNC[which].mode = mode; SYNC[which].info = info || '';
+  updateInfoRows();
+}
+function updateInfoRows(){
+  [['acc','infoAcc'],['emp','infoEmp']].forEach(([k,id])=>{
+    const el = document.getElementById(id);
+    el.textContent = SYNC[k].info;
+    el.className = 'v ' + (SYNC[k].mode === 'ok' ? 'ok' : SYNC[k].mode === 'off' ? 'warn' : '');
+  });
+  document.getElementById('infoManual').textContent = ACCOUNTS.length + ' account(s) · ' + EMPLOYEES.length + ' employee(s)';
+}
+function renderSyncBar(){
+  updateInfoRows();
+  renderTabCounts();
+}
+function renderTabCounts(){
+  document.getElementById('tab-manage-count').textContent = manageEid ? accountsForEid(manageEid).length : 0;
+  document.getElementById('tab-all-count').textContent = allAccounts().length;
+  document.getElementById('tab-upload-count').textContent = BATCH_SHEET.length;
+}
+function toggleSyncPopover(force){
+  const pop = document.getElementById('sync-popover');
+  const show = force !== undefined ? force : !pop.classList.contains('open');
+  pop.classList.toggle('open', show);
+  document.getElementById('cache-status').setAttribute('aria-expanded', String(show));
+}
+document.addEventListener('click', e=>{
+  const wrap = document.querySelector('#accP .sync-wrap');
+  if(wrap && !wrap.contains(e.target)) toggleSyncPopover(false);
+});
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') toggleSyncPopover(false); });
+document.getElementById('sync-refresh').addEventListener('click', async ()=>{ await loadAccCache(); await loadEmpCache(); renderAll(); });
+
+// Same load method as salik: read (watcher -> store scan), subscribe for live updates,
+// and while the cache is missing show why in the info popover and retry every 5 s.
+async function loadCacheKey(which, key, apply, noun){
+  const S = SYNC[which];
+  if(S.busy) return;
+  S.busy = true;
+  clearTimeout(S.timer);
+  try{
+    const rec = await _readCache(key);
+    if(!apply(rec)) throw new Error('No ' + noun + ' rows found');
+    if(typeof AP2CacheWatcher.subscribe === 'function' && !S.sub){
+      S.sub = true;
+      AP2CacheWatcher.subscribe(k => { if(k === key) loadCacheKey(which, key, apply, noun).then(renderAll); });
+    }
+  }catch(err){
+    setSyncStatus(which, 'off', 'Not available yet \u2014 ' + err.message);
+    S.timer = setTimeout(() => loadCacheKey(which, key, apply, noun).then(renderAll), 5000);
+  }finally{ S.busy = false; }
+}
+function loadAccCache(){ return loadCacheKey('acc', _AP2_CACHE_KEY, applyCacheData, 'account'); }
+function loadEmpCache(){ return loadCacheKey('emp', _AP2_CACHE_KEY_EMP, applyEmpCacheData, 'employee'); }
+async function loadAllWithRetries(){
+  await Promise.all([loadAccCache(), loadEmpCache()]);
+  renderAll();
+}
+/* re-check when the user comes back to this tab */
+function recheckCache(){
+  if(document.hidden) return;
+  if(SYNC.acc.mode !== 'ok') loadAccCache().then(renderAll);
+  if(SYNC.emp.mode !== 'ok') loadEmpCache().then(renderAll);
+}
+window.addEventListener('focus', recheckCache);
+document.addEventListener('visibilitychange', recheckCache);
+try{ AP2CacheWatcher.init(); }catch(e){ console.warn('[accPortal] cacheWatcher wiring failed:', e.message); }
+window.addEventListener('message', (e)=>{
+  if(!e.data) return;
+  if(e.data.type === 'ap-cache-preload' && e.data.datasets){
+    let changed = false;
+    if(e.data.datasets[_AP2_CACHE_KEY]){ applyCacheData(e.data.datasets[_AP2_CACHE_KEY]); changed = true; }
+    if(e.data.datasets[_AP2_CACHE_KEY_EMP]){ applyEmpCacheData(e.data.datasets[_AP2_CACHE_KEY_EMP]); changed = true; }
+    if(changed) renderAll();
+  }
+  if(e.data.type === 'ap-cache-ready' && e.data.key === _AP2_CACHE_KEY && e.data.data){ applyCacheData(e.data.data); renderAll(); }
+  if(e.data.type === 'ap-cache-ready' && e.data.key === _AP2_CACHE_KEY_EMP && e.data.data){ applyEmpCacheData(e.data.data); renderAll(); }
+  if(e.data.type === 'ap-cache-updated'){
+    try{
+      window.parent.postMessage({ type:'ap-cache-request', key:_AP2_CACHE_KEY }, '*');
+      window.parent.postMessage({ type:'ap-cache-request', key:_AP2_CACHE_KEY_EMP }, '*');
+    }catch(err){}
+  }
+});
+try{
+  window.parent.postMessage({ type:'ap-cache-request', key:_AP2_CACHE_KEY }, '*');
+  window.parent.postMessage({ type:'ap-cache-request', key:_AP2_CACHE_KEY_EMP }, '*');
+}catch(e){}
+
+/* ═══════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════ */
+function switchPortalTab(tab){
+  document.querySelectorAll('#accP .tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#accP .cap-btn').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false');});
+  document.getElementById('tab-'+tab).classList.add('active');
+  const _tb=document.getElementById('tab-'+tab+'-btn'); _tb.classList.add('active'); _tb.setAttribute('aria-selected','true');
+  activePortalTab = tab;
+  let any=false;
+  document.querySelectorAll('#accP .vb-ctx').forEach(t=>{
+    const on = t.dataset.for===tab;
+    t.style.display = on ? 'flex' : 'none';
+    if(on) any=true;
+  });
+  const sp=document.getElementById('vb-spacer'); if(sp) sp.style.display = any ? 'none' : '';
+  const add=document.getElementById('manage-add-btn'); if(add) add.style.display = tab==='manage' ? '' : 'none';
+}
+/* capsule is pinned to a fixed width: whichever tab needs the most room when active (icon + label)
+   plus the icon-only width of the others, so it never resizes while switching tabs. */
+function sizeCapsule(){
+  const capsule=document.getElementById('capsule');
+  if(!capsule) return;
+  if(window.matchMedia('(max-width:700px)').matches){ capsule.style.width=''; return; }
+  const buttons=[...capsule.querySelectorAll('.cap-btn')];
+  if(!buttons.length) return;
+  const current=buttons.find(b=>b.classList.contains('active'))||buttons[0];
+  capsule.style.width='auto';
+  let max=0;
+  buttons.forEach(btn=>{
+    buttons.forEach(b=>b.classList.toggle('active',b===btn));
+    max=Math.max(max,capsule.scrollWidth);
+  });
+  buttons.forEach(b=>b.classList.toggle('active',b===current));
+  capsule.style.width=max+'px';
+}
+window.addEventListener('resize',sizeCapsule);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(sizeCapsule);
+setTimeout(()=>{ switchPortalTab(activePortalTab); sizeCapsule(); },0);
+function clearBarSearch(inputId,sdwId){
+  const i=document.getElementById(inputId);
+  i.value=''; i.dispatchEvent(new Event('input'));
+  openSearch(sdwId);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CSV HELPERS
+═══════════════════════════════════════════════════════ */
+function parseCSV(text){
+  const lines = text.replace(/\r/g,'').split('\n').filter(l=>l.trim().length);
+  if(!lines.length) return [];
+  const splitLine = (line)=>{
+    const out=[]; let cur=''; let inQ=false;
+    for(let i=0;i<line.length;i++){
+      const c = line[i];
+      if(c==='"'){ inQ=!inQ; continue; }
+      if(c===',' && !inQ){ out.push(cur); cur=''; continue; }
+      cur+=c;
+    }
+    out.push(cur);
+    return out.map(s=>s.trim());
+  };
+  const header = splitLine(lines[0]).map(h=>h.toLowerCase().replace(/\s+/g,''));
+  return lines.slice(1).map(line=>{
+    const cells = splitLine(line);
+    const row = {};
+    header.forEach((h,i)=> row[h]=cells[i] ?? '');
+    return row;
+  });
+}
+function downloadCSV(filename, header, rows){
+  const lines = [header.join(',')].concat(rows.map(row => row.map(v => `"${(v??'').toString().replace(/"/g,'""')}"`).join(',')));
+  const blob = new Blob([lines.join('\n')], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SEARCH-TO-SELECT (employee picker, used by Manage tab)
+═══════════════════════════════════════════════════════ */
+function openSearch(sdwId){
+  const el=document.getElementById(sdwId);
+  if(el) el.querySelector('input').focus();
+}
+function openDrop(key){ const dd=document.getElementById(key+'-dropdown'); if(dd) dd.classList.add('open'); }
+function closeDrop(key){ const dd=document.getElementById(key+'-dropdown'); if(dd) dd.classList.remove('open'); }
+
+function filterDrop(key, query){
+  if(key !== 'manage') return;
+  const dd = document.getElementById('manage-dropdown');
+  const q = (query||'').trim();
+  const ql = q.toLowerCase();
+  if(!ql){
+    const recent = allEmployees().slice(0,8);
+    dd.innerHTML = recent.length
+      ? recent.map(e=>`<div class="di" data-eid="${esc(e.empid)}"><div class="dn">${esc(e.name)}</div><div class="ds">${esc(e.empid)}</div></div>`).join('')
+      : '<div class="di no-match">Start typing an EID or name…</div>';
+    dd.classList.add('open');
+    return;
+  }
+  const matches = allEmployees().filter(e => e.empid.toLowerCase().includes(ql) || (e.name||'').toLowerCase().includes(ql)).slice(0,20);
+  let html = matches.map(e=>`<div class="di" data-eid="${esc(e.empid)}"><div class="dn">${esc(e.name)}</div><div class="ds">${esc(e.empid)}</div></div>`).join('');
+  const exactOnFile = matches.some(e=>e.empid.toLowerCase()===ql);
+  if(!exactOnFile){
+    html += `<div class="di" data-eid="${esc(q)}"><div class="dn">Use EID <em>${esc(q)}</em></div><div class="ds">${matches.length?'Not on employee master list':'No matching employee — search by exact EID'}</div></div>`;
+  }
+  dd.innerHTML = html || '<div class="di no-match">No matches</div>';
+  dd.classList.add('open');
+}
+document.getElementById('manage-dropdown').addEventListener('mousedown', e=>{
+  const item = e.target.closest('[data-eid]');
+  if(item) selectManageEmployee(item.dataset.eid);
+});
+document.getElementById('manage-types').addEventListener('click', e=>{
+  const row = e.target.closest('[data-acc-id]');
+  if(row) selectAccount(row.dataset.accId);
+});
+
+function selectManageEmployee(eid){
+  manageEid = eid;
+  manageName = nameForEid(eid) || '';
+  document.getElementById('manage-search').value = '';
+  closeDrop('manage');
+  document.getElementById('manage-confirm').style.display = 'flex';
+  document.getElementById('manage-confirm-id').textContent = eid;
+  selectedAccountId = null;
+  manageAddOpen = null;
+  editingAccountId = null;
+  renderManage();
+}
+function clearManage(){
+  manageEid = null; manageName = '';
+  document.getElementById('manage-confirm').style.display = 'none';
+  renderManage();
+  openSearch('manage-sdw');
+}
+
+/* ═══════════════════════════════════════════════════════
+   MANAGE TAB — per-employee add/update
+═══════════════════════════════════════════════════════ */
+function toggleExpFields(idp){
+  const wrap = document.getElementById(idp+'-expwrap');
+  const cb = document.getElementById(idp+'-hasexp');
+  if(wrap && cb) wrap.style.display = cb.checked ? 'flex' : 'none';
+}
+function accountFormHtml(mode, label, acc){
+  const idp = mode==='add' ? `af-${label}` : `ef-${acc.id}`;
+  const accountNo = acc ? esc(acc.accountNo) : '';
+  const addDetail = acc ? esc(acc.addDetail) : '';
+  const primaryVal = acc && acc.isPrimary ? 'primary' : 'secondary';
+  const activeVal = acc ? (acc.frozen ? 'frozen' : (acc.active ? 'active' : 'inactive')) : 'active';
+  const hasExpiry = acc ? !!acc.hasExpiry : false;
+  const startDate = acc ? (acc.startDate||'') : '';
+  const expDate = acc ? (acc.expDate||'') : '';
+  const categoryVal = acc ? acc.label : label;
+  const catIcon = { WPS:'ti-briefcase', Salary:'ti-cash', Other:'ti-dots-circle-horizontal' };
+  const submitCall = mode==='add' ? `submitAdd('${label}')` : `submitEdit('${acc.id}')`;
+  const cancelCall = mode==='add' ? `closeAddForm()` : `closeEditForm()`;
+  return `
+  <div class="acc-form" id="${idp}">
+    ${mode==='add' ? `<div class="acc-form-row cat-btn-row">
+      ${LABELS.map(l=>`<button type="button" class="cat-btn${label===l?' active':''}" onclick="openAddForm('${l}')"><i class="ti ${catIcon[l]}"></i>${l}</button>`).join('')}
+    </div>` : ''}
+    <div class="field"><label>Account No <span class="req">*</span></label><input type="text" id="${idp}-accno" class="date-input" value="${accountNo}" placeholder="e.g. AE070331234567890123456"></div>
+    <div class="field"><label>Add Detail</label><input type="text" id="${idp}-detail" class="date-input" value="${addDetail}" placeholder="Bank / note"></div>
+    <div class="acc-form-row">
+      ${mode==='edit' ? `<div class="field"><label>Category</label>
+        <select id="${idp}-label" class="date-input">
+          ${LABELS.map(l=>`<option value="${l}" ${categoryVal===l?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>` : ''}
+      <div class="field"><label>Rank</label>
+        <select id="${idp}-primary" class="date-input">
+          <option value="secondary" ${primaryVal==='secondary'?'selected':''}>Secondary</option>
+          <option value="primary" ${primaryVal==='primary'?'selected':''}>Primary</option>
+        </select>
+      </div>
+      <div class="field"><label>Status</label>
+        <select id="${idp}-active" class="date-input">
+          <option value="active" ${activeVal==='active'?'selected':''}>Active</option>
+          <option value="frozen" ${activeVal==='frozen'?'selected':''}>Frozen</option>
+          <option value="inactive" ${activeVal==='inactive'?'selected':''}>Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="flex-direction:row;align-items:center;gap:7px;">
+      <input type="checkbox" id="${idp}-hasexp" ${hasExpiry?'checked':''} onchange="toggleExpFields('${idp}')" style="width:auto;">
+      <label style="margin:0;text-transform:none;font-weight:600;color:var(--text2);font-size:12px;">Has an expiry / validity window</label>
+    </div>
+    <div class="acc-form-row" id="${idp}-expwrap" style="display:${hasExpiry?'flex':'none'};">
+      <div class="field"><label>Start Date</label><input type="date" id="${idp}-start" class="date-input" value="${startDate}"></div>
+      <div class="field"><label>Expiry Date</label><input type="date" id="${idp}-exp" class="date-input" value="${expDate}"></div>
+    </div>
+    <div class="acc-form-actions">
+      <button class="btn btn-primary btn-sm" onclick="${submitCall}"><i class="ti ti-check"></i> ${mode==='add'?'Add account':'Save changes'}</button>
+      <button class="btn btn-ghost btn-sm" onclick="${cancelCall}">Cancel</button>
+      ${mode==='edit' ? `<button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--red);border-color:var(--red);" onclick="deleteAccount('${acc.id}')"><i class="ti ti-trash"></i></button>` : ''}
+    </div>
+  </div>`;
+}
+/* Primary | Secondary switch. The account's current rank is lit and does nothing; the other side is the button that changes it. */
+function rankToggleHtml(acc, size){
+  const p = !!acc.isPrimary;
+  const btn = (rank, on, icon) => `<button type="button" class="${on?'on':''}" aria-pressed="${on}" ${on?'aria-disabled="true" tabindex="-1"':''} title="${on?'Current rank: '+rank:'Change to '+rank}" onclick="event.stopPropagation();${on?'':`setRank('${acc.id}','${rank}',this)`}"><i class="ti ${icon}"></i>${rank}</button>`;
+  return `<div class="rank-seg ${size||''}" role="group" aria-label="Account rank">${btn('Primary',p,'ti-star-filled')}${btn('Secondary',!p,'ti-star')}</div>`;
+}
+/* Read-only rank indicator for the list rows: shows ONLY the current rank, no way to change it here.
+   Changing the rank happens in the preview panel (rankToggleHtml). */
+function rankBadgeHtml(acc){
+  const p = !!acc.isPrimary;
+  return `<span class="badge rank-badge ${p?'primary':'secondary'}" title="Current rank: ${p?'Primary':'Secondary'}"><i class="ti ${p?'ti-star-filled':'ti-star'}"></i>${p?'PRIMARY':'SECONDARY'}</span>`;
+}
+function accountRowHtml(acc){
+  const st = statusOf(acc);
+  const isAuto = acc.source === 'auto';
+  const activeCls = selectedAccountId === acc.id ? ' active' : '';
+  const expText = acc.hasExpiry ? (esc(acc.startDate||'—') + ' \u2192 ' + esc(acc.expDate||'—')) : 'No expiry';
+  return `<div class="hist-rec${activeCls}" data-acc-id="${acc.id}">
+    <div class="hist-icon" style="background:var(--accent-dim);color:var(--accent);"><i class="ti ti-credit-card"></i></div>
+    <div class="hist-meta">
+      <div class="hist-row1">
+        <span class="hist-accno">${esc(acc.accountNo)}</span>
+        ${statusBadgeHtml(st)}
+      </div>
+      <div class="hist-date"><i class="ti ti-calendar-event"></i> ${expText}</div>
+      ${acc.addDetail ? `<div class="hist-detail">${esc(acc.addDetail)}</div>` : ''}
+    </div>
+    <div class="hist-side">
+      ${rankBadgeHtml(acc)}
+      ${isAuto ? '<span class="badge auto-badge">SYNCED</span>' : `<span class="upd">Upd ${esc(fmtTs(acc.updatedAt))}</span>`}
+    </div>
+    <button class="ib sm" type="button" title="Edit account" onclick="openEditFromRow(event,'${acc.id}')"><i class="ti ti-pencil"></i></button>
+  </div>`;
+}
+function accountPreviewHtml(acc){
+  const st = statusOf(acc);
+  const isAuto = acc.source === 'auto';
+  return `
+    <div class="acc-card-badges" style="margin-bottom:10px;">
+      ${statusBadgeHtml(st)}
+      ${isAuto ? '<span class="badge auto-badge">SYNCED</span>' : ''}
+    </div>
+    <div class="acc-cell" style="font-size:14px;">${esc(acc.accountNo)}</div>
+    <div class="preview-meta">
+      <div class="pmi"><span class="k">Type</span><span class="v">${esc(acc.label)}</span></div>
+      <div class="pmi"><span class="k">Add Detail</span><span class="v">${esc(acc.addDetail || '—')}</span></div>
+      <div class="pmi"><span class="k">Validity</span><span class="v">${acc.hasExpiry ? esc(acc.startDate||'—') + ' → ' + esc(acc.expDate||'—') : 'No expiry'}</span></div>
+      <div class="pmi"><span class="k">Updated</span><span class="v">${esc(fmtTs(acc.updatedAt))}</span></div>
+      <div class="pmi"><span class="k">Source</span><span class="v">${isAuto ? 'Synced' : 'Manual'}</span></div>
+    </div>
+    <div class="ppf" style="padding:14px 0 0;border-top:none;">
+      ${rankToggleHtml(acc,'lg')}
+      <button class="btn btn-ghost btn-sm" onclick="toggleActive('${acc.id}')"><i class="ti ${acc.active?'ti-toggle-right':'ti-toggle-left'}"></i> ${acc.active?'Deactivate':'Activate'}</button>
+      <button class="btn btn-ghost btn-sm" onclick="openEditForm('${acc.id}')"><i class="ti ti-pencil"></i> Edit</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--red);border-color:var(--red);" onclick="deleteAccount('${acc.id}')"><i class="ti ti-trash"></i></button>
+    </div>
+  `;
+}
+function openAddForm(label){ manageAddOpen = label; editingAccountId = null; selectedAccountId = null; renderManagePreview(); }
+function closeAddForm(){ manageAddOpen = null; renderManagePreview(); }
+function openEditForm(id){ editingAccountId = id; manageAddOpen = null; renderManagePreview(); }
+function openEditFromRow(e, id){
+  e.stopPropagation();
+  selectedAccountId = id;
+  editingAccountId = id;
+  manageAddOpen = null;
+  renderManagePreview();
+  renderManageTypes();
+}
+function closeEditForm(){ editingAccountId = null; renderManagePreview(); }
+function selectAccount(id){ selectedAccountId = id; editingAccountId = null; manageAddOpen = null; renderManagePreview(); renderManageTypes(); }
+function closeManagePreview(){ selectedAccountId = null; editingAccountId = null; manageAddOpen = null; renderManagePreview(); renderManageTypes(); }
+
+function filteredAccsForLabel(label){
+  return accountsForEidLabel(manageEid, label).slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+}
+function typeCenterBodyHtml(label){
+  if(!manageEid){
+    return `<div class="doc-center-placeholder"><i class="ti ti-user-search"></i><span>Select an employee above to view ${esc(label)} accounts.</span></div>`;
+  }
+  const accs = filteredAccsForLabel(label);
+  return accs.length
+    ? `<div class="hist-list">${accs.map(accountRowHtml).join('')}</div>`
+    : `<div class="doc-center-placeholder"><i class="ti ti-credit-card-off"></i><span>No ${esc(label)} accounts yet.</span></div>`;
+}
+function refreshTypeBody(label){
+  const body = document.querySelector(`.doc-center-body[data-body-for="${label}"]`);
+  if(body) body.innerHTML = typeCenterBodyHtml(label);
+}
+function updateManageToolbarCount(){
+  const el = document.getElementById('manage-toolbar-count');
+  if(!el) return;
+  if(!manageEid){ el.textContent = ''; return; }
+  const n = accountsForEid(manageEid).length;
+  el.textContent = n + (n===1 ? ' account' : ' accounts');
+}
+
+/* ---- + button: opens the add-account form directly in the preview panel,
+   with the category picked via the three buttons inside the form itself ---- */
+function openCategoryPicker(){
+  if(!manageEid){ showToast('Select an employee first','error'); return; }
+  openAddForm(manageAddOpen || LABELS[0]);
+}
+
+function manageTypeSectionHtml(label){
+  const iconFor = { WPS:'ti-briefcase', Salary:'ti-cash', Other:'ti-dots-circle-horizontal' };
+  const count = accountsForEidLabel(manageEid, label).length;
+  return `
+  <div class="doc-center" data-label="${label}">
+    <div class="doc-center-header">
+      <h3><i class="ti ${iconFor[label]||'ti-dots'}"></i><span>${label} accounts</span><span class="dch-count">${count}</span></h3>
+    </div>
+    <div class="doc-center-body" data-body-for="${label}">${typeCenterBodyHtml(label)}</div>
+  </div>`;
+}
+function renderManageTypes(){
+  document.getElementById('manage-types').innerHTML = LABELS.map(manageTypeSectionHtml).join('');
+}
+
+function readFormValues(idp){
+  const accountNo = document.getElementById(idp+'-accno').value.trim();
+  const addDetail = document.getElementById(idp+'-detail').value.trim();
+  const labelEl = document.getElementById(idp+'-label');
+  const category = labelEl ? labelEl.value : null;
+  const primary = document.getElementById(idp+'-primary').value === 'primary';
+  const statusSel = document.getElementById(idp+'-active').value; // 'active' | 'frozen' | 'inactive'
+  const active = statusSel === 'active';
+  const statusText = statusSel === 'frozen' ? 'Frozen' : (statusSel === 'inactive' ? 'Inactive' : 'Active');
+  const hasExpiry = document.getElementById(idp+'-hasexp').checked;
+  const startDate = hasExpiry ? document.getElementById(idp+'-start').value : '';
+  const expDate = hasExpiry ? document.getElementById(idp+'-exp').value : '';
+  return { accountNo, addDetail, category, primary, active, statusText, hasExpiry, startDate, expDate };
+}
+async function submitAdd(label){
+  if(!manageEid){ showToast('Select an employee first','error'); return; }
+  const idp = `af-${label}`;
+  const v = readFormValues(idp);
+  if(!v.accountNo){ showToast('Account number is required','error'); return; }
+  try{
+    const data = await apiPost('addAccLog', {
+      eid: manageEid, accType: label, accountNo: v.accountNo, addDetail: v.addDetail,
+      status: v.statusText, startDate: v.startDate, expDate: v.expDate,
+      rank: v.primary ? 'Primary' : 'Secondary'
+    });
+    if(!data.success){ showToast(data.error || 'Could not save', 'error'); return; }
+    manageAddOpen = null;
+    requestAccLogRefresh();
+    showToast(`${label} account added`,'success');
+  }catch(e){ showToast('Could not save: ' + e.message, 'error'); }
+}
+async function submitEdit(id){
+  const acc = allAccounts().find(a=>a.id===id); // any account — synced or manual — not just ACCOUNTS
+  if(!acc) return;
+  const idp = `ef-${id}`;
+  const v = readFormValues(idp);
+  if(!v.accountNo){ showToast('Account number is required','error'); return; }
+  try{
+    const data = await apiPost('updateAccLog', {
+      timestamp: acc.timestamp,
+      accType: v.category || acc.label, accountNo: v.accountNo, addDetail: v.addDetail,
+      status: v.statusText, startDate: v.startDate, expDate: v.expDate,
+      rank: v.primary ? 'Primary' : 'Secondary'
+    });
+    if(!data.success){ showToast(data.error || 'Could not save', 'error'); return; }
+    editingAccountId = null;
+    requestAccLogRefresh();
+    showToast('Saved','success');
+  }catch(e){ showToast('Could not save: ' + e.message, 'error'); }
+}
+
+function renderManage(){
+  // Manage opens by default — the three type columns are always visible,
+  // even before an employee is picked (each column shows its own empty state).
+  document.getElementById('manage-placeholder').style.display = 'none';
+  document.getElementById('manage-body').style.display = 'flex';
+  refreshManageConfirmName();
+  renderManageTypes();
+  renderManagePreview();
+  updateManageToolbarCount();
+  renderTabCounts();
+}
+function refreshManageConfirmName(){
+  if(!manageEid) return;
+  const nm = nameForEid(manageEid);
+  if(nm) manageName = nm;
+  document.getElementById('manage-confirm-name').textContent = manageName || '(name unknown)';
+  document.getElementById('manage-avatar').textContent = initialsFor(manageName, manageEid);
+}
+function renderManagePreview(){
+  const panel = document.getElementById('manage-preview-panel');
+  const title = document.getElementById('manage-preview-title');
+  const body = document.getElementById('manage-preview-body');
+  if(manageAddOpen){
+    panel.classList.add('open');
+    title.textContent = 'Add ' + manageAddOpen + ' account';
+    body.innerHTML = accountFormHtml('add', manageAddOpen, null);
+    return;
+  }
+  if(editingAccountId){
+    const acc = allAccounts().find(a=>a.id===editingAccountId);
+    if(acc){
+      panel.classList.add('open');
+      title.textContent = 'Edit account';
+      body.innerHTML = accountFormHtml('edit', acc.label, acc);
+      return;
+    }
+  }
+  if(selectedAccountId){
+    const acc = allAccounts().find(a=>a.id===selectedAccountId);
+    if(acc){
+      panel.classList.add('open');
+      title.textContent = acc.label + ' account';
+      body.innerHTML = accountPreviewHtml(acc);
+      return;
+    }
+  }
+  panel.classList.remove('open');
+  body.innerHTML = '';
+}
+
+/* ═══════════════════════════════════════════════════════
+   ALL ACCOUNTS TAB
+═══════════════════════════════════════════════════════ */
+['f2-label','f2-status','f2-primary'].forEach(id=>{
+  const el = document.getElementById(id);
+  const base = el.getAttribute('aria-label');
+  const sync = ()=>{
+    const on = !!el.value;
+    el.parentElement.classList.toggle('active', on);
+    el.title = on ? base + ': ' + el.options[el.selectedIndex].text : base;
+  };
+  el.addEventListener('change', ()=>{ sync(); renderAllTab(); });
+  sync();
+});
+document.getElementById('f2-search').addEventListener('input', renderAllTab);
+document.getElementById('all-table').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-jump]');
+  if(btn) jumpToManage(btn.dataset.jump);
+});
+function jumpToManage(eid){
+  switchPortalTab('manage');
+  selectManageEmployee(eid);
+}
+function renderAllTab(){
+  const all = allAccounts();
+  const statuses = all.map(statusOf);
+  const labelF = document.getElementById('f2-label').value;
+  const statusF = document.getElementById('f2-status').value;
+  const primaryF = document.getElementById('f2-primary').value;
+  const q = document.getElementById('f2-search').value.trim().toLowerCase();
+
+  let rows = all.filter(a=>{
+    if(labelF && a.label !== labelF) return false;
+    if(statusF && statusOf(a) !== statusF) return false;
+    if(primaryF === 'primary' && !a.isPrimary) return false;
+    if(primaryF === 'secondary' && a.isPrimary) return false;
+    if(q){
+      const nm = (nameForEid(a.eid)||'').toLowerCase();
+      if(!a.eid.toLowerCase().includes(q) && !nm.includes(q)) return false;
+    }
+    return true;
+  });
+  rows.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+
+  const el = document.getElementById('all-table');
+  if(!rows.length){ el.innerHTML = '<div class="empty">No accounts match these filters.</div>'; return; }
+  const html = rows.map(r=>`<tr>
+    <td class="acc-cell" style="font-size:11.5px;">${esc(r.eid)}</td>
+    <td>${esc(nameForEid(r.eid) || '—')}</td>
+    <td>${labelBadgeHtml(r.label)}</td>
+    <td class="acc-cell">${esc(r.accountNo)}</td>
+    <td>${esc(r.addDetail || '—')}</td>
+    <td>${r.isPrimary ? '<span class="badge primary">PRIMARY</span>' : '<span class="badge secondary">SECONDARY</span>'}</td>
+    <td>${statusBadgeHtml(statusOf(r))}</td>
+    <td style="font-family:var(--mono);font-size:11px;">${r.hasExpiry ? esc(r.startDate||'—')+' → '+esc(r.expDate||'—') : 'No expiry'}</td>
+    <td style="font-size:11px;color:var(--text3);">${esc(fmtTs(r.updatedAt))}</td>
+    <td><span class="badge ${r.source==='auto'?'auto-badge':'label-other'}">${r.source==='auto'?'SYNCED':'MANUAL'}</span></td>
+    <td><button class="link-btn" data-jump="${esc(r.eid)}">Manage</button></td>
+  </tr>`).join('');
+  el.innerHTML = `<table><thead><tr>
+    <th>EID</th><th>Name</th><th>Type</th><th>Account No</th><th>Add Detail</th><th>Rank</th><th>Status</th><th>Validity</th><th>Updated</th><th>Source</th><th></th>
+  </tr></thead><tbody>${html}</tbody></table>`;
+}
+document.getElementById('all-export').addEventListener('click', ()=>{
+  const labelF = document.getElementById('f2-label').value;
+  const statusF = document.getElementById('f2-status').value;
+  const primaryF = document.getElementById('f2-primary').value;
+  const q = document.getElementById('f2-search').value.trim().toLowerCase();
+  const rows = allAccounts().filter(a=>{
+    if(labelF && a.label !== labelF) return false;
+    if(statusF && statusOf(a) !== statusF) return false;
+    if(primaryF === 'primary' && !a.isPrimary) return false;
+    if(primaryF === 'secondary' && a.isPrimary) return false;
+    if(q){
+      const nm = (nameForEid(a.eid)||'').toLowerCase();
+      if(!a.eid.toLowerCase().includes(q) && !nm.includes(q)) return false;
+    }
+    return true;
+  }).map(r=>[r.eid, nameForEid(r.eid), r.label, r.accountNo, r.addDetail, r.isPrimary?'PRIMARY':'SECONDARY', statusOf(r).toUpperCase(), r.startDate, r.expDate, r.source]);
+  downloadCSV(`accounts-${todayISO()}.csv`,
+    ['EID','Name','Type','Account No','AddDetail','Rank','Status','StartDate','ExpDate','Source'], rows);
+});
+
+/* ═══════════════════════════════════════════════════════
+   UPLOAD & EXPORT TAB
+═══════════════════════════════════════════════════════ */
+const UP_MODES = {
+  sheet:{ title:'Sheet for this run', icon:'ti-file-spreadsheet',
+    hint:'Columns: EmpID, Name (extra columns are ignored). Pick the account type in the bar above to resolve — you can override it per row.',
+    uploadTip:'Upload the run sheet (CSV)', actionIcon:'ti-table-import', actionTxt:'Load sheet', actionTip:'Load the run sheet',
+    tplTip:'Download the run-sheet template', clearTip:'Clear the sheet' },
+  emp:{ title:'Employee master list', icon:'ti-users',
+    hint:'Columns exactly: EmpID, Name. Used to show names next to EIDs everywhere in this app.',
+    uploadTip:'Upload the employee master list (CSV)', actionIcon:'ti-device-floppy', actionTxt:'Save employees', actionTip:'Save the employee master list',
+    tplTip:'Download the employee-master template', clearTip:'Clear the manual employee list' }
+};
+let upMode = 'sheet', upType = 'WPS', upFile = null;
+function defaultLabel(){ return upType; }
+
+function syncUploadBar(){
+  const m = UP_MODES[upMode];
+  document.querySelectorAll('#up-mode button').forEach(b=>b.classList.toggle('on', b.dataset.mode===upMode));
+  document.querySelectorAll('#up-type button').forEach(b=>b.classList.toggle('on', b.dataset.label===upType));
+  document.getElementById('up-type').style.display = upMode==='sheet' ? '' : 'none';
+  document.getElementById('up-export').style.display = upMode==='sheet' ? '' : 'none';
+  const pick = document.getElementById('up-pick'), run = document.getElementById('up-run');
+  pick.title = m.uploadTip; pick.setAttribute('aria-label', m.uploadTip);
+  pick.classList.toggle('has-file', !!upFile);
+  run.innerHTML = `<i class="ti ${m.actionIcon}"></i><span class="vb-txt">${m.actionTxt}</span>`;
+  run.title = m.actionTip; run.setAttribute('aria-label', m.actionTip);
+  run.disabled = !upFile;
+  const tpl = document.getElementById('up-tpl'); tpl.title = m.tplTip; tpl.setAttribute('aria-label', m.tplTip);
+  const clr = document.getElementById('up-clear'); clr.title = m.clearTip; clr.setAttribute('aria-label', m.clearTip);
+  document.getElementById('up-fname').textContent = upFile ? upFile.name : '';
+}
+function resetUpFile(){ upFile = null; document.getElementById('up-file').value = ''; syncUploadBar(); }
+
+document.getElementById('up-mode').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-mode]'); if(!b || b.dataset.mode===upMode) return;
+  upMode = b.dataset.mode; resetUpFile(); renderUploadTable();
+});
+document.getElementById('up-type').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-label]'); if(!b) return;
+  upType = b.dataset.label; syncUploadBar(); renderUploadTable();
+});
+document.getElementById('up-pick').addEventListener('click', ()=>document.getElementById('up-file').click());
+document.getElementById('up-file').addEventListener('change', e=>{
+  upFile = e.target.files.length ? e.target.files[0] : null; syncUploadBar();
+});
+
+document.getElementById('up-tpl').addEventListener('click', ()=>{
+  if(upMode==='emp') downloadCSV('ap2_employee-template.csv', ['EmpID','Name'], [['40231','Amir Farooq'],['40232','Sana Iqbal']]);
+  else downloadCSV('accounts-run-template.csv', ['EmpID','Name'], [['40231','Amir Farooq'],['40232','Sana Iqbal']]);
+});
+
+document.getElementById('up-run').addEventListener('click', async ()=>{
+  if(!upFile){ showToast('Choose a CSV file first — use the Upload button.','error'); return; }
+  let rows;
+  try{ rows = parseCSV(await upFile.text()); } catch(e){ showToast('Could not read that file as CSV.','error'); return; }
+  if(!rows.length){ showToast('No rows found in the file.','error'); return; }
+  if(upMode==='emp'){
+    let added = 0, updated = 0;
+    rows.forEach(row=>{
+      const empid = (row.empid||'').trim();
+      const name = (row.name||'').trim();
+      if(!empid) return;
+      const existing = EMPLOYEES.find(e=>e.empid===empid);
+      if(existing){ existing.name = name; updated++; } else { EMPLOYEES.push({ empid, name }); added++; }
+    });
+    await saveEmployees();
+    resetUpFile();
+    renderAll();
+    showToast(`Saved ${added} new, updated ${updated} existing employee(s).`,'success');
+  } else {
+    BATCH_SHEET = rows.map(row=>({ eid: (row.empid||row.eid||'').trim(), name: (row.name||'').trim() })).filter(r=>r.eid);
+    ROW_LABEL = {};
+    await saveBatchSheet();
+    resetUpFile();
+    renderAll();
+    showToast(`Loaded ${BATCH_SHEET.length} row(s).`,'success');
+  }
+});
+
+document.getElementById('up-clear').addEventListener('click', async ()=>{
+  if(upMode==='emp'){
+    if(!confirm('Clear the manual employee list? The live ap2_employee cache (if connected) is unaffected.')) return;
+    EMPLOYEES = [];
+    await saveEmployees();
+  } else {
+    BATCH_SHEET = []; ROW_LABEL = {};
+    await saveBatchSheet();
+  }
+  renderAll();
+});
+
+document.getElementById('up-table').addEventListener('change', e=>{
+  if(e.target.classList.contains('batch-label-select')){
+    ROW_LABEL[e.target.dataset.eid] = e.target.value;
+    renderUploadTable();
+  }
+});
+
+function renderUploadTable(){
+  syncUploadBar();
+  const m = UP_MODES[upMode];
+  document.getElementById('up-title').innerHTML = `<i class="ti ${m.icon}"></i><span>${m.title}</span>`;
+  document.getElementById('up-hint').textContent = m.hint;
+  const statsEl = document.getElementById('up-stats');
+  const el = document.getElementById('up-table');
+  const statHtml = arr => arr.map(([cls,l,n])=>`<div class="stat ${cls}"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+
+  /* ---- Employee master list view ---- */
+  if(upMode==='emp'){
+    const live = new Set(AUTO_EMPLOYEES.map(e=>e.empid));
+    const list = allEmployees().slice().sort((a,b)=>String(a.empid).localeCompare(String(b.empid),undefined,{numeric:true}));
+    statsEl.innerHTML = statHtml([['s-primary','Known', list.length],['s-active','Live', AUTO_EMPLOYEES.length],['s-amber','Manual', EMPLOYEES.length]]);
+    if(!list.length){ el.innerHTML = '<div class="empty">No employees yet — upload a master list, then press Save employees.</div>'; return; }
+    const MAX = 1000;
+    el.innerHTML = `<table><thead><tr><th>EID</th><th>Name</th><th>Source</th></tr></thead><tbody>${
+      list.slice(0,MAX).map(e=>`<tr><td class="acc-cell" style="font-size:11.5px;">${esc(e.empid)}</td><td>${esc(e.name||'—')}</td><td>${live.has(e.empid)?'<span class="badge auto-badge">SYNCED</span>':'<span class="badge secondary">MANUAL</span>'}</td></tr>`).join('')
+    }</tbody></table>${list.length>MAX?`<div class="empty">Showing the first ${MAX} of ${list.length}.</div>`:''}`;
+    return;
+  }
+
+  /* ---- Sheet for this run view ---- */
+  if(!BATCH_SHEET.length){
+    statsEl.innerHTML = '';
+    el.innerHTML = '<div class="empty">No sheet loaded yet — press Upload, choose the CSV, then Load sheet.</div>';
+    return;
+  }
+  const defLabel = defaultLabel();
+  let nOk=0, nMissing=0, nAmbig=0;
+  const rowsHtml = BATCH_SHEET.map(({eid,name})=>{
+    const label = ROW_LABEL[eid] || defLabel;
+    const opts = LABELS.map(l=>`<option value="${l}" ${l===label?'selected':''}>${l}</option>`).join('');
+    const selectHtml = `<select class="date-input batch-label-select" data-eid="${esc(eid)}">${opts}</select>`;
+    const result = resolvePrimary(eid, label);
+    const displayName = name || nameForEid(eid) || '—';
+    if(result.status === 'missing'){
+      nMissing++;
+      return `<tr>
+        <td class="acc-cell" style="font-size:11.5px;">${esc(eid)}</td><td>${esc(displayName)}</td><td>${selectHtml}</td>
+        <td colspan="4" class="empty" style="padding:8px;">No active ${esc(label)} account for this EID.</td>
+      </tr>`;
+    }
+    if(result.status === 'ambiguous'){
+      nAmbig++;
+      return `<tr>
+        <td class="acc-cell" style="font-size:11.5px;">${esc(eid)}</td><td>${esc(displayName)}</td><td>${selectHtml}</td>
+        <td colspan="4"><span class="badge ambiguous">MULTIPLE ACTIVE — SET A PRIMARY</span></td>
+      </tr>`;
+    }
+    nOk++;
+    const r = result.rec;
+    return `<tr>
+      <td class="acc-cell" style="font-size:11.5px;">${esc(eid)}</td><td>${esc(displayName)}</td><td>${selectHtml}</td>
+      <td class="acc-cell">${esc(r.accountNo)}</td>
+      <td>${esc(r.addDetail || '—')}</td>
+      <td><span class="badge primary">PRIMARY</span></td>
+      <td style="font-family:var(--mono);font-size:11px;">${r.hasExpiry ? esc(r.startDate||'—')+' → '+esc(r.expDate||'—') : 'No expiry'}</td>
+    </tr>`;
+  }).join('');
+  statsEl.innerHTML = statHtml([['s-active','Resolved', nOk],['s-amber','Ambiguous', nAmbig],['s-inactive','Missing', nMissing]]);
+  el.innerHTML = `<table><thead><tr>
+    <th>EID</th><th>Name</th><th>Type</th><th>Account No</th><th>Add Detail</th><th>Rank</th><th>Validity</th>
+  </tr></thead><tbody>${rowsHtml}</tbody></table>`;
+}
+document.getElementById('up-export').addEventListener('click', ()=>{
+  const defLabel = defaultLabel();
+  const rows = BATCH_SHEET.map(({eid,name})=>{
+    const label = ROW_LABEL[eid] || defLabel;
+    const result = resolvePrimary(eid, label);
+    const displayName = name || nameForEid(eid) || '';
+    if(result.status !== 'ok') return null;
+    const r = result.rec;
+    return [eid, displayName, label, r.accountNo, r.addDetail, r.startDate, r.expDate];
+  }).filter(Boolean);
+  if(!rows.length){ showToast('Nothing to export — no rows resolved to a primary account.','error'); return; }
+  downloadCSV(`primary-accounts-${todayISO()}.csv`,
+    ['EID','Name','Type','Account No','AddDetail','StartDate','ExpDate'], rows);
+});
+
+/* ═══════════════════════════════════════════════════════
+   ACCOUNT HISTORY TAB
+   Every raw ap2_accLog row is already its own timestamped entry
+   (see mapAutoAccountRow) — nothing here drops a single one of them.
+   This groups those entries back into one timeline per account
+   (same EID + same Account No) so you can see: when it was added,
+   every AccType / Status / Rank change since, and what it is right
+   now — with Frozen periods shown muted/faded and in smaller text
+   so they read as "paused", not as just another normal change.
+═══════════════════════════════════════════════════════ */
+function historyGroups(){
+  const groups = {};
+  allAccounts().forEach(a=>{
+    const key = a.eid + '||' + a.accountNo;
+    (groups[key] = groups[key] || []).push(a);
+  });
+  return Object.keys(groups).map(key=>{
+    const entries = groups[key].slice().sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+    return { key, eid: entries[0].eid, accountNo: entries[0].accountNo, entries };
+  });
+}
+/* What actually changed between two consecutive log rows for the same account.
+   Checks AccType, Status and Rank first (the fields the business cares about);
+   only falls back to detail/validity/account-no if none of those three moved. */
+function diffEntries(prev, cur){
+  const lines = [];
+  if(prev.label !== cur.label) lines.push({field:'Type', from:prev.label, to:cur.label});
+  const sPrev = rawStatusLabel(prev), sCur = rawStatusLabel(cur);
+  if(sPrev !== sCur) lines.push({field:'Status', from:sPrev, to:sCur});
+  const rPrev = prev.isPrimary ? 'Primary' : 'Secondary', rCur = cur.isPrimary ? 'Primary' : 'Secondary';
+  if(rPrev !== rCur) lines.push({field:'Rank', from:rPrev, to:rCur});
+  if(!lines.length){
+    if((prev.addDetail||'') !== (cur.addDetail||'')){
+      lines.push({field:'Add Detail', from: prev.addDetail || '—', to: cur.addDetail || '—'});
+    }
+    const prevVal = prev.hasExpiry ? `${prev.startDate||'—'} → ${prev.expDate||'—'}` : 'No expiry';
+    const curVal  = cur.hasExpiry  ? `${cur.startDate||'—'} → ${cur.expDate||'—'}`  : 'No expiry';
+    if(prevVal !== curVal) lines.push({field:'Validity', from: prevVal, to: curVal});
+    if((prev.accountNo||'') !== (cur.accountNo||'')) lines.push({field:'Account No', from: prev.accountNo, to: cur.accountNo});
+  }
+  return lines;
+}
+function historyEventHtml(entry, i, entries){
+  const isFirst = i===0, isLast = i===entries.length-1, prev = entries[i-1];
+  const isFrozenNow = !!entry.frozen;
+  const cls = ['hev'];
+  if(isFirst) cls.push('hev-added'); else if(isFrozenNow) cls.push('hev-frozen');
+  if(isLast) cls.push('hev-current');
+
+  let title;
+  let changeHtml = '';
+  if(isFirst){
+    title = `Added — ${esc(entry.label)} account, ${esc(rawStatusLabel(entry))}, ${entry.isPrimary?'Primary':'Secondary'}`;
+  } else {
+    const changes = diffEntries(prev, entry);
+    if(changes.length){
+      title = changes.map(c=>c.field).join(' & ') + ' changed';
+      changeHtml = `<div class="hev-changes">${changes.map(c=>
+        `<div class="hev-change-line"><b>${esc(c.field)}</b>: ${esc(c.from)} → ${esc(c.to)}</div>`
+      ).join('')}</div>`;
+    } else {
+      title = 'Record updated (no type/status/rank change)';
+    }
+  }
+  if(isLast) title += isFirst ? '' : ' — current state';
+  else if(isFirst && entries.length===1) title += ' — current state';
+
+  // Reason: whenever a row is Frozen, surface its Add Detail as the reason on file (if any).
+  const reasonHtml = isFrozenNow && entry.addDetail
+    ? `<div class="hev-reason"><i class="ti ti-info-circle"></i> Reason on file: ${esc(entry.addDetail)}</div>`
+    : (isFrozenNow ? `<div class="hev-reason">No reason logged for this freeze — add one via Edit → Add Detail.</div>` : '');
+
+  return `<div class="${cls.join(' ')}">
+    <div class="hev-title">${title}</div>
+    ${changeHtml}
+    ${reasonHtml}
+    <div class="hev-date"><i class="ti ti-clock"></i> ${esc(fmtTs(entry.updatedAt))} &nbsp;${labelBadgeHtml(entry.label)} ${statusBadgeHtml(statusOf(entry))} ${entry.isPrimary?'<span class="badge primary">PRIMARY</span>':'<span class="badge secondary">SECONDARY</span>'}</div>
+  </div>`;
+}
+function historyCardHtml(group){
+  const entries = group.entries;
+  const last = entries[entries.length-1];
+  const nm = nameForEid(group.eid) || '—';
+  const eventsHtml = entries.map((e,i)=>historyEventHtml(e,i,entries)).join('');
+  return `<div class="hist-card">
+    <div class="hist-card-head">
+      <span class="hn">${esc(nm)}</span>
+      <span class="hid">${esc(group.eid)}</span>
+      <span class="acc-cell" style="font-size:11.5px;">${esc(group.accountNo)}</span>
+      ${labelBadgeHtml(last.label)}
+      ${statusBadgeHtml(statusOf(last))}
+      ${last.isPrimary?'<span class="badge primary">PRIMARY</span>':'<span class="badge secondary">SECONDARY</span>'}
+      <span class="hev-count">${entries.length} event${entries.length>1?'s':''} on file</span>
+    </div>
+    <div class="hev-track">${eventsHtml}</div>
+  </div>`;
+}
+function renderHistoryTab(){
+  const groups = historyGroups(); // nothing removed — every account, every logged entry
+  const searchEl = document.getElementById('hist-search');
+  const q = searchEl ? searchEl.value.trim().toLowerCase() : '';
+  let shown = groups;
+  if(q){
+    shown = groups.filter(g=>{
+      const nm = (nameForEid(g.eid)||'').toLowerCase();
+      return g.eid.toLowerCase().includes(q) || nm.includes(q) || (g.accountNo||'').toLowerCase().includes(q);
+    });
+  }
+  shown = shown.slice().sort((a,b)=>{
+    const la = a.entries[a.entries.length-1].updatedAt || 0;
+    const lb = b.entries[b.entries.length-1].updatedAt || 0;
+    return lb - la;
+  });
+
+  const el = document.getElementById('history-list');
+  el.innerHTML = shown.length ? shown.map(historyCardHtml).join('') : '<div class="empty">No account history to show.</div>';
+  document.getElementById('tab-history-count').textContent = groups.length;
+}
+document.getElementById('hist-search').addEventListener('input', renderHistoryTab);
+
+/* ═══════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════ */
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  const icon=document.getElementById('toast-icon');
+  const label=document.getElementById('toast-msg');
+  t.className='toast show'+(type?' '+type:'');
+  icon.className='ti '+(type==='error'?'ti-alert-circle':type==='success'?'ti-circle-check':'ti-info-circle');
+  label.textContent=msg;
+  clearTimeout(showToast._t);
+  showToast._t=setTimeout(()=>{ t.classList.remove('show'); },2600);
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER ALL + INIT
+═══════════════════════════════════════════════════════ */
+function renderAll(){
+  if(!loaded) return;
+  renderManage();
+  renderAllTab();
+  renderHistoryTab();
+  renderUploadTable();
+  renderSyncBar();
+}
+(async function init(){
+  await loadLocal();
+  loaded = true;
+  renderAll();
+  await loadAllWithRetries();
+})();
+</script>

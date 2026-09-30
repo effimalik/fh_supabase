@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FleetFlow Pro — HR &amp; Fleet Management</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232554C7'/%3E%3Cstop offset='100%25' stop-color='%2312223f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath d='M14 40 L28 26 L38 34 L50 20' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='20' r='4' fill='white'/%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<script src="https://effimalik.github.io/Testing/shared/auth.js?v=5"></script>
+<script src="https://effimalik.github.io/Testing/shared/dataLayer.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cioView.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/accessGuard.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cacheWatcher.js?v=1"></script>
+<!-- <script src="https://effimalik.github.io/Testing/shared/devPre.js"></script> -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     AP2 IDB Bridge — all data served from IndexedDB via AdminPro
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── Constants used by child pages ── */
+window.AP2_VS_ROWS  = 20;
+
+/* ══ AP2Cache — thin IDB-backed API (wraps AdminPro._cache) ══
+   All reads/writes go through IndexedDB via dataLayer.js.
+   No in-memory store, no static data, no shadow Maps.          */
+window.AP2Cache = {
+  async set(key, data) {
+    if (window.AdminPro) AdminPro.cache.set(key, data);
+  },
+  async get(key) {
+    return window.AdminPro ? AdminPro.cache.get(key) : null;
+  },
+  async getData(key) {
+    const e = window.AdminPro ? AdminPro.cache.get(key) : null;
+    return e ? e.data : null;
+  },
+  async getTs(key) {
+    const e = window.AdminPro ? AdminPro.cache.get(key) : null;
+    return e ? e.ts : null;
+  },
+  async getAge(key) {
+    const e = window.AdminPro ? AdminPro.cache.get(key) : null;
+    return e ? Date.now() - e.ts : Infinity;
+  },
+  async delete(key) {
+    if (window.AdminPro) AdminPro.cache.clear(key);
+  },
+  async clearAll() {
+    if (window.AdminPro) AdminPro.cache.clearAll();
+  },
+  async keys() {
+    return window.AdminPro ? Object.keys(AdminPro.getActiveDatasets()) : [];
+  },
+  /* Stream-query directly from IDB — row-by-row filter, no full clone */
+  async streamQuery(key, predicateFn) {
+    if (window.AdminPro) return AdminPro.streamQuery(key, predicateFn);
+    return [];
+  },
+  async count(key) {
+    const e = window.AdminPro ? AdminPro.cache.get(key) : null;
+    return e && Array.isArray(e.data) ? e.data.length : 0;
+  },
+  onChange(_fn) { /* no-op — IDB writes are observed via AdminPro */ },
+};
+
+/* ══ _AP2Shadow — thin Map-like proxy over AdminPro.cache ══
+   Lets legacy call sites keep using .age.get/.set/.delete/.clear/.entries()
+   and .data.get/.set/.delete/.clear/.entries() without maintaining a
+   separate in-memory copy. Reads always reflect AdminPro.cache (IDB-backed);
+   writes/deletes are routed back into AdminPro.cache so both "maps" stay
+   in sync automatically. */
+(function () {
+  function activeEntries(pick) {
+    if (!window.AdminPro || typeof AdminPro.getActiveDatasets !== 'function') return [];
+    const out = [];
+    for (const key of Object.keys(AdminPro.getActiveDatasets())) {
+      const e = AdminPro.cache.get(key);
+      if (e) out.push([key, pick(e)]);
+    }
+    return out;
+  }
+
+  const dataShadow = {
+    get(key) {
+      const e = window.AdminPro ? AdminPro.cache.get(key) : null;
+      return e ? e.data : undefined;
+    },
+    set(_key, _value) { /* no-op — AdminPro.cache is already the source of truth */ },
+    has(key) {
+      const e = window.AdminPro ? AdminPro.cache.get(key) : null;
+      return !!(e && e.data !== undefined && e.data !== null);
+    },
+    delete(key) {
+      if (window.AdminPro) AdminPro.cache.clear(key);
+      return true;
+    },
+    clear() {
+      if (window.AdminPro) AdminPro.cache.clearAll();
+    },
+    entries() {
+      return activeEntries(e => e.data).filter(([, d]) => d != null)[Symbol.iterator]();
+    },
+    keys() {
+      return activeEntries(e => e.data).filter(([, d]) => d != null).map(([k]) => k)[Symbol.iterator]();
+    },
+  };
+
+  const ageShadow = {
+    get(key) {
+      const e = window.AdminPro ? AdminPro.cache.get(key) : null;
+      return e ? e.ts : undefined;
+    },
+    set(_key, _ts) { /* no-op — AdminPro.cache is already the source of truth */ },
+    has(key) {
+      const e = window.AdminPro ? AdminPro.cache.get(key) : null;
+      return !!e;
+    },
+    delete(key) {
+      if (window.AdminPro) AdminPro.cache.clear(key);
+      return true;
+    },
+    clear() {
+      if (window.AdminPro) AdminPro.cache.clearAll();
+    },
+    entries() {
+      return activeEntries(e => e.ts)[Symbol.iterator]();
+    },
+    keys() {
+      return activeEntries(e => e.ts).map(([k]) => k)[Symbol.iterator]();
+    },
+  };
+
+  window._AP2Shadow = { data: dataShadow, age: ageShadow };
+})();
+
+console.log('[AP2] IDB bridge ready — all data served from IndexedDB via AdminPro');
+</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+/* ═══ TOKENS ═══ */
+:root,[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --surface:#21262d;--surface2:#2d333b;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent-dim:rgba(88,166,255,.12);--accent-glow:rgba(88,166,255,.28);
+  --teal:#39d353;--teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341;--amber-dim:rgba(227,179,65,.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7;--purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e;--orange-dim:rgba(240,136,62,.12);
+  --icon-bar-w:56px;--sub-bar-w:220px;--sub-bar-w-collapsed:60px;--icon-bar-h:68px;--icon-rail-w:76px;
+  --topbar-h:52px;
+  /* Live "how much space the sidebar currently occupies in-flow" — kept in
+     sync by JS (see updateDockOffset()) so the bottom notch dock can center
+     itself over the *content* area instead of the full viewport. Without
+     this, the dock (centered on the whole screen) bleeds its rounded left
+     edge over the collapsed sidebar on narrower widths, looking like a
+     stray scrollbar/pill sitting on top of it. */
+  --cur-sidebar-w:220px;
+  --radius:8px;--radius-lg:12px;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#ffffff;--bg3:#e8ecf0;
+  --surface:#ffffff;--surface2:#e2e7ed;
+  --border:#c8d0d9;--border2:#9aa5b1;
+  --text:#0d1117;--text2:#3d454f;--text3:#5a6370;
+  --accent:#0550ae;--accent-dim:rgba(5,80,174,.12);--accent-glow:rgba(5,80,174,.22);
+  --teal:#116329;--teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00;--amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b;--red-dim:rgba(168,17,27,.11);
+  --purple:#6639c8;--purple-dim:rgba(102,57,200,.13);
+  --orange:#953800;--orange-dim:rgba(149,56,0,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.10);
+  --shadow-md:0 4px 16px rgba(0,0,0,.12);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.15);
+}
+[data-theme="purple"]{
+  --bg:#0f0b1e;--bg2:#17112e;--bg3:#1e1840;
+  --surface:#221a3a;--surface2:#2c2250;
+  --border:#3a2e5e;--border2:#5a4890;
+  --text:#e8e0ff;--text2:#a899d4;--text3:#7a6ca8;
+  --accent:#c084fc;--accent-dim:rgba(192,132,252,.14);--accent-glow:rgba(192,132,252,.3);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#c084fc;--purple-dim:rgba(192,132,252,.14);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5);
+  --shadow-md:0 4px 16px rgba(0,0,0,.6);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.7);
+}
+[data-theme="ocean"]{
+  --bg:#071520;--bg2:#0d2035;--bg3:#112840;
+  --surface:#143050;--surface2:#1a3d60;
+  --border:#1e4a72;--border2:#2e6a9e;
+  --text:#d6eeff;--text2:#7db8e8;--text3:#4a87b8;
+  --accent:#38bdf8;--accent-dim:rgba(56,189,248,.14);--accent-glow:rgba(56,189,248,.3);
+  --teal:#34d399;--teal-dim:rgba(52,211,153,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5);
+  --shadow-md:0 4px 16px rgba(0,0,0,.55);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.65);
+}
+[data-theme="slate"]{
+  --bg:#0e1117;--bg2:#1a1f28;--bg3:#222836;
+  --surface:#28303e;--surface2:#313c4e;
+  --border:#3a4556;--border2:#556070;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --accent:#60a5fa;--accent-dim:rgba(96,165,250,.13);--accent-glow:rgba(96,165,250,.28);
+  --teal:#4ade80;--teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.45);
+  --shadow-md:0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+
+ html,body{
+  height:100%;width:100%;
+  font-family:var(--font);
+  background:var(--bg);color:var(--text);
+  font-size:14px;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+	
+/*
+.shell{
+  display:flex;flex-direction:column;
+  height:100vh;width:100%;
+  overflow:hidden;position:fixed;
+  top:0;left:0;right:0;bottom:0;
+} */
+
+
+.shell{
+  display:flex;
+  flex-direction:column;
+  height:100dvh;
+  width:100%;
+  inset:0; 
+}
+	
+
+/* ═══ TOPBAR ═══ */
+.topbar{
+  height:var(--topbar-h);
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:stretch;
+  flex-shrink:0;position:relative;
+  /* topbar must be above the dropdown — z-index:300 so dropdown (z:9999 fixed) still clears */
+  z-index:300;width:100%;
+  overflow:visible; /* allow dropdown to escape */
+}
+.topbar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent) 0%,var(--purple) 40%,var(--teal) 100%);
+  opacity:.75;pointer-events:none;
+}
+
+/* ── Brand zone — matches the folded/collapsed sub-bar's width exactly,
+   so the truck toggle button sits directly above the collapsed sidebar
+   rail and the two columns line up. */
+.tb-brand{
+  width:var(--sub-bar-w-collapsed);
+  display:flex;align-items:center;justify-content:center;
+  border-right:1px solid var(--border);flex-shrink:0;
+  background:linear-gradient(160deg,rgba(88,166,255,.06) 0%,transparent 100%);
+}
+.tb-brand-icon{
+  width:34px;height:34px;
+  background:linear-gradient(135deg,var(--accent) 0%,#1f6feb 100%);
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:16px;
+  box-shadow:0 0 14px var(--accent-glow),0 2px 4px rgba(0,0,0,.3);
+  transition:box-shadow .2s,transform .15s;
+  cursor:pointer;border:none;
+}
+.tb-brand-icon:hover{box-shadow:0 0 22px var(--accent-glow),0 2px 8px rgba(0,0,0,.4);transform:scale(1.05);}
+.tb-brand-icon:active{transform:scale(.96);}
+
+/* ── App name zone ── */
+.tb-app{
+  width:var(--sub-bar-w);
+  border-right:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 14px;gap:10px;flex-shrink:0;
+  min-width:0;overflow:hidden;
+  transition:width .25s cubic-bezier(.4,0,.2,1),padding .25s,border .25s;
+}
+.tb-app.collapsed{width:0;padding:0;border-right-color:transparent;}
+.tb-app-name{font-size:12.5px;font-weight:700;color:var(--text);letter-spacing:-.015em;line-height:1.2;white-space:nowrap;}
+.tb-app-sub{font-size:9.5px;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;margin-top:2px;white-space:nowrap;}
+
+.tb-daynight{
+  margin-left:auto;flex-shrink:0;
+  height:24px;width:24px;padding:0;
+  border:none;background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+  font-family:var(--font);font-weight:600;
+}
+.tb-daynight i{font-size:15px;transition:color .2s,transform .3s;}
+.tb-daynight:hover{background:transparent;color:var(--text);}
+.tb-daynight:hover i{transform:rotate(20deg);}
+/* ── Main strip ── */
+.tb-strip{
+  flex:1;display:flex;align-items:center;
+  padding:0 10px;gap:5px;min-width:0;
+  /* allow overflow visible so dropdown can show above everything */
+  overflow:visible;
+}
+
+/* page context — hide on small screens */
+.tb-page-ctx{
+  display:flex;align-items:center;gap:8px;
+  padding-right:12px;
+  border-right:1px solid var(--border);
+  flex-shrink:0;
+}
+.tb-page-pill{
+  width:28px;height:28px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.tb-page-label{font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;}
+.tb-page-sub2{font-size:10px;color:var(--text3);margin-top:1px;}
+
+/* shortcuts — visible, but allowed to shrink (flex-shrink:1) so they
+   never force the topbar's right-side icons (bell/cache/theme/avatar)
+   off-screen. If shrunk below their natural content width, the buttons
+   scroll internally instead of overflowing the strip. */
+.tb-shortcuts{
+  display:flex;align-items:center;gap:4px;
+  padding:0 8px;
+  border-right:1px solid var(--border);
+  flex-shrink:1;min-width:0;
+  /* scrollable when items overflow */
+  overflow-x:auto;overflow-y:hidden;
+  max-width:560px;
+  scrollbar-width:none;
+}
+.tb-shortcuts::-webkit-scrollbar{display:none;}
+.tb-sc{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:0 9px;height:28px;
+  border-radius:6px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text2);
+  font-size:11px;font-weight:500;cursor:pointer;
+  font-family:var(--font);transition:all .15s;white-space:nowrap;flex-shrink:0;
+}
+.tb-sc i{font-size:13px;flex-shrink:0;}
+.tb-sc:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.tb-sc.emp{color:var(--accent);border-color:rgba(88,166,255,.3);background:var(--accent-dim);}
+.tb-sc.emp:hover{background:var(--accent);color:#fff;box-shadow:0 0 10px var(--accent-glow);}
+.tb-sc.bike{color:var(--teal);border-color:rgba(57,211,83,.3);background:var(--teal-dim);}
+.tb-sc.bike:hover{background:var(--teal);color:#fff;}
+.tb-sc.adv{color:var(--amber);border-color:rgba(227,179,65,.3);background:var(--amber-dim);}
+.tb-sc.adv:hover{background:var(--amber);color:#0d1117;}
+.tb-sc.doc{color:var(--red);border-color:rgba(248,81,73,.3);background:var(--red-dim);}
+.tb-sc.doc:hover{background:var(--red);color:#fff;}
+.tb-sc.sim{color:var(--purple);border-color:rgba(163,113,247,.3);background:var(--purple-dim);}
+.tb-sc.sim:hover{background:var(--purple);color:#fff;}
+
+.tb-gap{flex:1;min-width:4px;}
+
+
+/* ══ THEME DROPDOWN ══
+   The button sits inside .topbar (z:300).
+   The dropdown is position:fixed so it always renders on top of everything. */
+.theme-dd-wrap{position:relative;flex-shrink:0;}
+
+.tb-theme-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:28px;
+  border-radius:6px;
+  border:1px solid var(--border2);
+  background:var(--surface);
+  color:var(--text);
+  cursor:pointer;
+  font-family:var(--font);transition:all .15s;flex-shrink:0;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.tb-theme-btn i.icon-main{font-size:15px;color:var(--accent);}
+.tb-theme-btn:hover{background:var(--surface2);border-color:var(--accent);box-shadow:0 0 8px var(--accent-glow);}
+.tb-theme-btn.open{border-color:var(--accent);background:var(--surface2);box-shadow:0 0 10px var(--accent-glow);}
+
+/* Dropdown — position:fixed so it always renders above all siblings */
+.theme-dropdown{
+  position:fixed;
+  /* JS sets top/right at open time */
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:10px;padding:6px;
+  box-shadow:0 8px 32px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.3);
+  z-index:99999;
+  min-width:175px;
+  display:none;
+  animation:ddIn .15s ease;
+}
+.theme-dropdown.open{display:block;}
+@keyframes ddIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+.td-label{
+  font-size:9px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text3);
+  padding:4px 10px 5px;
+}
+.td-item{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 10px;border-radius:7px;
+  cursor:pointer;font-size:12px;color:var(--text2);
+  transition:all .12s;
+  border:1px solid transparent;
+  font-family:var(--font);background:none;width:100%;text-align:left;
+}
+.td-item:hover{background:var(--surface2);color:var(--text);}
+.td-item.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(88,166,255,.25);font-weight:600;}
+.td-swatch{
+  width:13px;height:13px;border-radius:50%;
+  flex-shrink:0;border:1.5px solid rgba(255,255,255,.2);
+}
+.td-item i{font-size:13px;flex-shrink:0;width:15px;text-align:center;}
+
+/* sep */
+.tb-vsep{width:1px;height:18px;background:var(--border);flex-shrink:0;}
+
+/* user chip */
+.tb-user{
+  display:flex;align-items:center;gap:7px;
+  padding:0 10px;height:28px;
+  border-radius:6px;
+  border:1px solid var(--border);background:var(--surface);
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+}
+.tb-user:hover{background:var(--surface2);border-color:var(--border2);}
+.tb-avatar{
+  width:20px;height:20px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),#6e40c9);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:8.5px;font-weight:700;flex-shrink:0;
+}
+.tb-uname{font-size:11px;font-weight:600;color:var(--text);line-height:1.1;}
+.tb-urole{font-size:9px;color:var(--text3);}
+
+/* avatar-only icon button (opens profile popup) */
+.tb-avatar-btn{
+  width:28px;height:28px;border-radius:50%;
+  border:none;padding:0;flex-shrink:0;cursor:pointer;
+  background:linear-gradient(135deg,var(--purple),#6e40c9);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:10px;font-weight:700;
+  transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.tb-avatar-btn:hover{box-shadow:0 0 0 2px var(--accent-glow);transform:scale(1.05);}
+@media(max-width:520px){
+  .tb-avatar-btn{width:26px;height:26px;font-size:9px;margin-left:auto;}
+}
+
+/* ═══ PROFILE / LOGOUT MODAL ═══ */
+.pm-overlay{
+  display:none;position:fixed;inset:0;z-index:900;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(2px);
+  align-items:center;justify-content:center;
+  /* breathing room so the card never touches the viewport edge, and
+     lets it shrink/scroll instead of clipping on short screens */
+  padding:16px;box-sizing:border-box;
+}
+.pm-overlay.open{display:flex;}
+.pm-card{
+  width:300px;max-width:100%;
+  max-height:100%;overflow-y:auto;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.4);
+  padding:22px 20px 18px;text-align:center;
+  animation:pm-pop .16s ease-out;
+}
+@keyframes pm-pop{from{opacity:0;transform:scale(.94);}to{opacity:1;transform:scale(1);}}
+.pm-avatar{
+  width:56px;height:56px;border-radius:50%;margin:0 auto 10px;
+  background:linear-gradient(135deg,var(--purple),#6e40c9);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:19px;font-weight:700;
+  box-shadow:0 0 0 3px var(--accent-dim);
+}
+.pm-name{font-size:15px;font-weight:700;color:var(--text);}
+.pm-role{font-size:11.5px;color:var(--text2);margin-top:2px;}
+.pm-divider{height:1px;background:var(--border);margin:14px 0;}
+.pm-rows{display:flex;flex-direction:column;gap:8px;text-align:left;}
+.pm-row{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--text2);}
+.pm-row i{font-size:14px;color:var(--text3);flex-shrink:0;width:16px;text-align:center;}
+.pm-status{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700;
+  text-transform:capitalize;letter-spacing:.03em;
+}
+.pm-status.active{background:var(--teal-dim);color:var(--teal);}
+.pm-status.inactive{background:var(--red-dim);color:var(--red);}
+.pm-actions{display:flex;gap:8px;margin-top:18px;}
+.pm-btn{
+  flex:1;height:34px;border-radius:7px;font-size:12px;font-weight:600;
+  cursor:pointer;font-family:var(--font);transition:all .15s;border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.pm-btn.pm-cancel{background:var(--surface2);color:var(--text);}
+.pm-btn.pm-cancel:hover{border-color:var(--border2);background:var(--surface);}
+.pm-btn.pm-logout{background:var(--red);color:#fff;border-color:var(--red);}
+.pm-btn.pm-logout:hover{box-shadow:0 0 10px rgba(248,81,73,.4);opacity:.92;}
+
+/* ═══ BODY ROW ═══ */
+.body-row{flex:1;display:flex;overflow:hidden;min-height:0;}
+
+/* ─── FLOATING DOCK — macOS-style floating bottom nav bar (not flush
+   with the screen edge — it hovers above it with a gap on every
+   side). Sized to hug its icons, not full width. position:fixed with
+   an intrinsic width means it takes no space in .shell's flex flow —
+   the topbar/sidebar/content keep their full natural size, unaffected
+   by its presence. Each icon is its own colored rounded "app tile"
+   (see .dock-item); the active tile is marked by a small dot under
+   it (see .dock-item.active::after) rather than the old SVG wave. ─── */
+#icon-bar{
+  position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));
+  /* Center over the content area (to the right of the sidebar), not the
+     whole viewport — see --cur-sidebar-w above. */
+  left:calc(50% + (var(--cur-sidebar-w) / 2));
+  transform:translateX(-50%);
+  width:max-content;
+  background:transparent;border:none;
+  z-index:400;
+  margin:0;
+  transition:left .24s cubic-bezier(.4,0,.2,1);
+}
+.ib-scroll{
+  position:relative;
+  display:flex;flex-direction:row;align-items:flex-end;
+  gap:6px;padding:8px 10px;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:22px;
+  box-shadow:var(--shadow-lg);
+  max-width:calc(100vw - 24px);
+  overflow-x:auto;overflow-y:hidden;
+  scrollbar-width:none;
+}
+.ib-scroll::-webkit-scrollbar{display:none;}
+.ib-divider{display:none;}
+.ib-spacer{display:none;}
+/* Rounded "app tile" dock buttons — colored square-ish icons like a
+   macOS dock, each with a hover-revealed tooltip label. */
+.dock-item{
+  position:relative;flex-shrink:0;width:52px;height:52px;border-radius:14px;
+  border:none;color:#fff;font-size:22px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .16s cubic-bezier(.2,.9,.3,1.3);
+}
+.dock-item:hover{transform:translateY(-9px) scale(1.08);}
+.dock-item::after{
+  content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:0;
+}
+.dock-item.active::after{opacity:1;}
+.dock-sep{width:1px;align-self:stretch;margin:8px 4px;background:var(--border);}
+.dock-tip{
+  position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);
+  background:var(--text);color:var(--bg2);font-size:10.5px;font-weight:600;
+  padding:4px 9px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;
+  transition:opacity .12s;z-index:2;
+}
+.dock-item:hover .dock-tip{opacity:1;}
+
+/* icon-bar adaptive: shrink when very tight */
+@media(max-width:520px){
+  .ib-scroll{padding:6px 8px;gap:4px;}
+  .dock-item{width:44px;height:44px;font-size:18px;border-radius:12px;}
+}
+@media(max-height:420px){
+  .ib-scroll{padding:6px 8px;gap:4px;}
+  .dock-item{width:38px;height:38px;font-size:17px;border-radius:10px;}
+}
+
+
+/* ─── ADMIN — the last item in the same notch dock (no separate pinned
+   corner button). Its item list is hidden by default and only unfolds
+   while hovering this button/panel, auto-hiding again 5s after the
+   hover leaves. ─── */
+.admin-dock-wrap{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;
+}
+/* List — hidden by default, revealed only while hovering the corner area,
+   auto-hides again after the hover-out delay (handled in JS). Opens
+   upward, above the gear icon. */
+.admin-flyout{
+  position:absolute;right:0;bottom:calc(100% + 12px);
+  width:210px;max-height:min(60vh,420px);
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:14px;box-shadow:var(--shadow-lg);
+  overflow:hidden;display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateY(8px) scale(.97);transform-origin:bottom right;
+  transition:opacity .16s ease,transform .16s ease,visibility 0s linear .16s;
+}
+.admin-flyout.open{
+  opacity:1;visibility:visible;pointer-events:auto;
+  transform:translateY(0) scale(1);
+  transition:opacity .16s ease,transform .16s ease;
+}
+.admin-flyout-header{
+  padding:10px 12px;font-size:12px;font-weight:700;color:var(--text);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+}
+.admin-flyout-header i{color:var(--accent);font-size:14px;}
+.admin-flyout-nav{overflow-y:auto;padding:8px;min-height:0;}
+@media(max-width:520px){
+  .admin-fab{width:46px;height:46px;border-radius:12px;font-size:16px;}
+}
+
+/* ─── SUB MENU — docked left sidebar (Apple-style, e.g. Mail / Finder) ───
+   Part of normal layout flow, sits beside the main content area. Instead
+   of disappearing, "collapsed" shrinks it down to an icon-only rail
+   (same idea as macOS's collapsed Finder sidebar) so items stay reachable. */
+#sub-bar{
+  width:var(--sub-bar-w);
+  min-width:var(--sub-bar-w);
+  max-width:var(--sub-bar-w);
+  height:100%;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  flex-shrink:0;z-index:110;position:relative;
+  transition:width .24s cubic-bezier(.4,0,.2,1),min-width .24s cubic-bezier(.4,0,.2,1),max-width .24s cubic-bezier(.4,0,.2,1),border-color .24s ease;
+}
+#sub-bar.collapsed{
+  width:var(--sub-bar-w-collapsed);
+  min-width:var(--sub-bar-w-collapsed);
+  max-width:var(--sub-bar-w-collapsed);
+}
+/* Collapsed header: only the module icon remains, centered — it's the
+   whole header now (no separate collapse button; the header itself is
+   the click target, see .sb2-header onclick), so it just needs simple
+   centering rather than juggling a hidden label + a chevron. */
+#sub-bar.collapsed .sb2-header{justify-content:center;align-items:center;padding:14px 4px;gap:0;}
+#sub-bar.collapsed .sb2-header i{font-size:19px;transform:scale(1.06);}
+#sub-bar.collapsed .sb2-header span,
+#sub-bar.collapsed .sb2-item-label,
+#sub-bar.collapsed .sb2-badge{
+  opacity:0;visibility:hidden;pointer-events:none;
+  width:0;min-width:0;max-width:0;flex:none;margin:0;overflow:hidden;
+  transition:opacity .12s ease,visibility 0s linear .12s,width .12s ease;
+}
+/* Collapsed nav sections: fully removed from layout (display:none)
+   rather than height/opacity-animated. A height/opacity-collapsed
+   section can still register with its natural (non-zero) content
+   width in a column flex container, which is what was throwing the
+   icon column below it out of true center — display:none guarantees
+   it contributes nothing to sizing or alignment at all. */
+#sub-bar.collapsed .sb2-section{display:none;}
+#sub-bar.collapsed .sb2-nav{padding:8px 6px;display:flex;flex-direction:column;align-items:center;}
+#sub-bar.collapsed .sb2-item{
+  justify-content:center;align-items:center;
+  width:40px;height:40px;padding:0;margin:0 0 4px;gap:0;
+  overflow:hidden;
+  pointer-events:auto;cursor:pointer;
+}
+#sub-bar.collapsed .sb2-item i{font-size:18px;transform:scale(1.08);}
+.sb2-header{
+  padding:12px 16px;
+  font-size:13px;font-weight:700;
+  color:var(--text);
+  flex-shrink:0;white-space:nowrap;
+  display:flex;align-items:center;gap:9px;
+  cursor:pointer;user-select:none;
+  border-radius:var(--radius);
+  transition:padding .24s cubic-bezier(.4,0,.2,1),justify-content .24s cubic-bezier(.4,0,.2,1),background .15s ease;
+}
+.sb2-header:hover{background:var(--surface);}
+.sb2-header i{
+  font-size:16px;color:var(--accent);flex-shrink:0;
+  transition:font-size .24s cubic-bezier(.4,0,.2,1),transform .24s cubic-bezier(.4,0,.2,1);
+}
+.sb2-header span,
+.sb2-item-label,
+.sb2-badge{
+  opacity:1;visibility:visible;
+  transition:opacity .18s ease .06s,visibility 0s linear 0s;
+}
+.sb2-header span{flex:1;overflow:hidden;text-overflow:ellipsis;}
+.sb2-nav{overflow-y:auto;padding:8px;min-height:0;flex:1;transition:padding .24s cubic-bezier(.4,0,.2,1);}
+.sb2-nav::-webkit-scrollbar{width:3px;}
+.sb2-nav::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+.sb2-section{
+  font-size:9px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text3);
+  padding:8px 10px 4px;
+  max-height:26px;opacity:1;visibility:visible;overflow:hidden;white-space:nowrap;
+  transition:max-height .22s cubic-bezier(.4,0,.2,1),padding .22s cubic-bezier(.4,0,.2,1),opacity .16s ease .08s,visibility 0s linear 0s;
+}
+.sb2-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 11px;border-radius:var(--radius);
+  cursor:pointer;font-size:12.5px;color:var(--text2);
+  transition:background .15s ease,color .15s ease,border-color .15s ease,transform .15s ease,padding .24s cubic-bezier(.4,0,.2,1),gap .24s cubic-bezier(.4,0,.2,1),justify-content .24s cubic-bezier(.4,0,.2,1),width .24s cubic-bezier(.4,0,.2,1),height .24s cubic-bezier(.4,0,.2,1),margin .24s cubic-bezier(.4,0,.2,1);
+  user-select:none;white-space:nowrap;
+  border:1px solid transparent;margin-bottom:2px;
+}
+.sb2-item i{
+  font-size:15px;flex-shrink:0;
+  transition:font-size .24s cubic-bezier(.4,0,.2,1),transform .24s cubic-bezier(.4,0,.2,1);
+}
+.sb2-item:hover{background:var(--surface);color:var(--text);border-color:var(--border);}
+.sb2-item.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(88,166,255,.2);font-weight:500;}
+#sub-bar.collapsed .sb2-item:hover{transform:translateY(-2px);}
+#sub-bar.collapsed .sb2-item.active{box-shadow:0 0 0 1px rgba(88,166,255,.25) inset;}
+.sb2-badge{
+  margin-left:auto;font-size:9px;font-weight:700;
+  padding:1px 5px;border-radius:10px;
+  background:var(--red-dim);color:var(--red);
+}
+
+/* ─── MAIN AREA ─── */
+.main-area{flex:1;overflow:hidden;display:flex;flex-direction:column;min-width:0;}
+.main-container{
+  flex:1;margin:5px;overflow:hidden;
+  display:flex;flex-direction:column;
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  background:var(--bg);min-height:0;
+}
+#main-frame{flex:1;border:none;background:var(--bg);width:100%;height:100%;min-height:0;border-radius:var(--radius);}
+
+/* ══ RESPONSIVE ══ */
+
+/* Hide page-ctx on medium and small screens */
+@media(max-width:900px){
+  .tb-page-ctx{display:none;}
+}
+/* Hide app name zone on small screens */
+@media(max-width:720px){
+  .tb-app{display:none;}
+  /* Not enough room to show shortcut labels without squeezing the
+     bell/cache/theme/avatar icons off-screen — collapse to icon-only
+     instead of letting them "unfold" and push the rest of the topbar
+     out of view. */
+  .tb-sc span{display:none;}
+  .tb-sc{padding:0 7px;gap:0;}
+  .tb-shortcuts{max-width:220px;}
+}
+/* Below this width, the *expanded* sidebar becomes an overlay (like Apple
+   Mail on a compact width) instead of squeezing the content area; the
+   collapsed icon-only rail stays docked in-flow since it's already slim */
+@media(max-width:640px){
+  .body-row{position:relative;}
+  #sub-bar:not(.collapsed){
+    position:absolute;top:0;left:0;bottom:0;
+    width:min(var(--sub-bar-w),calc(100vw - 40px));
+    min-width:0;max-width:none;
+    box-shadow:var(--shadow-lg);
+    z-index:200;
+  }
+}
+@media(max-width:520px){
+  :root{--topbar-h:44px;--icon-bar-h:60px;}
+  .tb-vsep{display:none;}
+  .tb-uname,.tb-urole{display:none;}
+  .tb-user{padding:0 7px;}
+}
+
+/* ══ CACHE STATUS BUTTON ══ */
+.tb-cache-btn{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:28px;
+  border-radius:6px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text2);
+  cursor:pointer;font-family:var(--font);transition:all .15s;flex-shrink:0;
+}
+.tb-cache-btn i{font-size:14px;}
+.tb-cache-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.tb-cache-btn.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(88,166,255,.3);}
+/* signal dot — bottom-right corner of the icon button */
+.tb-cache-btn .cache-dot{
+  position:absolute;bottom:4px;right:4px;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 4px rgba(57,211,83,.7);
+  border:1px solid var(--bg2);
+}
+.tb-cache-btn .cache-dot.stale{background:var(--amber);box-shadow:0 0 4px rgba(227,179,65,.7);}
+.tb-cache-btn .cache-dot.error{background:var(--red);box-shadow:0 0 4px rgba(248,81,73,.7);}
+
+/* ══ ALERT BELL ══ */
+.bell-wrap{position:relative;flex-shrink:0;}
+.tb-bell-btn{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:28px;
+  border-radius:6px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text2);
+  cursor:pointer;font-family:var(--font);transition:all .15s;flex-shrink:0;
+}
+.tb-bell-btn i{font-size:14px;}
+.tb-bell-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.tb-bell-btn.active{background:var(--accent-dim);color:var(--accent);border-color:rgba(88,166,255,.3);}
+
+/* pulse dot — bottom-right corner, mirrors the cache signal dot */
+.bell-dot{
+  position:absolute;bottom:4px;right:4px;
+  width:7px;height:7px;border-radius:50%;
+  border:1px solid var(--bg2);
+  display:none;
+}
+.bell-dot.show{display:block;}
+.bell-dot::before{
+  content:'';position:absolute;inset:-3px;border-radius:50%;
+  animation:bellPulse 1.6s ease-out infinite;
+}
+.bell-dot.green{background:var(--teal);}
+.bell-dot.green::before{background:var(--teal);}
+.bell-dot.red{background:var(--red);}
+.bell-dot.red::before{background:var(--red);}
+@keyframes bellPulse{0%{transform:scale(1);opacity:.6;}100%{transform:scale(2.6);opacity:0;}}
+
+/* numeric count badge — top-right corner */
+.bell-count{
+  position:absolute;top:-4px;right:-4px;
+  min-width:15px;height:15px;padding:0 3px;
+  border-radius:20px;background:var(--red);color:#fff;
+  font-size:9px;font-weight:700;line-height:1;
+  align-items:center;justify-content:center;
+  border:1.5px solid var(--bg2);display:none;
+}
+.bell-count.show{display:flex;}
+
+/* dropdown panel — position:fixed, same pattern as the theme dropdown */
+.bell-panel{
+  position:fixed;display:none;
+  width:260px;max-width:calc(100vw - 16px);
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:10px;box-shadow:0 10px 32px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.3);
+  z-index:99999;animation:ddIn .15s ease;overflow:hidden;
+}
+.bell-panel.open{display:block;}
+.bell-panel-header{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 12px;font-size:11.5px;font-weight:700;color:var(--text);
+  border-bottom:1px solid var(--border);
+}
+.bell-panel-header i{color:var(--accent);font-size:14px;}
+.bell-panel-body{max-height:280px;overflow-y:auto;padding:6px;}
+.bell-empty{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:26px 10px;color:var(--text3);font-size:11px;text-align:center;
+}
+.bell-empty i{font-size:22px;opacity:.5;}
+/* row style ready for real alert items later */
+.bell-item{display:flex;gap:8px;padding:8px;border-radius:7px;font-size:11px;color:var(--text2);cursor:pointer;}
+.bell-item:hover{background:var(--surface2);}
+.bell-item i{font-size:15px;flex-shrink:0;margin-top:1px;}
+.bell-item.critical i{color:var(--red);}
+.bell-item.info i{color:var(--teal);}
+.bell-item-title{font-weight:600;color:var(--text);}
+.bell-item-sub{font-size:10px;color:var(--text3);margin-top:1px;}
+
+/* ══ CACHE PANEL ══ */
+.cache-panel{
+  position:fixed;
+  top:calc(var(--topbar-h) + 8px);
+  right:clamp(8px, 2vw, 120px);
+  width:min(480px, calc(100vw - 16px));
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  box-shadow:0 10px 36px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.3);
+  z-index:99998;
+  display:none;
+  overflow:hidden;
+  animation:cpIn .18s ease;
+  flex-direction:column;
+}
+.cache-panel.open{display:flex;}
+.cp-scroll{overflow:hidden;flex:1;}
+@keyframes cpIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+/* Mobile: centered sheet at top, 80% wide */
+@media(max-width:600px){
+  .cache-panel{
+    top:calc(var(--topbar-h) + 10px);
+    bottom:auto;
+    left:50%;
+    right:auto;
+    transform:translateX(-50%);
+    width:80%;
+    max-width:none;
+    border-radius:10px;
+    animation:cpInMob .2s ease;
+  }
+  @keyframes cpInMob{from{opacity:0;transform:translateX(-50%) translateY(-8px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+}
+
+.cp-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px 7px;
+  border-bottom:1px solid var(--border);
+}
+.cp-title{
+  display:flex;align-items:center;gap:7px;
+  font-size:11.5px;font-weight:700;color:var(--text);
+}
+.cp-title i{font-size:14px;color:var(--accent);}
+.cp-actions{display:flex;align-items:center;gap:5px;}
+.cp-action-btn{
+  display:flex;align-items:center;gap:3px;
+  padding:3px 8px;border-radius:5px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text2);font-size:10px;font-weight:600;
+  cursor:pointer;font-family:var(--font);transition:all .15s;
+}
+.cp-action-btn:hover{color:var(--text);border-color:var(--border2);}
+.cp-action-btn.danger:hover{color:var(--red);border-color:rgba(248,81,73,.4);background:var(--red-dim);}
+.cp-action-btn i{font-size:11px;}
+
+/* Table */
+.cp-table{width:100%;border-collapse:collapse;table-layout:fixed;}
+.cp-table .cp-col-hdr th{
+  font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--text3);padding:4px 8px;text-align:left;
+  border-bottom:1px solid var(--border);background:var(--bg3);
+}
+.cp-table .cp-col-hdr th:last-child{text-align:center;}
+.cp-table td{
+  padding:6px 8px;font-size:10.5px;color:var(--text2);
+  border-bottom:1px solid var(--border);vertical-align:middle;
+}
+.cp-table tr:last-child td{border-bottom:none;}
+.cp-table tr:hover td{background:var(--surface2);}
+
+/* Stacked cell layout — top line bold, bottom line muted */
+.cp-cell-top{
+  font-size:11px;line-height:1.3;
+}
+.cp-cell-bot{
+  font-size:9.5px;line-height:1.3;margin-top:2px;
+  display:flex;align-items:center;
+}
+
+/* Dataset name */
+.cp-ds-name{
+  display:flex;align-items:center;gap:6px;
+  font-weight:600;color:var(--text);font-size:11px;min-width:0;
+}
+.cp-ds-name-text{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+}
+.cp-ds-icon{
+  width:20px;height:20px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;flex-shrink:0;
+}
+
+/* Status pill */
+.cp-status-pill{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:2px 6px;border-radius:20px;
+  font-size:9.5px;font-weight:700;letter-spacing:.03em;
+}
+.cp-status-pill.fresh{background:var(--teal-dim);color:var(--teal);}
+.cp-status-pill.stale{background:var(--amber-dim);color:var(--amber);}
+.cp-status-pill.empty{background:var(--surface2);color:var(--text3);}
+.cp-status-pill i{font-size:9.5px;}
+
+/* TTL bar (inline in remaining line) */
+.cp-ttl-fill.fresh{background:var(--teal);}
+.cp-ttl-fill.mid  {background:var(--amber);}
+.cp-ttl-fill.low  {background:var(--red);}
+
+/* Action buttons */
+.cp-row-btns{display:flex;align-items:center;justify-content:center;gap:3px;}
+.cp-row-btn{
+  width:22px;height:22px;border-radius:5px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text2);font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.cp-row-btn:hover.refresh{color:var(--accent);border-color:rgba(88,166,255,.4);background:var(--accent-dim);}
+.cp-row-btn:hover.delete {color:var(--red);border-color:rgba(248,81,73,.4);background:var(--red-dim);}
+.cp-row-btn.spin i{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.cp-footer{
+  padding:6px 12px;background:var(--bg3);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:9.5px;color:var(--text3);
+}
+.cp-footer-note{display:flex;align-items:center;gap:4px;}
+.cp-footer-note i{font-size:10px;}
+
+/* ══ CACHE MISS CHECKER PANEL ══ */
+.cm-panel{
+  position:fixed;bottom:14px;right:14px;
+  width:320px;max-height:260px;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);
+  z-index:9000;
+  display:none;flex-direction:column;overflow:hidden;
+  font-family:var(--font);
+}
+.cm-panel.open{display:flex;}
+.cm-header{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 12px;background:var(--bg3);border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.cm-title{font-size:11px;font-weight:700;color:var(--text);flex:1;display:flex;align-items:center;gap:6px;}
+.cm-title i{color:var(--amber);font-size:13px;}
+.cm-close{width:20px;height:20px;border-radius:4px;border:none;background:none;color:var(--text3);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;padding:0;}
+.cm-close:hover{background:var(--surface2);color:var(--text);}
+.cm-body{flex:1;overflow-y:auto;padding:8px;scrollbar-width:none;}
+.cm-body::-webkit-scrollbar{display:none;}
+.cm-row{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 8px;border-radius:var(--radius);margin-bottom:3px;
+  font-size:11px;background:var(--bg2);border:1px solid var(--border);
+}
+.cm-row.miss{border-color:rgba(248,81,73,.3);background:var(--red-dim);}
+.cm-row.error{border-color:rgba(248,81,73,.5);background:var(--red-dim);}
+.cm-row.ok{border-color:rgba(57,211,83,.25);background:var(--teal-dim);}
+.cm-row-name{flex:1;color:var(--text);font-weight:600;}
+.cm-row-info{color:var(--text3);font-size:10px;}
+.cm-row-badge{
+  font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;
+  text-transform:uppercase;letter-spacing:.04em;flex-shrink:0;
+}
+.cm-row-badge.miss{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.3);}
+.cm-row-badge.error{background:var(--red-dim);color:var(--red);}
+.cm-row-badge.ok{background:var(--teal-dim);color:var(--teal);}
+.cm-row-badge.stale{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(227,179,65,.3);}
+.cm-row-btn{
+  width:22px;height:22px;border-radius:4px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--text2);font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;padding:0;flex-shrink:0;
+}
+.cm-row-btn:hover{color:var(--accent);border-color:rgba(88,166,255,.4);background:var(--accent-dim);}
+.cm-row-btn.spin i{animation:spin 1s linear infinite;}
+.cm-footer-strip{
+  padding:7px 12px;background:var(--bg3);border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:10px;color:var(--text3);flex-shrink:0;
+}
+.cm-footer-strip button{
+  font-size:10px;padding:3px 8px;border-radius:4px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text2);cursor:pointer;font-family:var(--font);
+  display:flex;align-items:center;gap:4px;transition:all .15s;
+}
+.cm-footer-strip button:hover{color:var(--accent);border-color:rgba(88,166,255,.3);}
+/* miss badge on cache btn */
+.cache-miss-badge{
+  position:absolute;top:-4px;right:-4px;
+  min-width:14px;height:14px;border-radius:7px;
+  background:var(--red);color:#fff;
+  font-size:8px;font-weight:700;font-family:var(--font);
+  display:none;align-items:center;justify-content:center;
+  padding:0 3px;border:1.5px solid var(--bg2);
+}
+.cache-miss-badge.show{display:flex;}
+
+/* ══ AP2 Virtual-Scroll container ══
+   Attach class ap2-vs-wrap to any scrollable table host.
+   Height = VS_ROWS (20) × ROW_H (36px) = 720px max;
+   overflows scroll automatically.                        */
+.ap2-vs-wrap{
+  overflow-y:auto;
+  max-height:720px;         /* 20 × 36px */
+  contain:strict;           /* GPU compositing hint */
+  will-change:scroll-position;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border2) transparent;
+}
+.ap2-vs-wrap::-webkit-scrollbar{width:5px;}
+.ap2-vs-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+.ap2-vs-row{ height:36px; }  /* fixed row height for virtual-scroll math */
+
+/* ══ IDB status badge in cache panel footer ══ */
+.cp-idb-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 7px;border-radius:20px;
+  font-size:9px;font-weight:700;letter-spacing:.04em;
+  background:var(--accent-dim);color:var(--accent);
+  border:1px solid rgba(88,166,255,.25);
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+
+    <!-- Truck = sidebar toggle -->
+    <div class="tb-brand">
+      <button class="tb-brand-icon" onclick="toggleSidebar()" title="Toggle sidebar">
+        <i class="ti ti-truck"></i>
+      </button>
+    </div>
+
+    <!-- App name + day/night toggle icon -->
+    <div class="tb-app" id="tb-app-zone">
+      <div style="min-width:0;">
+        <div class="tb-app-name">FleetFlow Pro</div>
+        <div class="tb-app-sub">HR &amp; Fleet Management</div>
+      </div>
+      <!-- Day/Night pill toggle — icon only -->
+      <button class="tb-daynight" id="daynight-btn"
+        onclick="quickToggleDarkLight()"
+        title="Toggle dark / light mode">
+        <i class="ti ti-moon" id="daynight-icon"></i>
+      </button>
+    </div>
+
+    <!-- Main strip -->
+    <div class="tb-strip">
+
+      <!-- Page context (hides on small screens) -->
+      <div class="tb-page-ctx">
+        <div class="tb-page-pill" id="tb-pill" style="background:var(--accent-dim);color:var(--accent);">
+          <i class="ti ti-users" id="tb-pill-i"></i>
+        </div>
+        <div>
+          <div class="tb-page-label" id="tb-page-label">Employees</div>
+          <div class="tb-page-sub2" id="tb-page-sub2">Staff directory</div>
+        </div>
+      </div>
+
+      <!-- Shortcuts — always visible, scrollable -->
+      <div class="tb-shortcuts">
+        <button class="tb-sc emp"
+          onclick="loadPage('Reg/addEmp.html',null,'Add Employee','ti-user-plus','Register new employee','var(--accent-dim)','var(--accent)')">
+          <i class="ti ti-user-plus"></i><span> Add Employee</span>
+        </button>
+        <button class="tb-sc bike"
+          onclick="loadPage('Reg/addBike.html',null,'Add Bike','ti-motorbike','Register vehicle','var(--teal-dim)','var(--teal)')">
+          <i class="ti ti-motorbike"></i><span> Add Bike</span>
+        </button>
+        <button class="tb-sc sim"
+          onclick="loadPage('Reg/addSim.html',null,'Add Sim','ti-device-sim','New sim','var(--purple-dim)','var(--purple)')">
+          <i class="ti ti-device-sim"></i><span> Add Sim</span>
+        </button>
+        <button class="tb-sc doc"
+          onclick="loadPage('Reg/docPortal.html',null,'Add Documents','ti-file-plus','Upload new document','var(--red-dim)','var(--red)')">
+          <i class="ti ti-file-plus"></i><span> Add Doc</span>
+        </button>
+      </div>
+
+      <div class="tb-gap"></div>
+
+      <!-- Alerts Bell — icon + pulse dot; real alert data wired in later -->
+      <div class="bell-wrap" id="bell-wrap">
+        <button class="tb-bell-btn" id="bell-btn" onclick="toggleBellPanel(event)" title="Alerts">
+          <i class="ti ti-bell"></i>
+          <span class="bell-dot" id="bell-dot"></span>
+          <span class="bell-count" id="bell-count"></span>
+        </button>
+        <div class="bell-panel" id="bell-panel" role="menu">
+          <div class="bell-panel-header"><i class="ti ti-bell"></i> Alerts</div>
+          <div class="bell-panel-body" id="bell-panel-body">
+            <div class="bell-empty">
+              <i class="ti ti-bell-off"></i>
+              <span>No alerts yet</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cache Status Button — icon + signal dot only -->
+      <button class="tb-cache-btn" id="cache-status-btn" onclick="toggleCachePanel(event)" title="Cache Status">
+        <i class="ti ti-database"></i>
+        <span class="cache-dot" id="cache-health-dot"></span>
+        <span class="cache-miss-badge" id="cache-miss-badge"></span>
+      </button>
+
+      <div class="tb-vsep"></div>
+
+      <!-- Theme dropdown — position:fixed dropdown -->
+      <div class="theme-dd-wrap" id="theme-dd-wrap">
+        <button class="tb-theme-btn" id="theme-dd-btn" onclick="toggleThemeDropdown(event)" title="Choose theme">
+          <i class="ti ti-palette icon-main" id="theme-dd-icon"></i>
+        </button>
+        <!-- Dropdown rendered here but positioned fixed via JS -->
+        <div class="theme-dropdown" id="theme-dropdown" role="menu">
+          <div class="td-label">Choose Theme</div>
+          <button class="td-item" data-t="dark"   onclick="setTheme('dark')">
+            <span class="td-swatch" style="background:#161b22;border-color:#30363d;"></span>
+            <i class="ti ti-moon"></i>Dark
+          </button>
+          <button class="td-item" data-t="light"  onclick="setTheme('light')">
+            <span class="td-swatch" style="background:#f0f2f5;border-color:#c8d0d9;"></span>
+            <i class="ti ti-sun"></i>Light
+          </button>
+          <button class="td-item" data-t="purple" onclick="setTheme('purple')">
+            <span class="td-swatch" style="background:#17112e;border-color:#3a2e5e;"></span>
+            <i class="ti ti-star"></i>Purple Night
+          </button>
+          <button class="td-item" data-t="ocean"  onclick="setTheme('ocean')">
+            <span class="td-swatch" style="background:#0d2035;border-color:#1e4a72;"></span>
+            <i class="ti ti-waves"></i>Ocean
+          </button>
+          <button class="td-item" data-t="slate"  onclick="setTheme('slate')">
+            <span class="td-swatch" style="background:#1a1f28;border-color:#3a4556;"></span>
+            <i class="ti ti-layout-grid"></i>Slate
+          </button>
+        </div>
+      </div>
+
+      <div class="tb-vsep"></div>
+
+      <!-- Avatar — simple icon button, opens profile popup (Name / Designation / Logout) -->
+      <button class="tb-avatar-btn" id="tb-avatar-btn" onclick="openProfileModal()" title="Loading...">--</button>
+
+    </div>
+  </header>
+
+  <!-- BODY ROW -->
+  <div class="body-row" id="body-row">
+
+    <!-- SUB MENU — docked left sidebar (Apple-style, e.g. Mail / Finder sidebar) -->
+    <nav id="sub-bar" role="menu" aria-hidden="false">
+      <div class="sb2-header" onclick="toggleSidebar()" title="Toggle menu">
+        <i class="ti ti-users" id="sb2-icon"></i>
+        <span id="sb2-title">Employees</span>
+      </div>
+      <div class="sb2-nav" id="sb2-nav"></div>
+    </nav>
+
+    <!-- MAIN AREA — 5px margin container -->
+    <div class="main-area">
+      <div class="main-container">
+        <iframe id="main-frame" src="Reg/allEmp.html" title="Content"></iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FLOATING DOCK — main menu, a macOS-style floating bottom dock that
+       hovers clear of the screen edge, sized to fit its icons. Fixed
+       positioning means it floats over the page without ever shifting
+       the topbar/sidebar/content. Each icon is its own colored "app
+       tile" (see .dock-item); the active tile is marked with a small
+       dot underneath (see .dock-item.active::after). Clicking any icon
+       opens that section's items into the left #sub-bar (see ibOpen()
+       in JS) — same behavior as before, just a different look. -->
+  <nav id="icon-bar" aria-label="Navigation">
+    <div class="ib-scroll" id="ib-scroll">
+      <button class="dock-item active" id="ib-emp" style="background:var(--accent);" onclick="ibOpen('ib-emp',this)" title="Employees">
+        <i class="ti ti-users"></i><span class="dock-tip">Employees</span>
+      </button>
+
+      <button class="dock-item" id="ib-bike" style="background:var(--teal);" onclick="ibOpen('ib-bike',this)" title="Bike Fleet">
+        <i class="ti ti-motorbike"></i><span class="dock-tip">Bike Fleet</span>
+      </button>
+
+      <button class="dock-item" id="ib-sim" style="background:var(--purple);" onclick="ibOpen('ib-sim',this)" title="SIM Cards">
+        <i class="ti ti-device-sim"></i><span class="dock-tip">SIM Cards</span>
+      </button>
+
+      <button class="dock-item" id="ib-adv" style="background:var(--amber);" onclick="ibOpen('ib-adv',this)" title="Advance Salary">
+        <i class="ti ti-cash"></i><span class="dock-tip">Advance Salary</span>
+      </button>
+
+      <button class="dock-item" id="ib-docs" style="background:var(--orange);" onclick="ibOpen('ib-docs',this)" title="Document">
+        <i class="ti ti-file-description"></i><span class="dock-tip">Document</span>
+      </button>
+
+      <button class="dock-item" id="ib-payroll" style="background:var(--red);" onclick="ibOpen('ib-payroll',this)" title="Payroll">
+        <i class="ti ti-report-money"></i><span class="dock-tip">Payroll</span>
+      </button>
+
+      <div class="dock-sep"></div>
+
+      <!-- ADMIN — last item in this same floating dock. Its item list is
+           hidden by default and only unfolds while hovering this
+           button/panel (auto-hides again a few seconds after the hover
+           leaves). Clicking the gear still opens the Admin section into
+           the main sidebar + content frame as before. -->
+      <div class="admin-dock-wrap" id="admin-dock-wrap">
+        <div class="admin-flyout" id="admin-flyout" role="menu" aria-hidden="true">
+          <div class="admin-flyout-header"><i class="ti ti-settings"></i> Admin</div>
+          <div class="admin-flyout-nav" id="admin-flyout-nav"></div>
+        </div>
+        <button class="dock-item admin-fab" id="ib-admin" style="background:linear-gradient(135deg,var(--text2),var(--text3));" onclick="ibOpen('ib-admin',this)" title="Admin">
+          <i class="ti ti-settings"></i><span class="dock-tip">Admin</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<!-- ══ CACHE STATUS PANEL ══ -->
+<div class="cache-panel" id="cache-panel">
+  <div class="cp-header">
+    <div class="cp-title">
+      <i class="ti ti-database"></i>
+      Cache Status
+    </div>
+    <div class="cp-actions">
+      <button class="cp-action-btn" onclick="toggleMissChecker()" title="Cache miss checker" style="color:var(--amber);">
+        <i class="ti ti-alert-triangle"></i> Checker
+      </button>
+      <button class="cp-action-btn" onclick="refreshAllCache()" title="Hard refresh all datasets">
+        <i class="ti ti-refresh"></i> Refresh All
+      </button>
+      <button class="cp-action-btn danger" onclick="deleteAllCache()" title="Clear entire cache">
+        <i class="ti ti-trash"></i> Clear All
+      </button>
+    </div>
+  </div>
+  <div class="cp-scroll">
+  <table class="cp-table">
+    <colgroup>
+      <col style="width:36%"/>
+      <col style="width:22%"/>
+      <col style="width:28%"/>
+      <col style="width:14%"/>
+    </colgroup>
+    <thead>
+      <tr class="cp-col-hdr">
+        <th>Dataset</th>
+        <th class="cp-col-sync">Last Sync / TTL</th>
+        <th class="cp-col-status-rem">Status / Remaining</th>
+        <th style="text-align:center;">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="cache-table-body">
+      <tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px;">Loading cache info…</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="cp-footer">
+    <span class="cp-footer-note"><i class="ti ti-database"></i> In-memory data store · Static dataset · Stream-queried &amp; virtual-scrolled</span>
+    <span id="cp-last-check">—</span>
+  </div>
+</div>
+<!-- ══ CACHE MISS CHECKER PANEL ══ -->
+<div class="cm-panel" id="cm-panel">
+  <div class="cm-header">
+    <div class="cm-title"><i class="ti ti-alert-triangle"></i>Cache Checker</div>
+    <span id="cm-last-scan" style="font-size:9.5px;color:var(--text3);margin-right:6px;"></span>
+    <button class="cm-close" onclick="closeMissPanel()" title="Close"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="cm-body" id="cm-body">
+    <div style="text-align:center;color:var(--text3);padding:20px;font-size:11px;">Scanning…</div>
+  </div>
+  <div class="cm-footer-strip">
+    <span id="cm-summary">—</span>
+    <button onclick="cmScanAll()"><i class="ti ti-refresh"></i> Re-scan</button>
+  </div>
+</div>
+
+<!-- ══ PROFILE / LOGOUT POPUP ══ -->
+<div class="pm-overlay" id="pm-overlay">
+  <div class="pm-card" role="dialog" aria-modal="true" aria-labelledby="pm-name">
+    <div class="pm-avatar" id="pm-avatar">--</div>
+    <div class="pm-name" id="pm-name">Afan Haidar</div>
+    <div class="pm-role" id="pm-role">Head Operations · Talabat</div>
+    <div class="pm-divider"></div>
+    <div class="pm-rows">
+      <div class="pm-row"><i class="ti ti-mail"></i><span id="pm-email">sas.ds.llc@gmail.com</span></div>
+      <div class="pm-row"><i class="ti ti-circle-check"></i><span class="pm-status active" id="pm-status">Active</span></div>
+    </div>
+    <div class="pm-actions">
+      <button class="pm-btn pm-cancel" onclick="closeProfileModal()">Cancel</button>
+      <button class="pm-btn pm-logout" onclick="confirmLogoutFromModal()"><i class="ti ti-logout-2"></i> Logout</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+
+/* ════════════════════════════════════════════
+   EVENT LOG — silent sink (monitor removed)
+   ════════════════════════════════════════════ */
+function _logEvent() {} // no-op; kept so cache functions compile without change
+
+/* ════════════════════════════════════════════
+   CACHE MISS CHECKER
+   ════════════════════════════════════════════ */
+let _cmPanelOpen = false;
+let _cmAutoHideTimer = null;
+
+function toggleMissChecker() {
+  _cmPanelOpen = !_cmPanelOpen;
+  const p = document.getElementById('cm-panel');
+  if (_cmPanelOpen) {
+    p.classList.add('open');
+    cmScanAll();
+    p.removeEventListener('mouseleave', _onCmLeave);
+    p.removeEventListener('mouseenter', _onCmEnter);
+    p.addEventListener('mouseleave', _onCmLeave);
+    p.addEventListener('mouseenter', _onCmEnter);
+    _resetCmAutoHide();
+  } else {
+    closeMissPanel();
+  }
+}
+
+function _onCmLeave()  { _resetCmAutoHide(); }
+function _onCmEnter()  { if (_cmAutoHideTimer) { clearTimeout(_cmAutoHideTimer); _cmAutoHideTimer = null; } }
+
+function closeMissPanel() {
+  _cmPanelOpen = false;
+  const p = document.getElementById('cm-panel');
+  p?.classList.remove('open');
+  p?.removeEventListener('mouseleave', _onCmLeave);
+  p?.removeEventListener('mouseenter', _onCmEnter);
+  if (_cmAutoHideTimer) { clearTimeout(_cmAutoHideTimer); _cmAutoHideTimer = null; }
+}
+
+function _resetCmAutoHide() {
+  if (_cmAutoHideTimer) clearTimeout(_cmAutoHideTimer);
+  _cmAutoHideTimer = setTimeout(closeMissPanel, 3000);
+}
+
+function cmScanAll() {
+  const body = document.getElementById('cm-body');
+  const summary = document.getElementById('cm-summary');
+  const lastScan = document.getElementById('cm-last-scan');
+  if (!body) return;
+
+  const now = new Date();
+  if (lastScan) lastScan.textContent = 'Scanned ' + now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+
+  const results = Object.entries(DS_META).map(([key, meta]) => {
+    const ageMs = getCacheAge(key);
+    const hasData = (() => { try { const d = getCacheData(key); return Array.isArray(d) ? d.length > 0 : d != null; } catch(_){ return false; } })();
+    const fresh = ageMs < meta.ttlMs;
+    const status = !hasData ? 'miss' : !fresh ? 'stale' : 'ok';
+    return { key, label: meta.label, status, meta, ageMs };
+  });
+
+  const misses = results.filter(r => r.status === 'miss').length;
+  const stales = results.filter(r => r.status === 'stale').length;
+  if (summary) {
+    if (misses === 0 && stales === 0) summary.textContent = 'All ' + results.length + ' healthy';
+    else summary.textContent = (misses ? misses + ' miss' : '') + (misses && stales ? ', ' : '') + (stales ? stales + ' stale' : '');
+  }
+
+  const missTotal = misses + stales;
+  const badge = document.getElementById('cache-miss-badge');
+  if (badge) {
+    badge.textContent = missTotal || '';
+    badge.classList.toggle('show', missTotal > 0);
+  }
+
+  // Only update visible rows when panel is open
+  if (!_cmPanelOpen) {
+    if (_cmPanelOpen) _resetCmAutoHide();
+    return;
+  }
+
+  body.innerHTML = results.map(r => {
+    const badgeCls = r.status === 'miss' ? 'miss' : r.status === 'stale' ? 'stale' : 'ok';
+    const badgeTxt = r.status === 'miss' ? 'MISS' : r.status === 'stale' ? 'STALE' : 'OK';
+    const ageStr = r.ageMs === Infinity ? 'Never loaded' : r.ageMs < 60000 ? Math.floor(r.ageMs/1000)+'s ago' : Math.floor(r.ageMs/60000)+'m ago';
+    return `<div class="cm-row ${r.status !== 'ok' ? r.status : ''}">
+      <span class="cm-row-name">${r.label}</span>
+      <span class="cm-row-info">${ageStr}</span>
+      <span class="cm-row-badge ${badgeCls}">${badgeTxt}</span>
+      <button class="cm-row-btn" id="cmbtn-${r.key}" onclick="cmRefresh('${r.key}',this)" title="Force refresh">
+        <i class="ti ti-refresh"></i>
+      </button>
+    </div>`;
+  }).join('');
+
+  if (_cmPanelOpen) _resetCmAutoHide();
+}
+
+async function cmRefresh(key, btn) {
+  btn.classList.add('spin');
+  btn.disabled = true;
+  _logEvent('refresh', 'Cache refresh triggered:', key);
+  try {
+    if (window.AdminPro && AdminPro.forceRefresh) {
+      await AdminPro.forceRefresh(key);
+    } else {
+      await AP2Cache.delete(key);
+    }
+    setTimeout(() => { cmScanAll(); renderCacheTable(); updateCacheHealthDot(); _notifyFrame(); }, 300);
+  } catch(e) {
+    _logEvent('miss', 'Refresh error:', key);
+  } finally {
+    btn.classList.remove('spin');
+    btn.disabled = false;
+  }
+}
+
+/* ══ CACHE CHANGE WATCHER ══ */
+(function _watchCache() {
+  AP2Cache.onChange(async (key, op) => {
+    if (op === 'set') {
+      const rec = await AP2Cache.get(key).catch(() => null);
+      if (rec) {
+        window._AP2Shadow.age.set(key, rec.ts);
+        window._AP2Shadow.data.set(key, rec.data);
+      }
+      _logEvent('cache', 'Cache updated:', key);
+    } else if (op === 'delete') {
+      window._AP2Shadow.age.delete(key);
+      window._AP2Shadow.data.delete(key);
+      _logEvent('delete', 'Cache deleted:', key);
+    } else if (op === 'clear') {
+      window._AP2Shadow.age.clear();
+      window._AP2Shadow.data.clear();
+      _logEvent('delete', 'ALL cache cleared', '');
+    }
+    updateCacheHealthDot();
+    if (_cmPanelOpen) cmScanAll();
+  });
+})();
+
+
+/* ══ SECTION MAP ══
+   permKey: matches column name in the Permissions sheet (e.g. ap2_employee).
+   If permKey is null the section is always visible (admin utilities etc.).
+   If Auth.getPermissions() returns null (perms not loaded yet) all sections
+   with a permKey are hidden until _applyPermissions() is called.            */
+const SECTIONS = {
+  'ib-emp': {
+    icon:'ti-users', label:'Employees',
+    pageLabel:'Employees', pageSub:'Staff directory',
+    pillBg:'var(--accent-dim)', pillColor:'var(--accent)', pillIcon:'ti-users',
+    permKey: 'ap2_employee',   // ← Permissions sheet column
+    groups:[
+      { label:'Directory', items:[
+        { label:'Employee List', file:'Reg/allEmp.html', icon:'ti-list',      sub:'All staff records'     },
+        { label:'Add Employee',  file:'Reg/addEmp.html', icon:'ti-user-plus', sub:'Register new employee' },
+      ]},
+      { label:'Documents', items:[
+        { label:'Expiring Docs', file:'Reg/empExp.html', icon:'ti-file-x', sub:'Visa · EID · Labour', badge:true },
+      ]},
+    ],
+  },
+  'ib-bike': {
+    icon:'ti-motorbike', label:'Bike Fleet',
+    pageLabel:'Bike Fleet', pageSub:'Fleet registry',
+    pillBg:'var(--teal-dim)', pillColor:'var(--teal)', pillIcon:'ti-motorbike',
+    permKey: 'ap2_bike',
+    groups:[
+      { label:'Fleet', items:[
+        { label:'Bike List',     file:'Reg/allBike.html', icon:'ti-list', sub:'All registered bikes' },
+        { label:'Register Bike', file:'Reg/addBike.html', icon:'ti-plus', sub:'Add new vehicle'      },
+		{ label:'Check In/Out', file:'Reg/inOut.html', icon:'ti-arrows-horizontal', sub:'Check In/Out'      },
+      ]},
+      { label:'Documents', items:[
+        { label:'Expiring Docs', file:'Reg/bikExp.html', icon:'ti-file-x', sub:'Mulkiya · Insurance', badge:true },
+      ]},
+    ],
+  },	
+'ib-sim': {
+  icon:'ti-device-sim', label:'SIM Cards',
+  pageLabel:'SIM Cards', pageSub:'SIM registry',
+  pillBg:'var(--purple-dim)', pillColor:'var(--purple)', pillIcon:'ti-device-sim',
+  permKey: 'ap2_sim',
+  groups:[
+    { label:'SIM', items:[
+      { label:'SIM List',      file:'Reg/allSim.html',  icon:'ti-list', sub:'All registered SIMs'  },
+      { label:'Register SIM',  file:'Reg/addSim.html',  icon:'ti-plus', sub:'Add new SIM card'     },
+      { label:'Assign SIM',    file:'Reg/assignSim.html', icon:'ti-arrows-horizontal', sub:'Assign / Unassign SIM' },
+    ]},
+    { label:'Documents', items:[
+      { label:'Expiring SIMs', file:'Reg/simExp.html',  icon:'ti-file-x', sub:'Expiring contracts', badge:true },
+    ]},
+  ],
+},
+	
+
+	
+  'ib-adv': {
+    icon:'ti-cash', label:'Advance Salary',
+    pageLabel:'Advance Salary', pageSub:'Salary advances',
+    pillBg:'var(--amber-dim)', pillColor:'var(--amber)', pillIcon:'ti-cash',
+    permKey: 'ap2_master',   // master sheet controls salary advance visibility
+    groups:[
+      { label:'Salary', items:[
+        { label:'All Requests',    file:'Reg/penReq.html', icon:'ti-clipboard-list', sub:'Advance history'   },
+        { label:'New Request',     file:'Reg/finQue.html', icon:'ti-cash',           sub:'Submit an advance'  },
+        { label:'Recovery Module', file:'Reg/recMod.html', icon:'ti-wallet',         sub:'Recovery details'   },
+      ]},
+    ],
+  },
+
+	
+  'ib-docs': {
+    icon:'ti-file-description', label:'Document',
+    pageLabel:'Document', pageSub:'Document manager',
+    pillBg:'var(--red-dim)', pillColor:'var(--red)', pillIcon:'ti-file-description',
+    permKey: 'ap2_docLog',   // section always shown if at least one child item is permitted
+    groups:[
+      { label:'Directory', items:[
+        { label:'Add Documents', file:'Reg/docPortal.html', icon:'ti-file-plus', sub:'Upload new document' },
+      ]},
+      { label:'Doc Portal', items:[
+		{ label:'Opp Desk',  file:'Reg/OpsDeck.html', icon:'ti-device-sim', sub:'Request Booking', badge:true, permKey:'ap2_loginData'  },
+      ]},
+    ],
+  },
+
+  'ib-payroll': {
+    icon:'ti-report-money', label:'Payroll',
+    pageLabel:'Payroll', pageSub:'Payroll & deductions',
+    pillBg:'var(--orange-dim)', pillColor:'var(--orange)', pillIcon:'ti-report-money',
+    permKey: 'ap2_dedLog',
+    groups:[
+      { label:'Payroll', items:[
+        { label:'Salik Reconciliation',       file:'Reg/salik.html',    icon:'ti-road',       		sub:'Toll charges', 			permKey:'ap2_employee'},
+		{ label:'Salik Dump', file:'Reg/salik.html', icon:'ti-users',     sub:'Visa · EID · Labour', 		badge:true, permKey:'ap2_employee' },
+		{ label:'Account Management',   file:'Reg/accLog.html', icon:'ti-ticket',     		sub:'Traffic fines' , 			permKey:'ap2_employee'},
+        { label:'Deductions',  file:'Reg/dedEngine.html', icon:'ti-wallet-off', 	sub:'Salary deductions' , 		permKey:'ap2_employee'},
+		{ label:'Deduction Report',  file:'Reg/dedPivot.html', icon:'ti-device-sim',sub:'Deduction Pivot Report', 	badge:true, permKey:'ap2_loginData'  },
+      ]},
+    ],
+  },
+
+  'ib-admin': {
+    icon:'ti-settings', label:'Admin',
+    pageLabel:'Admin', pageSub:'System administration',
+    pillBg:'var(--surface2)', pillColor:'var(--text)', pillIcon:'ti-settings',
+    permKey: 'ap2_loginData',
+    groups:[
+      { label:'Admin', items:[
+        { label:'User Management', file:'Reg/userPortal.html', icon:'ti-user-cog', sub:'Manage user access' },
+        { label:'Audit Logs',      file:'Reg/upLog.html', icon:'ti-history',  sub:'System activity log' },
+      ]},
+    ],
+  },
+};
+
+let activeSection = null;
+let sidebarVisible = true;
+
+/* The Permissions sheet/session stores each granted dataset as an info
+   object: { label, apiKey, paramKey:'type', ttlMs, access:{view,add,editDelete} }.
+   Nav visibility is gated on the VIEW bit specifically — a dataset present
+   with add/editDelete but no view shouldn't show up in the nav. Legacy
+   boolean shape (perms[key] === true) is still treated as view-only. */
+function _hasPerm(perms, key) {
+  if (!perms || !perms[key]) return false;
+  const p = perms[key];
+  if (p === true) return true;
+  return !!(p.access && p.access.view === true);
+}
+
+/* ══ PERMISSIONS — show/hide nav buttons based on Permissions sheet ══
+   Called once on load (after Auth.getPermissions() is available) and
+   again if permissions are refreshed during the session.
+
+   Logic:
+   • If getPermissions() returns null → no perms fetched yet → hide ALL
+     permKey sections with a "loading…" state until perms arrive.
+   • For each SECTIONS entry with a permKey, show/hide the matching
+     icon-bar button and topbar shortcut.
+   • Sections with permKey:null are always visible.
+   • If the first permitted section isn't 'ib-emp', auto-open it.         */
+function _applyPermissions() {
+  const perms = window.Auth && window.Auth.getPermissions
+    ? window.Auth.getPermissions()
+    : null;
+
+  let firstAllowed = null;
+
+  for (const [id, sec] of Object.entries(SECTIONS)) {
+    const btn = document.getElementById(id);
+    if (!btn) continue;
+
+    let allowed;
+
+
+    if (sec.permKey === null) {
+      // Section has no own gate — check if at least one sub-item is permitted
+      allowed = sec.groups.some(g =>
+        g.items.some(item =>
+          !item.permKey || _hasPerm(perms, item.permKey)
+        )
+      );
+    } else {
+      allowed = !sec.permKey || _hasPerm(perms, sec.permKey);
+    }
+
+
+	  
+
+    btn.style.display = allowed ? '' : 'none';
+    if (allowed && !firstAllowed) firstAllowed = id;
+  }
+
+  // Also hide topbar shortcuts that are permission-gated
+  const shortcutGates = [
+    { sel: '.tb-sc.emp',  permKey: 'ap2_employee' },
+    { sel: '.tb-sc.bike', permKey: 'ap2_bike'     },
+    { sel: '.tb-sc.sim',  permKey: 'ap2_sim'      },
+    { sel: '.tb-sc.adv',  permKey: 'ap2_master'   },
+  ];
+  for (const { sel, permKey } of shortcutGates) {
+    document.querySelectorAll(sel).forEach(el => {
+      el.style.display = (!perms || _hasPerm(perms, permKey)) ? '' : 'none';
+    });
+  }
+
+  console.log('[Permissions] applied — firstAllowed:', firstAllowed, '| perms:', perms);
+  return firstAllowed;
+}
+
+/* ── Sidebar toggle — collapses the docked left sub-menu down to an
+   icon-only rail (like a collapsed macOS Finder sidebar), or expands
+   it back to full width with labels. Never fully hides it. ── */
+let _subBarFoldTimer = null;
+
+function _cancelSubBarFold() {
+  if (_subBarFoldTimer) { clearTimeout(_subBarFoldTimer); _subBarFoldTimer = null; }
+}
+
+/* Auto-fold back to the icon-only rail 5s after the mouse leaves the
+   sidebar (re-entering it within that window cancels the countdown). */
+function _scheduleSubBarFold() {
+  _cancelSubBarFold();
+  _subBarFoldTimer = setTimeout(() => {
+    if (sidebarVisible) toggleSidebar();
+  }, 5000);
+}
+
+/* Keeps --cur-sidebar-w in sync with how much horizontal space the
+   sidebar actually occupies in normal layout flow right now, so the
+   bottom notch dock (#icon-bar) can re-center itself over the content
+   area and never overlap the sidebar. Below 640px the *expanded*
+   sidebar becomes a floating overlay (position:absolute — see CSS) and
+   no longer pushes the content over, so in that case only the
+   collapsed rail width counts toward the offset. */
+function updateDockOffset() {
+  const collapsedW = 60;   // keep in sync with --sub-bar-w-collapsed
+  const expandedW  = 220;  // keep in sync with --sub-bar-w
+  const isOverlayMode = window.innerWidth <= 640;
+  let w;
+  if (!sidebarVisible) {
+    w = collapsedW;
+  } else {
+    w = isOverlayMode ? collapsedW : expandedW;
+  }
+  document.documentElement.style.setProperty('--cur-sidebar-w', w + 'px');
+}
+window.addEventListener('resize', updateDockOffset);
+
+function toggleSidebar() {
+  sidebarVisible = !sidebarVisible;
+  const sb = document.getElementById('sub-bar');
+  const appZone = document.getElementById('tb-app-zone');
+  const header = sb ? sb.querySelector('.sb2-header') : null;
+  if (sidebarVisible) {
+    sb.classList.remove('collapsed');
+    sb.setAttribute('aria-hidden', 'false');
+    appZone.classList.remove('collapsed');
+    if (header) header.title = 'Collapse menu';
+    _scheduleSubBarFold();
+  } else {
+    sb.classList.add('collapsed');
+    sb.setAttribute('aria-hidden', 'false');
+    appZone.classList.add('collapsed');
+    if (header) header.title = 'Expand menu';
+    _cancelSubBarFold();
+  }
+  updateDockOffset();
+}
+
+/* Cancel a pending auto-fold while the pointer is over the sidebar (so
+   it doesn't collapse mid-interaction), and re-schedule the fold once
+   the pointer leaves an *expanded* sidebar. Note: this no longer
+   auto-expands a collapsed sidebar on hover — doing so used to shift
+   the icon rail (revealing section headers) right as someone tried to
+   click an icon, moving the click target out from under the cursor
+   and making the folded icons feel unresponsive/misaligned. Expanding
+   is now an explicit action (click the header or the truck icon), so
+   the folded icons stay exactly where they are and are always directly
+   clickable. */
+(function initSubBarHover() {
+  const sb = document.getElementById('sub-bar');
+  if (!sb) return;
+  sb.addEventListener('mouseenter', () => {
+    _cancelSubBarFold();
+  });
+  sb.addEventListener('mouseleave', () => {
+    if (sidebarVisible) _scheduleSubBarFold();
+  });
+})();
+
+/* On very small screens the expanded sidebar overlays the content (see
+   CSS); clicking outside it while expanded in that mode collapses it
+   back to the icon-only rail, same as any Apple-style compact sidebar. */
+function _onSidebarOutsideClick(e) {
+  if (window.innerWidth > 640) return;
+  const sb = document.getElementById('sub-bar');
+  const ib = document.getElementById('icon-bar');
+  if (sidebarVisible && sb && !sb.contains(e.target) && !ib.contains(e.target)) {
+    toggleSidebar();
+  }
+}
+document.addEventListener('click', _onSidebarOutsideClick);
+
+/* ── Admin flyout — the gear's item list is hidden by default and only
+   unfolds while hovering the corner dock button/panel, auto-hiding again
+   5s after the hover leaves (same rhythm as the sidebar above). ── */
+let _adminFlyoutTimer = null;
+
+function _buildAdminFlyoutContent() {
+  const sec = SECTIONS['ib-admin'];
+  if (!sec) return;
+  const perms = window.Auth && window.Auth.getPermissions ? window.Auth.getPermissions() : null;
+  const nav = document.getElementById('admin-flyout-nav');
+  if (!nav) return;
+  nav.innerHTML = sec.groups.map(g => {
+    const visibleItems = g.items.filter(item => !item.permKey || _hasPerm(perms, item.permKey));
+    if (!visibleItems.length) return '';
+    return `
+      <div class="sb2-section">${g.label}</div>
+      ${visibleItems.map(item => `
+        <div class="sb2-item" title="${item.label}" onclick="loadPage('${item.file}',this,'${item.label}','${item.icon||sec.icon}','${item.sub}','${sec.pillBg.replace(/'/g,'"')}','${sec.pillColor}');activeSection='ib-admin';document.querySelectorAll('.dock-item').forEach(b=>b.classList.remove('active'));document.getElementById('ib-admin').classList.add('active');">
+          <i class="ti ${item.icon}"></i><span class="sb2-item-label">${item.label}</span>
+          ${item.badge ? '<span class="sb2-badge">!</span>' : ''}
+        </div>`).join('')}
+    `;
+  }).join('');
+}
+
+function _openAdminFlyout() {
+  if (_adminFlyoutTimer) { clearTimeout(_adminFlyoutTimer); _adminFlyoutTimer = null; }
+  _buildAdminFlyoutContent();
+  const fl = document.getElementById('admin-flyout');
+  if (!fl) return;
+  fl.classList.add('open');
+  fl.setAttribute('aria-hidden', 'false');
+}
+
+function _scheduleCloseAdminFlyout() {
+  if (_adminFlyoutTimer) clearTimeout(_adminFlyoutTimer);
+  _adminFlyoutTimer = setTimeout(() => {
+    const fl = document.getElementById('admin-flyout');
+    if (fl) { fl.classList.remove('open'); fl.setAttribute('aria-hidden', 'true'); }
+  }, 5000);
+}
+
+(function initAdminFlyoutHover() {
+  const wrap = document.getElementById('admin-dock-wrap');
+  if (!wrap) return;
+  wrap.addEventListener('mouseenter', _openAdminFlyout);
+  wrap.addEventListener('mouseleave', _scheduleCloseAdminFlyout);
+})();
+
+/* ── Open icon section — populates the docked sidebar with that section's items ── */
+function ibOpen(id, btn) {
+  const sec = SECTIONS[id];
+  if (!sec) return;
+  const sb = document.getElementById('sub-bar');
+
+  // Clicking the already-active section's icon again just toggles the sidebar
+  if (activeSection === id) {
+    toggleSidebar();
+    return;
+  }
+
+  document.querySelectorAll('.dock-item').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  document.getElementById('sb2-icon').className = 'ti ' + sec.icon;
+  document.getElementById('sb2-title').textContent = sec.label;
+
+  const perms = window.Auth && window.Auth.getPermissions ? window.Auth.getPermissions() : null;
+
+  const nav = document.getElementById('sb2-nav');
+  nav.innerHTML = sec.groups.map(g => {
+    const visibleItems = g.items.filter(item =>
+      !item.permKey || _hasPerm(perms, item.permKey)
+    );
+    if (!visibleItems.length) return '';
+    return `
+      <div class="sb2-section">${g.label}</div>
+      ${visibleItems.map(item => `
+        <div class="sb2-item" title="${item.label}" onclick="loadPage('${item.file}',this,'${item.label}','${item.icon||sec.icon}','${item.sub}','${sec.pillBg.replace(/'/g,'"')}','${sec.pillColor}')">
+          <i class="ti ${item.icon}"></i><span class="sb2-item-label">${item.label}</span>
+          ${item.badge ? '<span class="sb2-badge">!</span>' : ''}
+        </div>`).join('')}
+    `;
+  }).join('');
+
+  setCtx(sec.pageLabel, sec.pageSub, sec.pillBg, sec.pillColor, sec.pillIcon);
+  activeSection = id;
+
+  // Switching sections always reveals the sidebar so its new items are visible,
+  // then folds back to the icon-only rail 5s later unless it's being hovered
+  sidebarVisible = true;
+  sb.classList.remove('collapsed');
+  sb.setAttribute('aria-hidden', 'false');
+  document.getElementById('tb-app-zone').classList.remove('collapsed');
+  _scheduleSubBarFold();
+  updateDockOffset();
+
+  // Auto-load the first item of the first group into the main frame
+  // This ensures data is visible immediately without a manual click
+  const firstGroup = sec.groups && sec.groups[0];
+  const firstItem  = firstGroup && firstGroup.items && firstGroup.items[0];
+  if (firstItem) {
+    const frame = document.getElementById('main-frame');
+    if (frame && !frame.src.endsWith(firstItem.file)) {
+      // Mark first nav item as active
+      setTimeout(() => {
+        const firstNavEl = document.querySelector('#sb2-nav .sb2-item');
+        if (firstNavEl) firstNavEl.classList.add('active');
+      }, 0);
+      loadPage(firstItem.file, null, firstItem.label, firstItem.icon || sec.icon, firstItem.sub,
+               sec.pillBg, sec.pillColor);
+    }
+  }
+}
+
+/* ── Load page ── */
+function loadPage(file, el, label, icon, sub, pillBg, pillColor) {
+  const frame = document.getElementById('main-frame');
+  document.querySelectorAll('.sb2-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (!frame.src.endsWith(file)) frame.src = file;
+  if (label) setCtx(label, sub||'', pillBg||'var(--accent-dim)', pillColor||'var(--accent)', icon||'ti-circle');
+}
+
+/* ── Page context ── */
+function setCtx(label, sub, bg, color, iconCls) {
+  const pill  = document.getElementById('tb-pill');
+  const pillI = document.getElementById('tb-pill-i');
+  const lbl   = document.getElementById('tb-page-label');
+  const s     = document.getElementById('tb-page-sub2');
+  if (pill)  { pill.style.background = bg; pill.style.color = color; }
+  if (pillI) pillI.className = 'ti ' + iconCls;
+  if (lbl)   lbl.textContent = label;
+  if (s)     s.textContent   = sub;
+}
+
+/* ══ THEME SYSTEM ══ */
+const THEMES = {
+  dark:   { label:'Dark',         icon:'ti-palette' },
+  light:  { label:'Light',        icon:'ti-palette' },
+  purple: { label:'Purple Night', icon:'ti-palette' },
+  ocean:  { label:'Ocean',        icon:'ti-palette' },
+  slate:  { label:'Slate',        icon:'ti-palette' },
+};
+
+function setTheme(mode) {
+  document.documentElement.setAttribute('data-theme', mode);
+  // Store theme preference
+  _idbSetTheme(mode);
+
+  // Update label
+  const labelMap = { dark:'Dark', light:'Light', purple:'Purple Night', ocean:'Ocean', slate:'Slate' };
+  const lbl = document.getElementById('theme-dd-label');
+  if (lbl) lbl.textContent = labelMap[mode] || mode;
+
+  // Mark active
+  document.querySelectorAll('.td-item').forEach(el => el.classList.toggle('active', el.dataset.t === mode));
+
+  // Update day/night icon
+  updateDayNightIcon(mode);
+
+  // ── Instant theme push to child iframe ──
+  // 1. postMessage — direct, zero-delay
+  _pushThemeToFrame(mode);
+
+  // 2. BroadcastChannel — picks up other tabs/windows
+  try {
+    const bc = new BroadcastChannel('ap-theme');
+    bc.postMessage({ type: 'ap-theme', theme: mode });
+    bc.close();
+  } catch(_) {}
+
+  _logEvent('theme', 'Theme changed:', labelMap[mode] || mode);
+  closeThemeDropdown();
+}
+
+/* Push theme to the child iframe immediately */
+function _pushThemeToFrame(mode) {
+  try {
+    const frame = document.getElementById('main-frame');
+    if (frame && frame.contentWindow) {
+      frame.contentWindow.postMessage({ type: 'ap-theme', theme: mode }, '*');
+    }
+  } catch(_) {}
+}
+
+function updateDayNightIcon(mode) {
+  const icon  = document.getElementById('daynight-icon');
+  if (!icon) return;
+  const map = {
+    light : { cls:'ti ti-sun'          },
+    dark  : { cls:'ti ti-moon'         },
+    purple: { cls:'ti ti-sparkles'     },
+    ocean : { cls:'ti ti-wave-sine'    },
+    slate : { cls:'ti ti-layout-grid'  },
+  };
+  const cfg = map[mode] || map.dark;
+  icon.className = cfg.cls;
+}
+
+/* Quick dark ↔ light toggle via the icon button */
+function quickToggleDarkLight() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  setTheme(cur === 'light' ? 'dark' : 'light');
+}
+
+/* Theme dropdown — position:fixed, computed from button bounds */
+function toggleThemeDropdown(e) {
+  e.stopPropagation();
+  const dd  = document.getElementById('theme-dropdown');
+  const btn = document.getElementById('theme-dd-btn');
+  const isOpen = dd.classList.contains('open');
+  if (isOpen) {
+    closeThemeDropdown();
+  } else {
+    // Compute position from button's bounding rect
+    const rect = btn.getBoundingClientRect();
+    const ddW  = 180; // approx dropdown width
+    let left = rect.right - ddW;
+    if (left < 6) left = 6;
+    dd.style.top  = (rect.bottom + 6) + 'px';
+    dd.style.left = left + 'px';
+    dd.style.right = 'auto';
+    dd.classList.add('open');
+    btn.classList.add('open');
+    // Close on next outside click
+    setTimeout(() => document.addEventListener('click', outsideClose, { once: true }), 0);
+  }
+}
+
+function outsideClose(e) {
+  const dd  = document.getElementById('theme-dropdown');
+  const btn = document.getElementById('theme-dd-btn');
+  if (dd && !dd.contains(e.target) && btn && !btn.contains(e.target)) {
+    closeThemeDropdown();
+  }
+}
+
+function closeThemeDropdown() {
+  document.getElementById('theme-dropdown')?.classList.remove('open');
+  document.getElementById('theme-dd-btn')?.classList.remove('open');
+}
+
+/* ══ ALERT BELL — panel toggle + public hook for real data later ══ */
+function toggleBellPanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('bell-panel');
+  const btn   = document.getElementById('bell-btn');
+  if (panel.classList.contains('open')) { closeBellPanel(); return; }
+  // Close other fixed panels so they don't overlap
+  closeThemeDropdown();
+  if (typeof closeCachePanel === 'function') closeCachePanel();
+  const rect = btn.getBoundingClientRect();
+  const w = 260;
+  let left = rect.right - w;
+  if (left < 6) left = 6;
+  panel.style.top   = (rect.bottom + 8) + 'px';
+  panel.style.left  = left + 'px';
+  panel.style.right = 'auto';
+  panel.classList.add('open');
+  btn.classList.add('active');
+  setTimeout(() => document.addEventListener('click', bellOutsideClose), 0);
+}
+
+function closeBellPanel() {
+  document.getElementById('bell-panel')?.classList.remove('open');
+  document.getElementById('bell-btn')?.classList.remove('active');
+  document.removeEventListener('click', bellOutsideClose);
+}
+
+function bellOutsideClose(e) {
+  const panel = document.getElementById('bell-panel');
+  const btn   = document.getElementById('bell-btn');
+  if (panel && !panel.contains(e.target) && btn && !btn.contains(e.target)) {
+    closeBellPanel();
+  }
+}
+
+/* Public hook — call this once real alert data is wired up.
+   level: 'none' | 'info' (green pulse) | 'critical' (red pulse)
+   count: optional badge number */
+function setAlertStatus(level, count) {
+  const dot = document.getElementById('bell-dot');
+  const countEl = document.getElementById('bell-count');
+  if (dot) {
+    dot.className = 'bell-dot' + (level === 'critical' ? ' show red' : level === 'info' ? ' show green' : '');
+  }
+  if (countEl) {
+    if (count > 0) { countEl.textContent = count > 99 ? '99+' : String(count); countEl.classList.add('show'); }
+    else { countEl.classList.remove('show'); countEl.textContent = ''; }
+  }
+}
+
+/* Public hook — replace the "No alerts yet" placeholder with real rows.
+   items: [{ level:'critical'|'info', icon:'ti-alert-triangle', title, sub }] */
+function renderAlertList(items) {
+  const body = document.getElementById('bell-panel-body');
+  if (!body) return;
+  if (!items || !items.length) {
+    body.innerHTML = '<div class="bell-empty"><i class="ti ti-bell-off"></i><span>No alerts yet</span></div>';
+    return;
+  }
+  body.innerHTML = items.map(it => `
+    <div class="bell-item ${it.level === 'critical' ? 'critical' : 'info'}">
+      <i class="ti ${it.icon || 'ti-alert-circle'}"></i>
+      <div>
+        <div class="bell-item-title">${it.title || ''}</div>
+        ${it.sub ? `<div class="bell-item-sub">${it.sub}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── Clock — HH:MM only ── */
+(function tick() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const t = document.getElementById('tb-time');
+  if (t) t.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  setTimeout(tick, 5000); // update every 5s is enough for HH:MM
+})();
+
+/* ══ SESSION GUARD ══
+   auth.js (loaded in <head>) already runs _boot() on DOMContentLoaded
+   and redirects to login.html if the session is invalid or expired.
+   This guard is a secondary safety net in case auth.js failed to load. */
+(function sessionGuard() {
+  try {
+    // If auth.js loaded correctly, it already handled the guard — trust it.
+    if (window.Auth && typeof window.Auth.getCredentials === 'function') {
+      // auth.js is present — it will have already redirected if invalid.
+      // We don't double-redirect here.
+      return;
+    }
+    // auth.js didn't load (CDN failure?) — fall back to old key check
+    const raw = sessionStorage.getItem('ap_session');
+    if (!raw) {
+      console.warn('[index] auth.js not loaded and no session found — redirecting');
+      window.location.replace('https://effimalik.github.io/Testing/login.html');
+      return;
+    }
+    const s = JSON.parse(raw);
+    if (!s || !s.sessionId || !s.token || !s.email) {
+      window.location.replace('https://effimalik.github.io/Testing/login.html');
+    }
+  } catch (e) {
+    console.error('[sessionGuard] Error — redirecting to be safe:', e);
+    window.location.replace('https://effimalik.github.io/Testing/login.html');
+  }
+})();
+
+/* ── Sign out — delegates to Auth.signOut() which handles server + client ── */
+function signOut() {
+  if (window.Auth && typeof window.Auth.signOut === 'function') {
+    window.Auth.signOut();
+  } else {
+    // Fallback if auth.js failed to load
+    sessionStorage.removeItem('ap_session');
+    window.location.replace('https://effimalik.github.io/Testing/login.html');
+  }
+}
+
+/* ── Populate avatar button — auth.js does this automatically,
+   but this is called again on DOMContentLoaded for safety ── */
+function populateUserChip() {
+  try {
+    // Prefer auth.js getUser() — it reads from the correct session key
+    if (window.Auth && typeof window.Auth.getUser === 'function') {
+      const u = window.Auth.getUser();
+      if (!u || !u.email) return;
+
+      const avatarBtn = document.getElementById('tb-avatar-btn');
+      if (avatarBtn) {
+        avatarBtn.textContent = u.initials || (u.name ? u.name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase() : '--');
+        avatarBtn.title = `Signed in as ${u.name || u.email}\nClick to view profile`;
+      }
+    }
+  } catch (e) { console.error('[populateUserChip]:', e); }
+}
+
+/* ══ PROFILE / LOGOUT POPUP ══
+   Opened by either the avatar button (view profile) or the Logout
+   block button (confirm + sign out) — same popup either way. */
+function openProfileModal() {
+  populateProfileModal();
+  const overlay = document.getElementById('pm-overlay');
+  if (overlay) overlay.classList.add('open');
+}
+
+function closeProfileModal() {
+  const overlay = document.getElementById('pm-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function confirmLogoutFromModal() {
+  closeProfileModal();
+  signOut();
+}
+
+function populateProfileModal() {
+  try {
+    const u = (window.Auth && typeof window.Auth.getUser === 'function') ? window.Auth.getUser() : null;
+
+    const email = (u && u.email) || 'sas.ds.llc@gmail.com';
+    const name  = (u && u.name)  || 'Afan Haidar';
+    const rawRole = (u && u.role) || 'Head Operations|Talabat';
+    const status  = ((u && u.status) || 'active').toLowerCase();
+
+    const parts = rawRole.split('|').map(s => (s || '').trim()).filter(Boolean);
+    const designation = parts[0] || rawRole;
+    const company     = parts[1] || '';
+
+    const initials = name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
+
+    const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+
+    set('pm-avatar', initials || '--');
+    set('pm-name', name);
+    set('pm-role', company ? `${designation} · ${company}` : designation);
+    set('pm-email', email);
+
+    const statusEl = document.getElementById('pm-status');
+    if (statusEl) {
+      statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+      statusEl.className = 'pm-status ' + (status === 'active' ? 'active' : 'inactive');
+    }
+  } catch (e) { console.error('[populateProfileModal]:', e); }
+}
+
+// Close on overlay click (outside card) or Escape key
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('pm-overlay');
+  if (overlay) overlay.addEventListener('click', (e) => { if (e.target === overlay) closeProfileModal(); });
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeProfileModal(); });
+
+/* ── Theme helpers — stored in sessionStorage ── */
+function _idbSetTheme(mode) {
+  try { sessionStorage.setItem('__ui_theme', mode); } catch(_) {}
+}
+async function _idbGetTheme() {
+  try { return sessionStorage.getItem('__ui_theme') || null; } catch(_) { return null; }
+}
+/* ── Init ── */
+window.addEventListener('DOMContentLoaded', () => {
+  // Load saved theme; fall back to 'dark'
+  const savedTheme = (() => { try { return sessionStorage.getItem('__ui_theme') || 'dark'; } catch(_) { return 'dark'; } })();
+  setTheme(savedTheme);
+
+  // Sync the bottom dock's centering offset with the sidebar's actual
+  // starting width/state so it never overlaps the sidebar on load.
+  updateDockOffset();
+
+  populateUserChip();
+  updateCacheHealthDot();
+  setInterval(updateCacheHealthDot, 30000);
+
+  try { if (window.AP2CacheWatcher) AP2CacheWatcher.init(); } catch (e) { console.warn('[index] cacheWatcher init failed:', e.message); }
+
+  // ── STEP 1: Apply permissions from session immediately (instant, no network) ──
+  _applyPermissions();
+  _buildDsMeta();
+
+  // ── STEP 2: Warm cache in background — do NOT await, open page immediately ──
+  // warmIfEmpty() fetches from the server only if data is missing/stale.
+  // We fire it without awaiting so the first permitted page opens instantly.
+  // When it resolves it notifies the child frame via _notifyFrame().
+  if (window.AdminPro && typeof window.AdminPro.warmIfEmpty === 'function') {
+    AdminPro.warmIfEmpty()
+      .then(() => {
+        // Sync _AP2Shadow with what AdminPro just wrote to IDB, then push to child frame
+        if (window.AdminPro && AdminPro.getActiveDatasets) {
+          for (const key of Object.keys(AdminPro.getActiveDatasets())) {
+            const entry = AdminPro.cache.get(key);
+            if (entry && entry.data) {
+              window._AP2Shadow.age.set(key, entry.ts);
+              window._AP2Shadow.data.set(key, entry.data);
+            }
+          }
+        }
+        updateCacheHealthDot(); cmScanAll(); _notifyFrame();
+      })
+      .catch(e => console.warn('[index] warmIfEmpty error (non-fatal):', e.message));
+  }
+
+  // ── STEP 3: Open the first permitted section → loads first sub-page into frame ──
+  const _openFirstAllowed = () => {
+    const fv = Object.keys(SECTIONS).find(id => {
+      const btn = document.getElementById(id);
+      return btn && btn.style.display !== 'none';
+    });
+    if (fv) { activeSection = null; ibOpen(fv, document.getElementById(fv)); }
+  };
+  _openFirstAllowed();
+
+  // ── STEP 4: If permissions weren't in session (edge case), fetch then re-apply ──
+  if (window.Auth && typeof window.Auth.getPermissions === 'function') {
+    if (!window.Auth.getPermissions()) {
+      window.Auth.fetchPermissions().then(perms => {
+        if (perms) {
+          _applyPermissions();
+          _buildDsMeta();
+          if (window.AdminPro && typeof window.AdminPro.warmIfEmpty === 'function') {
+            AdminPro.warmIfEmpty()
+              .then(() => {
+                if (window.AdminPro && AdminPro.getActiveDatasets) {
+                  for (const key of Object.keys(AdminPro.getActiveDatasets())) {
+                    const entry = AdminPro.cache.get(key);
+                    if (entry && entry.data) {
+                      window._AP2Shadow.age.set(key, entry.ts);
+                      window._AP2Shadow.data.set(key, entry.data);
+                    }
+                  }
+                }
+                updateCacheHealthDot(); cmScanAll(); _notifyFrame();
+              })
+              .catch(() => {});
+          }
+          _openFirstAllowed();
+        }
+      }).catch(e => console.warn('[index] fetchPermissions failed:', e));
+    }
+  }
+
+  // ── Instant data push: inject cached data into child iframe the moment it loads ──
+  // This eliminates the postMessage request/reply round-trip completely.
+  // Child pages check window.__AP2_PRELOAD first — if present, they render
+  // immediately without sending any ap-cache-request message at all.
+  const _frame = document.getElementById('main-frame');
+  if (_frame) {
+    _frame.addEventListener('load', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      _pushThemeToFrame(currentTheme);
+      // Push all cached datasets into the child frame's window directly
+      try {
+        const fw = _frame.contentWindow;
+        if (fw) {
+          const preload = {};
+          for (const [key, data] of window._AP2Shadow.data.entries()) {
+            preload[key] = data;
+          }
+          fw.__AP2_PRELOAD = preload;
+          // Also broadcast as a message so child pages that already loaded can re-use it
+          fw.postMessage({ type: 'ap-cache-preload', datasets: preload }, '*');
+        }
+      } catch(_) {}
+    });
+  }
+
+  // BroadcastChannel — listen for theme changes from other tabs/windows
+  try {
+    const _bc = new BroadcastChannel('ap-theme');
+    _bc.onmessage = (evt) => {
+      if (evt.data && evt.data.type === 'ap-theme' && evt.data.theme) {
+        const cur = document.documentElement.getAttribute('data-theme');
+        if (cur !== evt.data.theme) setTheme(evt.data.theme);
+      }
+    };
+  } catch(_) {}
+
+  // Periodic miss check (every 60s) — keeps badge updated even when panel is closed
+  setInterval(() => {
+    cmScanAll();
+    updateCacheHealthDot();
+  }, 60000);
+});
+
+/* ══ CACHE PANEL ══ */
+let cachePanelOpen = false;
+let cachePanelTimer = null;
+let _cpAutoHideTimer = null;
+let _cpOutsideHandler = null;
+
+function _resetCpAutoHide() {
+  if (_cpAutoHideTimer) clearTimeout(_cpAutoHideTimer);
+  _cpAutoHideTimer = setTimeout(closeCachePanel, 3000);
+}
+
+function toggleCachePanel(e) {
+  e.stopPropagation();
+  cachePanelOpen = !cachePanelOpen;
+  const panel = document.getElementById('cache-panel');
+  const btn   = document.getElementById('cache-status-btn');
+  if (cachePanelOpen) {
+    panel.classList.add('open');
+    btn.classList.add('active');
+    renderCacheTable();
+    cmScanAll();
+    // Tick every second so "remaining" counts down live
+    cachePanelTimer = setInterval(renderCacheTable, 1000);
+    // Autohide on leave, cancel on re-enter
+    panel.removeEventListener('mouseleave', _onCpLeave);
+    panel.removeEventListener('mouseenter', _onCpEnter);
+    panel.addEventListener('mouseleave', _onCpLeave);
+    panel.addEventListener('mouseenter', _onCpEnter);
+    // Start the inactivity countdown immediately
+    _resetCpAutoHide();
+    // Cancel any prior outside-click handler then register a new one
+    if (_cpOutsideHandler) { document.removeEventListener('click', _cpOutsideHandler); }
+    _cpOutsideHandler = (ev) => closePanelOutside(ev);
+    setTimeout(() => document.addEventListener('click', _cpOutsideHandler), 0);
+  } else {
+    closeCachePanel();
+  }
+}
+
+function _onCpLeave()  { _resetCpAutoHide(); }
+function _onCpEnter()  { if (_cpAutoHideTimer) { clearTimeout(_cpAutoHideTimer); _cpAutoHideTimer = null; } }
+
+function closePanelOutside(e) {
+  const panel = document.getElementById('cache-panel');
+  const btn   = document.getElementById('cache-status-btn');
+  if (panel && !panel.contains(e.target) && btn && !btn.contains(e.target)) {
+    closeCachePanel();
+  }
+}
+
+function closeCachePanel() {
+  const panel = document.getElementById('cache-panel');
+  document.getElementById('cache-status-btn')?.classList.remove('active');
+  panel?.classList.remove('open');
+  panel?.removeEventListener('mouseleave', _onCpLeave);
+  panel?.removeEventListener('mouseenter', _onCpEnter);
+  cachePanelOpen = false;
+  if (cachePanelTimer) { clearInterval(cachePanelTimer); cachePanelTimer = null; }
+  if (_cpAutoHideTimer) { clearTimeout(_cpAutoHideTimer); _cpAutoHideTimer = null; }
+  if (_cpOutsideHandler) { document.removeEventListener('click', _cpOutsideHandler); _cpOutsideHandler = null; }
+}
+
+/* ── DS_META — visual display config for the cache panel.
+   Icon/colour metadata keyed by dataset name.
+   The active set is always driven by dataLayer.js (DATASETS),
+   which is permission-filtered at runtime. This map is UI-only. */
+const DS_META_ICONS = {
+  bike:          { icon:'ti-motorbike',         color:'var(--teal)',   colorDim:'var(--teal-dim)'   },
+  employee:      { icon:'ti-users',             color:'var(--accent)', colorDim:'var(--accent-dim)' },
+  master:        { icon:'ti-table',             color:'var(--purple)', colorDim:'var(--purple-dim)' },
+  cioLog:        { icon:'ti-arrows-horizontal', color:'var(--orange)', colorDim:'var(--orange-dim)' },
+  approvedSheet: { icon:'ti-clipboard-check',   color:'var(--teal)',   colorDim:'var(--teal-dim)'   },
+  recovery:      { icon:'ti-wallet',            color:'var(--amber)',  colorDim:'var(--amber-dim)'  },
+};
+
+/* DS_META getter — always derived from dataLayer’s active (permitted) datasets.
+   All cache panel functions (cmScanAll, renderCacheTable, updateCacheHealthDot,
+   cacheWatchdog) read DS_META and automatically see only what the user can access.
+   No hardcoded list here — permissions drive everything.                          */
+Object.defineProperty(window, 'DS_META', {
+  get() {
+    if (!window.AdminPro || !AdminPro.getActiveDatasets) return {};
+    const active = AdminPro.getActiveDatasets();
+    const result = {};
+    for (const [key, ds] of Object.entries(active)) {
+      const icons = DS_META_ICONS[key] || { icon:'ti-database', color:'var(--accent)', colorDim:'var(--accent-dim)' };
+      result[key] = { label: ds.label, ttlMs: ds.ttlMs, ...icons };
+    }
+    return result;
+  },
+  configurable: true,
+});
+
+/* No-op stub — kept so DOMContentLoaded calls don’t throw */
+function _buildDsMeta() {}
+
+function fmtTtl(ms) {
+  if (ms <= 0) return '—';
+  const s = Math.floor(ms / 1000);
+  if (s < 60) return s + 's';
+  if (s < 3600) return Math.floor(s/60) + 'm ' + (s%60) + 's';
+  return Math.floor(s/3600) + 'h ' + Math.floor((s%3600)/60) + 'm';
+}
+
+function fmtTtlLabel(ms) {
+  if (ms < 60000)   return Math.floor(ms/1000) + 's';
+  if (ms < 3600000) return Math.floor(ms/60000) + ' min';
+  return Math.floor(ms/3600000) + ' hr';
+}
+
+/* ── _notifyFrame is defined below in cacheWatchdog section ── */
+
+function renderCacheTable() {
+  const body = document.getElementById('cache-table-body');
+  const footer = document.getElementById('cp-last-check');
+  if (!body) return;
+
+  // Try to get AdminPro cache status
+  let rows = [];
+  try {
+    if (window.AdminPro && AdminPro.getCacheStatus) {
+      rows = AdminPro.getCacheStatus();
+    } else {
+      // Build from DS_META directly reading sessionStorage
+      rows = Object.entries(DS_META).map(([key, meta]) => {
+        const ageMs = getCacheAge(key);
+        const ttl   = meta.ttlMs;
+        const fresh = ageMs < ttl;
+        let hasData = false;
+        try { const d = getCacheData(key); hasData = Array.isArray(d) ? d.length > 0 : d != null; } catch(_) {}
+        const ageLabel = ageMs === Infinity ? 'Not loaded'
+          : ageMs < 60000 ? Math.floor(ageMs/1000) + 's ago'
+          : ageMs < 3600000 ? Math.floor(ageMs/60000) + 'm ago'
+          : Math.floor(ageMs/3600000) + 'h ago';
+        let lastSync = null;
+        if (ageMs !== Infinity) {
+          const d = new Date(Date.now() - ageMs);
+          lastSync = d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        }
+        return { key, label: meta.label, ageMs, ageLabel, fresh, hasData, lastSync, ttl };
+      });
+    }
+  } catch(e) { console.warn('cache status error', e); }
+
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px;">No cache data found</td></tr>';
+    return;
+  }
+
+  body.innerHTML = rows.map(row => {
+    const meta = DS_META[row.key] || { icon:'ti-database', color:'var(--accent)', colorDim:'var(--accent-dim)', ttlMs:300000 };
+    const ttlMs = row.ttl || meta.ttlMs;
+    const remaining = row.ageMs === Infinity ? 0 : Math.max(0, ttlMs - row.ageMs);
+    const pct = row.ageMs === Infinity ? 0 : Math.min(100, Math.round((remaining / ttlMs) * 100));
+    const barCls = pct > 50 ? 'fresh' : pct > 20 ? 'mid' : 'low';
+    const remColor = pct > 50 ? 'var(--teal)' : pct > 20 ? 'var(--amber)' : 'var(--red)';
+    const statusCls  = !row.hasData ? 'empty' : row.fresh ? 'fresh' : 'stale';
+    const statusIcon = !row.hasData ? 'ti-minus' : row.fresh ? 'ti-circle-check' : 'ti-alert-triangle';
+    const statusTxt  = !row.hasData ? 'Empty'   : row.fresh ? 'Fresh'          : 'Stale';
+
+    // HH:MM only — strip seconds and AM/PM
+    const syncDisplay = (() => {
+      if (!row.lastSync) return '—';
+      const t = row.lastSync.trim();
+      // extract HH:MM from whatever format comes in
+      const m = t.match(/(\d{1,2}:\d{2})/);
+      return m ? m[1] : t;
+    })();
+
+    return `<tr>
+      <td>
+        <div class="cp-ds-name">
+          <div class="cp-ds-icon" style="background:${meta.colorDim};color:${meta.color};">
+            <i class="ti ${meta.icon}"></i>
+          </div>
+          <span class="cp-ds-name-text" title="${row.label || row.key}">${row.label || row.key}</span>
+        </div>
+      </td>
+      <td class="cp-col-sync">
+        <div class="cp-cell-top" style="color:${row.lastSync ? 'var(--text)' : 'var(--text3)'};font-family:var(--mono);font-weight:600;">${syncDisplay}</div>
+        <div class="cp-cell-bot" style="color:var(--text3);">${fmtTtlLabel(ttlMs)}</div>
+      </td>
+      <td class="cp-col-status-rem">
+        <div class="cp-cell-top">
+          <span class="cp-status-pill ${statusCls}"><i class="ti ${statusIcon}"></i>${statusTxt}</span>
+        </div>
+        <div class="cp-cell-bot" style="color:${remColor};font-family:var(--mono);">
+          ${row.hasData ? fmtTtl(remaining) : '—'}
+          <span class="cp-ttl-bar" style="display:inline-block;vertical-align:middle;width:36px;height:3px;margin-left:4px;background:var(--bg3);border-radius:2px;overflow:hidden;">
+            <span class="cp-ttl-fill ${barCls}" style="display:block;height:100%;width:${pct}%;border-radius:2px;"></span>
+          </span>
+        </div>
+      </td>
+      <td>
+        <div class="cp-row-btns">
+          <button class="cp-row-btn refresh" id="rbtn-${row.key}"
+            onclick="hardRefreshDataset('${row.key}', this)"
+            title="Hard refresh ${row.label || row.key}">
+            <i class="ti ti-refresh"></i>
+          </button>
+          <button class="cp-row-btn delete"
+            onclick="deleteCacheDataset('${row.key}', this)"
+            title="Delete ${row.label || row.key} cache">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  if (footer) footer.textContent = 'Updated ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+}
+
+/* ══ Cache read helpers — source of truth is IndexedDB via AdminPro shadow ══ */
+
+function getCacheAge(key) {
+  if (!window.AdminPro) return Infinity;
+  return AdminPro.cache.age(key);
+}
+
+function getCacheData(key) {
+  if (!window.AdminPro) return null;
+  const e = AdminPro.cache.get(key);
+  return e ? e.data : null;
+}
+
+async function hardRefreshDataset(key, btn) {
+  btn.classList.add('spin');
+  btn.disabled = true;
+  _logEvent('refresh', 'Hard refresh triggered:', key);
+  try {
+    if (window.AdminPro && AdminPro.forceRefresh) {
+      await AdminPro.forceRefresh(key);
+    }
+    setTimeout(() => { renderCacheTable(); updateCacheHealthDot(); cmScanAll(); _notifyFrame(); }, 300);
+  } catch(e) {
+    console.warn('refresh failed', key, e);
+    _logEvent('miss', 'Refresh error:', key);
+  } finally {
+    btn.classList.remove('spin');
+    btn.disabled = false;
+  }
+}
+
+function deleteCacheDataset(key, btn) {
+  _logEvent('delete', 'Cache row deleted:', key);
+  AP2Cache.delete(key).then(() => {
+    window._AP2Shadow.age.delete(key);
+    window._AP2Shadow.data.delete(key);
+    renderCacheTable();
+    updateCacheHealthDot();
+    setTimeout(() => { cmScanAll(); _notifyFrame(); }, 250);
+  }).catch(() => {});
+}
+
+async function refreshAllCache() {
+  const btn = document.querySelector('.cp-action-btn');
+  _logEvent('refresh', 'Refresh all cache triggered', '');
+  if (btn) { btn.innerHTML = '<i class="ti ti-refresh" style="animation:spin 1s linear infinite;display:inline-block;"></i> Refreshing…'; btn.disabled = true; }
+  try {
+    if (window.AdminPro && AdminPro.warmCache) {
+      await AdminPro.warmCache();
+    }
+    renderCacheTable();
+    updateCacheHealthDot();
+    cmScanAll();
+    _notifyFrame();
+  } finally {
+    if (btn) { btn.innerHTML = '<i class="ti ti-refresh"></i> Refresh All'; btn.disabled = false; }
+  }
+}
+
+function deleteAllCache() {
+  if (!confirm('Clear all data? It will need to be re-loaded.')) return;
+  _logEvent('delete', 'ALL cache cleared', '');
+  AP2Cache.clearAll().then(() => {
+    window._AP2Shadow.age.clear();
+    window._AP2Shadow.data.clear();
+    renderCacheTable();
+    updateCacheHealthDot();
+    setTimeout(() => cmScanAll(), 250);
+  }).catch(() => {});
+}
+
+function updateCacheHealthDot() {
+  const dot = document.getElementById('cache-health-dot');
+  if (!dot) return;
+  try {
+    const keys = Object.keys(DS_META);
+    let anyStale = false, anyEmpty = true;
+    for (const k of keys) {
+      const age = getCacheAge(k);
+      const meta = DS_META[k];
+      if (age !== Infinity) anyEmpty = false;
+      if (age !== Infinity && age > meta.ttlMs) anyStale = true;
+    }
+    dot.className = 'cache-dot' + (anyEmpty ? ' error' : anyStale ? ' stale' : '');
+  } catch(e) {}
+}
+
+/* ══ CACHE MESSAGE LISTENER ══
+   Handles two message types:
+   • ap-cache-request  — child asking for one dataset (fallback if preload missed)
+   • ap-cache-updated  — (sent by parent) tells child to re-render with fresh data */
+(function cacheWatchdog() {
+  window.addEventListener('message', function(evt) {
+    if (!evt.data) return;
+    const frame = document.getElementById('main-frame');
+    if (!frame) return;
+
+    if (evt.data.type === 'ap-cache-request') {
+      // Child is pulling a single dataset — respond immediately from shadow map
+      const key  = evt.data.key;
+      if (!key) return;
+      const data = window._AP2Shadow.data.get(key) ?? null;
+      if (frame.contentWindow)
+        frame.contentWindow.postMessage({ type:'ap-cache-ready', key, data }, '*');
+    }
+  });
+})();
+
+/* Override _notifyFrame to also push the full preload bundle so child
+   re-renders with the laTesting data without issuing new pull requests */
+function _notifyFrame() {
+  const frame = document.getElementById('main-frame');
+  if (!frame || !frame.contentWindow) return;
+  try {
+    const preload = {};
+    for (const [key, data] of window._AP2Shadow.data.entries()) {
+      preload[key] = data;
+    }
+    frame.contentWindow.postMessage({ type: 'ap-cache-preload', datasets: preload }, '*');
+  } catch(_) {}
+  frame.contentWindow.postMessage({ type: 'ap-cache-updated' }, '*');
+  if (window.AP2CioView) AP2CioView.buildIfStale().catch(() => {});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salik Reconciliation Portal</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --ink:#10151c;
+  --paper:#f6f5f1;
+  --panel:#ffffff;
+  --line:#dcdad2;
+  --line-strong:#b7b4a8;
+  --accent:#c4501f;
+  --accent-dim:#e8d9cf;
+  --ok:#2f6b3a;
+  --ok-bg:#e7f0e3;
+  --warn:#9a6a00;
+  --warn-bg:#fbf0d6;
+  --bad:#a3261f;
+  --bad-bg:#fbe4e1;
+  --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --serif: 'Fraunces', Georgia, serif;
+}
+@font-face{font-family:'Fraunces';src:local('Georgia');}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);font-family:var(--sans);}
+body{font-size:14px;line-height:1.5;}
+.wrap{max-width:1280px;margin:0 auto;padding:28px 32px 80px;}
+
+/* ===== Header / masthead ===== */
+.masthead{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--ink);padding-bottom:14px;margin-bottom:28px;gap:24px;flex-wrap:wrap;}
+.masthead-left{display:flex;align-items:baseline;gap:14px;}
+.brand-mark{width:34px;height:34px;flex-shrink:0;}
+.title-block h1{font-family:var(--serif);font-weight:600;font-size:26px;margin:0;letter-spacing:-0.01em;}
+.title-block .sub{font-size:12px;color:#6b6a63;letter-spacing:.04em;text-transform:uppercase;margin-top:2px;}
+.account-tag{font-family:var(--mono);font-size:11px;background:var(--ink);color:var(--paper);padding:5px 10px;border-radius:3px;letter-spacing:.02em;white-space:nowrap;}
+
+/* ===== Steps row ===== */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;position:relative;}
+.step-num{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.06em;font-weight:600;}
+.step h3{font-family:var(--serif);font-size:16px;margin:6px 0 4px;font-weight:600;}
+.step p.desc{font-size:12.5px;color:#6b6a63;margin:0 0 12px;}
+.step.done{border-color:var(--ok);background:linear-gradient(180deg,#fbfdfa,var(--panel));}
+.step.done .step-num{color:var(--ok);}
+.status-chip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-family:var(--mono);padding:4px 9px;border-radius:20px;background:#efeee8;color:#6b6a63;margin-top:2px;}
+.status-chip.ok{background:var(--ok-bg);color:var(--ok);}
+.status-chip.warn{background:var(--warn-bg);color:var(--warn);}
+.status-chip.bad{background:var(--bad-bg);color:var(--bad);}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+button{font-family:var(--sans);cursor:pointer;border:none;}
+.btn{background:var(--ink);color:var(--paper);font-size:12.5px;font-weight:600;padding:9px 14px;border-radius:5px;letter-spacing:.01em;transition:background .15s;}
+.btn:hover{background:#2a323d;}
+.btn:disabled{background:#cfcdc4;color:#8b8a82;cursor:not-allowed;}
+.btn.secondary{background:transparent;color:var(--ink);border:1px solid var(--line-strong);}
+.btn.secondary:hover{background:#ece9e2;}
+.btn.accent{background:var(--accent);}
+.btn.accent:hover{background:#a8451b;}
+.btn.small{padding:6px 10px;font-size:11.5px;}
+.file-drop{border:1.5px dashed var(--line-strong);border-radius:6px;padding:14px;text-align:center;font-size:12px;color:#8b8a82;cursor:pointer;transition:border-color .15s, background .15s;}
+.file-drop:hover{border-color:var(--accent);background:#fdf6f2;}
+.file-drop input{display:none;}
+.file-drop.filled{border-style:solid;border-color:var(--ok);background:var(--ok-bg);color:var(--ok);}
+.row-gap{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+
+/* ===== config row ===== */
+.config-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin-bottom:18px;font-size:12.5px;}
+.config-row label{display:flex;align-items:center;gap:6px;color:#4a4940;}
+.config-row select,.config-row input[type=text]{font-family:var(--mono);font-size:12px;border:1px solid var(--line-strong);border-radius:4px;padding:5px 8px;background:#fff;}
+.config-spacer{flex:1;}
+
+/* ===== Run bar ===== */
+.run-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.run-bar .hint{font-size:12px;color:#8b8a82;}
+
+/* ===== Tabs ===== */
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--ink);margin-bottom:0;}
+.tab{padding:10px 18px;font-size:13px;font-weight:600;color:#8b8a82;background:transparent;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:var(--sans);}
+.tab.active{color:var(--ink);border-bottom:2px solid var(--accent);}
+.tab .count{font-family:var(--mono);font-weight:400;font-size:11px;background:#efeee8;border-radius:20px;padding:1px 7px;margin-left:6px;}
+.tab.active .count{background:var(--accent-dim);color:var(--accent);}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-top:none;border-radius:0 0 6px 6px;padding:0;}
+.panel-toolbar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);gap:12px;flex-wrap:wrap;}
+.panel-toolbar .search{font-family:var(--mono);font-size:12px;border:1px solid var(--line-strong);border-radius:4px;padding:6px 10px;width:220px;}
+.panel-toolbar .label{font-size:12px;color:#8b8a82;}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead th{position:sticky;top:0;background:var(--paper);text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#6b6a63;padding:9px 14px;border-bottom:1.5px solid var(--line-strong);cursor:pointer;white-space:nowrap;}
+thead th:hover{color:var(--ink);}
+thead th .arrow{opacity:.4;margin-left:3px;}
+tbody td{padding:8px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);white-space:nowrap;}
+tbody tr:hover{background:#fbf9f5;}
+.table-scroll{max-height:520px;overflow:auto;}
+.num{text-align:right;}
+.badge{font-family:var(--sans);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;display:inline-block;}
+.badge.ok{background:var(--ok-bg);color:var(--ok);}
+.badge.warn{background:var(--warn-bg);color:var(--warn);}
+.badge.bad{background:var(--bad-bg);color:var(--bad);}
+.empty-state{padding:60px 20px;text-align:center;color:#8b8a82;font-size:13px;}
+.empty-state .big{font-size:32px;display:block;margin-bottom:10px;}
+
+footer.meta{margin-top:16px;display:flex;justify-content:space-between;font-size:11.5px;color:#8b8a82;padding:0 4px;flex-wrap:wrap;gap:8px;}
+
+.log-area{font-family:var(--mono);font-size:11.5px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 12px;max-height:140px;overflow:auto;color:#6b6a63;margin-top:10px;}
+.log-area .ln{padding:1px 0;}
+.log-area .ln.err{color:var(--bad);}
+.log-area .ln.ok{color:var(--ok);}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(16,21,28,.5);display:none;align-items:center;justify-content:center;z-index:50;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:8px;padding:24px;max-width:480px;width:90%;}
+.modal h3{font-family:var(--serif);margin:0 0 10px;}
+.modal textarea{width:100%;height:160px;font-family:var(--mono);font-size:11.5px;border:1px solid var(--line-strong);border-radius:4px;padding:8px;}
+.modal .row-gap{justify-content:flex-end;}
+
+@media (max-width:880px){
+  .steps{grid-template-columns:1fr;}
+  .wrap{padding:20px 16px 60px;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="masthead-left">
+      <svg class="brand-mark" viewBox="0 0 34 34" fill="none">
+        <rect x="1" y="1" width="32" height="32" rx="6" stroke="#10151c" stroke-width="1.5"/>
+        <path d="M9 22 L17 9 L25 22" stroke="#c4501f" stroke-width="2" fill="none" stroke-linejoin="round"/>
+        <circle cx="17" cy="22" r="1.6" fill="#10151c"/>
+      </svg>
+      <div class="title-block">
+        <h1>Salik Reconciliation</h1>
+        <div class="sub">Toll trips &times; fleet check-in / check-out log</div>
+      </div>
+    </div>
+    <div id="acctTag" class="account-tag">no PDF loaded</div>
+  </div>
+
+  <div class="steps">
+    <div class="step" id="stepCio">
+      <div class="step-num">01 &middot; FLEET LOG</div>
+      <h3>Check-in / Check-out cache</h3>
+      <p class="desc">Reads <strong>ap2_cioLog</strong> straight from this browser's IndexedDB (<strong>ap2_fleet_cache</strong>). Use this tab in the same browser/profile as the fleet app.</p>
+      <div class="row-gap">
+        <button class="btn" id="btnLoadIDB">Read from IndexedDB</button>
+        <button class="btn secondary small" id="btnPasteJson">Paste JSON instead</button>
+      </div>
+      <div id="cioStatus" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="step" id="stepPdf">
+      <div class="step-num">02 &middot; SALIK PDF</div>
+      <h3>Trips report</h3>
+      <p class="desc">Upload the Salik <em>ViewTrips</em> PDF export. Parsed entirely in your browser &mdash; nothing is uploaded anywhere.</p>
+      <label class="file-drop" id="pdfDrop">
+        <input type="file" id="pdfInput" accept="application/pdf">
+        <span id="pdfDropLabel">Click or drop the Salik PDF here</span>
+      </label>
+      <div id="pdfStatus" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="step" id="stepRun">
+      <div class="step-num">03 &middot; RECONCILE</div>
+      <h3>Match &amp; review</h3>
+      <p class="desc">Pairs each bike's checkout with its next check-in (open sessions run to the last trip), then matches Salik trips inside that window by exact date &amp; time.</p>
+      <div class="row-gap">
+        <button class="btn accent" id="btnRun" disabled>Run reconciliation</button>
+      </div>
+      <div id="runStatus" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <div class="config-row" id="configRow" style="display:none;">
+    <label>Grace period before checkout
+      <select id="graceBefore">
+        <option value="0">0 min</option>
+        <option value="5">5 min</option>
+        <option value="10" selected>10 min</option>
+        <option value="15">15 min</option>
+        <option value="30">30 min</option>
+      </select>
+    </label>
+    <label>Grace period after check-in
+      <select id="graceAfter">
+        <option value="0">0 min</option>
+        <option value="5">5 min</option>
+        <option value="10" selected>10 min</option>
+        <option value="15">15 min</option>
+        <option value="30">30 min</option>
+      </select>
+    </label>
+    <label>Item type
+      <select id="itemTypeFilter">
+        <option value="Bike" selected>Bike</option>
+        <option value="Car">Car</option>
+        <option value="ALL">All vehicle types</option>
+      </select>
+    </label>
+    <div class="config-spacer"></div>
+    <span class="hint" id="configHint"></span>
+  </div>
+
+  <div id="resultsArea" style="display:none;">
+    <div class="tabs">
+      <button class="tab active" data-tab="summary">Summary <span class="count" id="cntSummary">0</span></button>
+      <button class="tab" data-tab="details">Trip Details <span class="count" id="cntDetails">0</span></button>
+      <button class="tab" data-tab="exceptions">Exceptions <span class="count" id="cntExceptions">0</span></button>
+      <button class="tab" data-tab="sessions">Checkout Sessions <span class="count" id="cntSessions">0</span></button>
+    </div>
+    <div class="panel">
+      <div class="panel-toolbar">
+        <input type="text" class="search" id="searchBox" placeholder="Filter rows&hellip;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="label" id="rowCountLabel"></span>
+          <button class="btn secondary small" id="btnExportCsv">Export CSV</button>
+          <button class="btn small" id="btnExportXlsx">Export Excel (all tables)</button>
+        </div>
+      </div>
+      <div class="table-scroll" id="tableHost"></div>
+    </div>
+    <footer class="meta">
+      <span id="metaLeft"></span>
+      <span id="metaRight"></span>
+    </footer>
+  </div>
+
+  <div id="emptyResults" class="empty-state">
+    <span class="big">&#9676;</span>
+    Load the fleet log and a Salik PDF, then run reconciliation to see results here.
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="pasteModal">
+  <div class="modal">
+    <h3>Paste ap2_cioLog JSON</h3>
+    <p style="font-size:12px;color:#6b6a63;margin-top:-4px;">Paste the raw array value (the <code>data</code> array, or the full cache object) copied from DevTools.</p>
+    <textarea id="pasteArea" placeholder='[["2026-06-02T22:28:58.113Z","REF-...",2,"Check Out","Bike","BIKE-2026-0005"], ...]'></textarea>
+    <div class="row-gap">
+      <button class="btn secondary small" id="btnPasteCancel">Cancel</button>
+      <button class="btn small" id="btnPasteConfirm">Load</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== STATE ===================== */
+const state = {
+  cioRaw: null,        // raw array of [ts, ref, riderId, action, itemType, itemId]
+  sessions: [],         // built checkout sessions
+  salikRows: [],         // parsed PDF rows
+  pdfMeta: {},
+  results: { summary: [], details: [], exceptions: [], sessions: [] },
+  sort: {}, // per-tab sort state
+  activeTab: 'summary'
+};
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+function setStatus(el, html, cls){
+  el.innerHTML = `<span class="status-chip ${cls||''}"><span class="dot"></span>${html}</span>`;
+}
+function markStepDone(stepEl){ stepEl.classList.add('done'); }
+
+/* ===================== STEP 1: IndexedDB read ===================== */
+function listDatabases(){
+  if (indexedDB.databases) return indexedDB.databases();
+  return Promise.resolve([{name:'ap2_fleet_cache'}]); // fallback guess
+}
+
+async function readCioLogFromIDB(){
+  const dbName = 'ap2_fleet_cache';
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(dbName);
+    req.onerror = () => reject(new Error('Could not open IndexedDB "' + dbName + '". It may not exist in this browser profile, or the fleet app uses a different name.'));
+    req.onsuccess = (e) => {
+      const db = e.target.result;
+      const storeNames = Array.from(db.objectStoreNames);
+      if (storeNames.length === 0){
+        db.close();
+        reject(new Error('Database "' + dbName + '" exists but has no object stores.'));
+        return;
+      }
+      // try each store, look for key ap2_cioLog
+      let found = null;
+      let remaining = storeNames.length;
+      const tx = db.transaction(storeNames, 'readonly');
+      storeNames.forEach(storeName => {
+        const store = tx.objectStore(storeName);
+        const getReq = store.get('ap2_cioLog');
+        getReq.onsuccess = () => {
+          if (getReq.result !== undefined && found === null){
+            found = { store: storeName, value: getReq.result };
+          }
+          remaining--;
+          if (remaining === 0){
+            db.close();
+            if (found) resolve(found);
+            else reject(new Error('Found database but no object store contained key "ap2_cioLog". Stores checked: ' + storeNames.join(', ')));
+          }
+        };
+        getReq.onerror = () => {
+          remaining--;
+          if (remaining === 0){
+            db.close();
+            if (found) resolve(found);
+            else reject(new Error('Error reading object stores in "' + dbName + '".'));
+          }
+        };
+      });
+    };
+  });
+}
+
+function normalizeCioValue(val){
+  // value might be: {ts, data, fingerprint} OR a raw array OR {data:[...]}
+  let arr = null;
+  if (Array.isArray(val)) arr = val;
+  else if (val && Array.isArray(val.data)) arr = val.data;
+  else if (val && val.value && Array.isArray(val.value.data)) arr = val.value.data;
+  if (!arr) throw new Error('Unrecognized ap2_cioLog shape — expected an array of log rows or {data:[...]}.');
+  return arr;
+}
+
+async function handleLoadIDB(){
+  setStatus($('#cioStatus'), 'Reading IndexedDB&hellip;', '');
+  try{
+    const found = await readCioLogFromIDB();
+    const arr = normalizeCioValue(found.value);
+    state.cioRaw = arr;
+    onCioLoaded(arr, 'IndexedDB &middot; store "' + found.store + '"');
+  }catch(err){
+    setStatus($('#cioStatus'), escapeHtml(err.message), 'bad');
+  }
+}
+
+function onCioLoaded(arr, sourceLabel){
+  state.sessions = buildSessions(arr);
+  const bikes = new Set(arr.map(r => r[5])).size;
+  setStatus($('#cioStatus'),
+    arr.length + ' log entries loaded (' + sourceLabel + ') &middot; ' + state.sessions.length + ' checkout sessions',
+    'ok');
+  markStepDone($('#stepCio'));
+  maybeEnableRun();
+}
+
+/* paste fallback */
+function openPasteModal(){ $('#pasteModal').classList.add('show'); }
+function closePasteModal(){ $('#pasteModal').classList.remove('show'); }
+function handlePasteConfirm(){
+  const raw = $('#pasteArea').value.trim();
+  if (!raw){ closePasteModal(); return; }
+  try{
+    const parsed = JSON.parse(raw);
+    const arr = normalizeCioValue(parsed);
+    state.cioRaw = arr;
+    onCioLoaded(arr, 'pasted JSON');
+    closePasteModal();
+  }catch(err){
+    alert('Could not parse that as JSON: ' + err.message);
+  }
+}
+
+/* ===================== Build checkout sessions ===================== */
+// Log row: [isoTimestamp, ref, riderId, action ("Check In"|"Check Out"), itemType, itemId]
+function buildSessions(rows){
+  // filter to rows with a valid timestamp, sort chronologically
+  const clean = rows
+    .filter(r => Array.isArray(r) && r.length >= 6 && r[0])
+    .map(r => ({ ts: new Date(r[0]).getTime(), ref: r[1], riderId: r[2], action: r[3], itemType: r[4], itemId: r[5] }))
+    .filter(r => !isNaN(r.ts))
+    .sort((a,b) => a.ts - b.ts);
+
+  // group by itemId, walk chronologically, pair Check Out -> next Check In
+  const byItem = {};
+  clean.forEach(r => {
+    const key = String(r.itemId);
+    if (!byItem[key]) byItem[key] = [];
+    byItem[key].push(r);
+  });
+
+  const sessions = [];
+  let lastKnownTs = 0;
+  clean.forEach(r => { if (r.ts > lastKnownTs) lastKnownTs = r.ts; });
+
+  Object.keys(byItem).forEach(itemId => {
+    const events = byItem[itemId];
+    let openCheckout = null;
+    events.forEach(ev => {
+      if (ev.action === 'Check Out'){
+        if (openCheckout){
+          // a second checkout before a check-in: close previous as "open" up to this new checkout (edge case)
+          sessions.push({
+            itemId, itemType: openCheckout.itemType, riderId: openCheckout.riderId,
+            checkOutTs: openCheckout.ts, checkInTs: ev.ts, open: false,
+            checkOutRef: openCheckout.ref, checkInRef: ev.ref, note: 'closed by next checkout (no explicit check-in found)'
+          });
+        }
+        openCheckout = ev;
+      } else if (ev.action === 'Check In'){
+        if (openCheckout){
+          sessions.push({
+            itemId, itemType: openCheckout.itemType, riderId: openCheckout.riderId,
+            checkOutTs: openCheckout.ts, checkInTs: ev.ts, open: false,
+            checkOutRef: openCheckout.ref, checkInRef: ev.ref, note: ''
+          });
+          openCheckout = null;
+        }
+        // a Check In with no prior open checkout is ignored (stray / pre-existing state)
+      }
+    });
+    if (openCheckout){
+      sessions.push({
+        itemId, itemType: openCheckout.itemType, riderId: openCheckout.riderId,
+        checkOutTs: openCheckout.ts, checkInTs: lastKnownTs, open: true,
+        checkOutRef: openCheckout.ref, checkInRef: null, note: 'still checked out — window extended to last log entry'
+      });
+    }
+  });
+
+  return sessions;
+}
+
+/* ===================== STEP 2: PDF parsing ===================== */
+async function parsePdf(file){
+  const buf = await file.arrayBuffer();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+
+  let fullText = '';
+  let meta = { accountNo: null, periodFrom: null, periodTo: null, totalTrips: null, totalAmount: null };
+
+  for (let p = 1; p <= pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    // reconstruct rows using y-position grouping since pdf.js gives individual text items
+    const items = content.items.map(it => ({ str: it.str, x: it.transform[4], y: it.transform[5] }));
+    const lines = {};
+    items.forEach(it => {
+      const key = Math.round(it.y);
+      if (!lines[key]) lines[key] = [];
+      lines[key].push(it);
+    });
+    const sortedYs = Object.keys(lines).map(Number).sort((a,b) => b - a);
+    sortedYs.forEach(y => {
+      const lineItems = lines[y].sort((a,b) => a.x - b.x);
+      const lineText = lineItems.map(li => li.str).join(' ').replace(/\s+/g,' ').trim();
+      if (lineText) fullText += lineText + '\n';
+    });
+
+    if (p === 1){
+      const accMatch = fullText.match(/Account No:\s*(\d+)/);
+      if (accMatch) meta.accountNo = accMatch[1];
+      const periodMatch = fullText.match(/From\s+(\d{2}-\d{2}-\d{4})\s+To\s+(\d{2}-\d{2}-\d{4})/);
+      if (periodMatch){ meta.periodFrom = periodMatch[1]; meta.periodTo = periodMatch[2]; }
+    }
+  }
+
+  const totalsMatch = fullText.match(/TotalTrips:\s*([\d,]+)\s+TotalAmount\(AED\):\s*([\d,.]+)/);
+  if (totalsMatch){
+    meta.totalTrips = parseInt(totalsMatch[1].replace(/,/g,''), 10);
+    meta.totalAmount = parseFloat(totalsMatch[2].replace(/,/g,''));
+  }
+
+  // Row pattern: TxID  TripDate  TripTime  PostDate  TollGate+Direction(variable)  TagNumber  Plate  Amount
+  const rowRe = /(\d{11})\s+(\d{2} \w{3} \d{4})\s+(\d{2}:\d{2}:\d{2} [AP]M)\s+(\d{2} \w{3} \d{4})\s+(.+?)\s+(\d+)\s+(\S+)\s+([\d.]+)(?=\s|$)/g;
+  const rows = [];
+  let m;
+  while ((m = rowRe.exec(fullText)) !== null){
+    const [_, txId, tripDateStr, tripTimeStr, postDateStr, location, tagNumber, plate, amountStr] = m;
+    const tripDt = parseSalikDateTime(tripDateStr, tripTimeStr);
+    rows.push({
+      transactionId: txId,
+      tripDateStr, tripTimeStr,
+      tripTs: tripDt.getTime(),
+      postDateStr,
+      location: location.trim(),
+      tagNumber,
+      plate: plate.trim(),
+      amount: parseFloat(amountStr)
+    });
+  }
+
+  // de-dup by transaction ID (mirrors Table.Distinct on Transaction ID in the original M code)
+  const seen = new Set();
+  const deduped = rows.filter(r => {
+    if (seen.has(r.transactionId)) return false;
+    seen.add(r.transactionId);
+    return true;
+  });
+
+  return { rows: deduped, meta };
+}
+
+function parseSalikDateTime(dateStr, timeStr){
+  // "31 Oct 2024" + "11:31:09 PM"
+  const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  const [d, monStr, y] = dateStr.split(' ');
+  const tm = timeStr.match(/(\d{2}):(\d{2}):(\d{2}) ([AP]M)/);
+  let [_, hh, mm, ss, ap] = tm;
+  hh = parseInt(hh, 10);
+  if (ap === 'AM'){ if (hh === 12) hh = 0; } else { if (hh !== 12) hh += 12; }
+  return new Date(parseInt(y,10), months[monStr], parseInt(d,10), hh, parseInt(mm,10), parseInt(ss,10));
+}
+
+/* ===================== STEP 3: Reconciliation ===================== */
+function runReconciliation(){
+  const graceBefore = parseInt($('#graceBefore').value, 10) * 60000;
+  const graceAfter = parseInt($('#graceAfter').value, 10) * 60000;
+  const itemTypeFilter = $('#itemTypeFilter').value;
+  state.results = reconcile(state.sessions, state.salikRows, { graceBefore, graceAfter, itemTypeFilter });
+  renderResults();
+}
+
+// Pure function: given sessions + salik trips + options, returns {summary, details, exceptions, sessions}.
+// Kept free of any DOM access so it can be unit-tested in isolation (e.g. against known-good M-code output).
+function reconcile(allSessions, salikRows, opts){
+  const graceBefore = opts.graceBefore || 0;
+  const graceAfter = opts.graceAfter || 0;
+  const itemTypeFilter = opts.itemTypeFilter || 'ALL';
+
+  let sessions = allSessions.slice();
+  if (itemTypeFilter !== 'ALL'){
+    sessions = sessions.filter(s => s.itemType === itemTypeFilter);
+  }
+
+  // index sessions by plate (itemId is assumed to equal the Salik "Plate" identifier, mirroring the original M-code join on Item No <-> Plate)
+  const sessionsByPlate = {};
+  sessions.forEach(s => {
+    const key = String(s.itemId).trim();
+    if (!sessionsByPlate[key]) sessionsByPlate[key] = [];
+    sessionsByPlate[key].push(s);
+  });
+  // index salik trips by plate for fast lookup during the session-driven join
+  const tripsByPlate = {};
+  salikRows.forEach(t => {
+    const key = t.plate;
+    if (!tripsByPlate[key]) tripsByPlate[key] = [];
+    tripsByPlate[key].push(t);
+  });
+
+  // Mirrors the original M-code exactly: NestedJoin(Sessions -> Salik, on Plate) -> Expand -> Filter by window -> Distinct by Transaction ID.
+  // Table order is preserved (sessions in their original order, trips in PDF order), and Table.Distinct keeps the FIRST
+  // occurrence of each Transaction ID — so when two sessions for the same plate overlap, the earlier session in the
+  // list wins that trip, exactly like the working query you validated against "Salik Sheet".
+  const seenTxIds = new Set();
+  const details = [];
+  const sessionTripCounts = new Map();
+
+  sessions.forEach(s => {
+    const candidates = tripsByPlate[String(s.itemId).trim()] || [];
+    const winStart = s.checkOutTs - graceBefore;
+    const winEnd = s.checkInTs + graceAfter;
+    candidates.forEach(trip => {
+      if (seenTxIds.has(trip.transactionId)) return; // already claimed by an earlier session (Table.Distinct behaviour)
+      if (trip.tripTs >= winStart && trip.tripTs <= winEnd){
+        seenTxIds.add(trip.transactionId);
+        const sKey = s.checkOutRef + '|' + s.itemId;
+        sessionTripCounts.set(sKey, (sessionTripCounts.get(sKey)||0) + 1);
+        details.push({
+          riderId: s.riderId,
+          plate: trip.plate,
+          itemId: s.itemId,
+          transactionId: trip.transactionId,
+          tripDateStr: trip.tripDateStr,
+          tripTimeStr: trip.tripTimeStr,
+          amount: trip.amount,
+          location: trip.location,
+          checkOutTs: s.checkOutTs,
+          checkInTs: s.checkInTs,
+          sessionOpen: s.open
+        });
+      }
+    });
+  });
+
+  // unmatched trips (no session covers this plate+time)
+  const exceptions = [];
+  salikRows.forEach(trip => {
+    if (!seenTxIds.has(trip.transactionId)){
+      const hadAnySessionForPlate = !!sessionsByPlate[trip.plate];
+      exceptions.push({
+        type: hadAnySessionForPlate ? 'Outside any checkout window' : 'No checkout session for this plate',
+        transactionId: trip.transactionId,
+        plate: trip.plate,
+        tripDateStr: trip.tripDateStr,
+        tripTimeStr: trip.tripTimeStr,
+        amount: trip.amount,
+        location: trip.location
+      });
+    }
+  });
+
+  // summary: group by riderId + plate
+  const summaryMap = new Map();
+  details.forEach(d => {
+    const key = d.riderId + '|' + d.plate;
+    if (!summaryMap.has(key)){
+      summaryMap.set(key, { riderId: d.riderId, plate: d.plate, count: 0, totalAmount: 0 });
+    }
+    const row = summaryMap.get(key);
+    row.count += 1;
+    row.totalAmount += d.amount;
+  });
+  const summary = Array.from(summaryMap.values()).sort((a,b) => b.count - a.count);
+
+  // session rows for the "Checkout Sessions" tab (with matched trip counts)
+  const sessionRows = sessions.map(s => {
+    const sKey = s.checkOutRef + '|' + s.itemId;
+    return {
+      itemId: s.itemId,
+      itemType: s.itemType,
+      riderId: s.riderId,
+      checkOutTs: s.checkOutTs,
+      checkInTs: s.checkInTs,
+      open: s.open,
+      tripsMatched: sessionTripCounts.get(sKey) || 0,
+      note: s.note
+    };
+  }).sort((a,b) => b.checkOutTs - a.checkOutTs);
+
+  return { summary, details, exceptions, sessions: sessionRows };
+}
+
+function maybeEnableRun(){
+  const ready = state.sessions.length > 0 && state.salikRows.length > 0;
+  $('#btnRun').disabled = !ready;
+  $('#configRow').style.display = ready ? 'flex' : ($('#configRow').style.display);
+  if (state.salikRows.length > 0) $('#configRow').style.display = 'flex';
+}
+
+/* ===================== RENDERING ===================== */
+const TAB_DEFS = {
+  summary: {
+    cols: [
+      {key:'riderId', label:'Rider ID'},
+      {key:'plate', label:'Plate'},
+      {key:'count', label:'Salik (Count)', num:true},
+      {key:'totalAmount', label:'Amount (AED)', num:true, fmt: v => v.toFixed(2)}
+    ]
+  },
+  details: {
+    cols: [
+      {key:'riderId', label:'Rider ID'},
+      {key:'plate', label:'Plate'},
+      {key:'itemId', label:'Item ID'},
+      {key:'transactionId', label:'Transaction ID'},
+      {key:'tripDateStr', label:'Trip Date'},
+      {key:'tripTimeStr', label:'Trip Time'},
+      {key:'amount', label:'Amount (AED)', num:true, fmt: v => v.toFixed(2)},
+      {key:'location', label:'Location'},
+      {key:'sessionOpen', label:'Session', fmt: v => v ? 'open' : 'closed', badge: v => v ? 'warn' : 'ok'}
+    ]
+  },
+  exceptions: {
+    cols: [
+      {key:'type', label:'Reason', badge: v => v.startsWith('No checkout') ? 'bad' : 'warn'},
+      {key:'transactionId', label:'Transaction ID'},
+      {key:'plate', label:'Plate'},
+      {key:'tripDateStr', label:'Trip Date'},
+      {key:'tripTimeStr', label:'Trip Time'},
+      {key:'amount', label:'Amount (AED)', num:true, fmt: v => v.toFixed(2)},
+      {key:'location', label:'Location'}
+    ]
+  },
+  sessions: {
+    cols: [
+      {key:'itemId', label:'Item ID'},
+      {key:'itemType', label:'Type'},
+      {key:'riderId', label:'Rider ID'},
+      {key:'checkOutTs', label:'Check Out', fmt: v => fmtTs(v)},
+      {key:'checkInTs', label:'Check In', fmt: v => fmtTs(v)},
+      {key:'tripsMatched', label:'Salik Trips', num:true},
+      {key:'open', label:'Status', fmt: v => v ? 'still out' : 'closed', badge: v => v ? 'warn' : 'ok'}
+    ]
+  }
+};
+
+function fmtTs(ts){
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderResults(){
+  $('#emptyResults').style.display = 'none';
+  $('#resultsArea').style.display = 'block';
+  $('#cntSummary').textContent = state.results.summary.length;
+  $('#cntDetails').textContent = state.results.details.length;
+  $('#cntExceptions').textContent = state.results.exceptions.length;
+  $('#cntSessions').textContent = state.results.sessions.length;
+  renderTable(state.activeTab);
+
+  const totalSalikCount = state.results.summary.reduce((a,r)=>a+r.count,0);
+  $('#metaLeft').textContent = state.salikRows.length + ' trips parsed from PDF \u00b7 ' + state.results.details.length + ' matched \u00b7 ' + state.results.exceptions.length + ' exceptions';
+  $('#metaRight').textContent = 'Reconciled ' + new Date().toLocaleString();
+}
+
+function renderTable(tabName, searchTerm){
+  const def = TAB_DEFS[tabName];
+  let rows = state.results[tabName].slice();
+
+  if (searchTerm){
+    const s = searchTerm.toLowerCase();
+    rows = rows.filter(r => def.cols.some(c => String(r[c.key]).toLowerCase().includes(s)));
+  }
+
+  const sortState = state.sort[tabName];
+  if (sortState){
+    rows.sort((a,b) => {
+      const av = a[sortState.key], bv = b[sortState.key];
+      let cmp;
+      if (typeof av === 'number' && typeof bv === 'number') cmp = av - bv;
+      else cmp = String(av).localeCompare(String(bv));
+      return sortState.dir === 'asc' ? cmp : -cmp;
+    });
+  }
+
+  $('#rowCountLabel').textContent = rows.length + ' row' + (rows.length===1?'':'s');
+
+  if (rows.length === 0){
+    $('#tableHost').innerHTML = '<div class="empty-state"><span class="big">&#8709;</span>No rows' + (searchTerm ? ' match "' + escapeHtml(searchTerm) + '"' : ' yet') + '.</div>';
+    return;
+  }
+
+  let html = '<table><thead><tr>';
+  def.cols.forEach(c => {
+    let arrow = '';
+    if (sortState && sortState.key === c.key) arrow = sortState.dir === 'asc' ? '&uarr;' : '&darr;';
+    html += `<th data-key="${c.key}" data-tab="${tabName}">${c.label}<span class="arrow">${arrow}</span></th>`;
+  });
+  html += '</tr></thead><tbody>';
+  rows.forEach(r => {
+    html += '<tr>';
+    def.cols.forEach(c => {
+      let v = r[c.key];
+      let display = c.fmt ? c.fmt(v) : v;
+      if (c.badge){
+        html += `<td><span class="badge ${c.badge(v)}">${escapeHtml(String(display))}</span></td>`;
+      } else {
+        html += `<td class="${c.num?'num':''}">${escapeHtml(String(display ?? ''))}</td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  $('#tableHost').innerHTML = html;
+
+  $$('#tableHost thead th').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.key;
+      const tab = th.dataset.tab;
+      const cur = state.sort[tab];
+      let dir = 'asc';
+      if (cur && cur.key === key && cur.dir === 'asc') dir = 'desc';
+      state.sort[tab] = { key, dir };
+      renderTable(tab, $('#searchBox').value);
+    });
+  });
+}
+
+/* ===================== EXPORT ===================== */
+function toCsv(rows, cols){
+  const header = cols.map(c => c.label).join(',');
+  const lines = rows.map(r => cols.map(c => {
+    let v = r[c.key];
+    if (c.fmt) v = c.fmt(v);
+    v = String(v ?? '');
+    if (v.includes(',') || v.includes('"')) v = '"' + v.replace(/"/g,'""') + '"';
+    return v;
+  }).join(','));
+  return [header, ...lines].join('\n');
+}
+
+function downloadFile(filename, content, mime){
+  const blob = new Blob([content], {type: mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportActiveTabCsv(){
+  const tab = state.activeTab;
+  const def = TAB_DEFS[tab];
+  const csv = toCsv(state.results[tab], def.cols);
+  downloadFile('salik_' + tab + '_' + dateStamp() + '.csv', csv, 'text/csv');
+}
+
+function dateStamp(){
+  const d = new Date();
+  return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+}
+
+function exportAllXlsx(){
+  const wb = XLSX.utils.book_new();
+  ['summary','details','exceptions','sessions'].forEach(tab => {
+    const def = TAB_DEFS[tab];
+    const rows = state.results[tab];
+    const aoa = [def.cols.map(c => c.label)];
+    rows.forEach(r => {
+      aoa.push(def.cols.map(c => {
+        let v = r[c.key];
+        if (c.fmt) v = c.fmt(v);
+        return v;
+      }));
+    });
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    XLSX.utils.book_append_sheet(wb, ws, tab.charAt(0).toUpperCase()+tab.slice(1));
+  });
+  XLSX.writeFile(wb, 'salik_reconciliation_' + dateStamp() + '.xlsx');
+}
+
+/* ===================== EVENTS ===================== */
+$('#btnLoadIDB').addEventListener('click', handleLoadIDB);
+$('#btnPasteJson').addEventListener('click', openPasteModal);
+$('#btnPasteCancel').addEventListener('click', closePasteModal);
+$('#btnPasteConfirm').addEventListener('click', handlePasteConfirm);
+
+$('#pdfDrop').addEventListener('click', (e) => { if (e.target.tagName !== 'INPUT') $('#pdfInput').click(); });
+$('#pdfInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  setStatus($('#pdfStatus'), 'Parsing PDF&hellip; this can take a few seconds for large reports.', '');
+  try{
+    const { rows, meta } = await parsePdf(file);
+    state.salikRows = rows;
+    state.pdfMeta = meta;
+    $('#pdfDrop').classList.add('filled');
+    $('#pdfDropLabel').textContent = file.name;
+    setStatus($('#pdfStatus'), rows.length + ' trips parsed' + (meta.totalTrips ? ' (PDF reports ' + meta.totalTrips + ')' : ''), rows.length === meta.totalTrips ? 'ok' : 'warn');
+    markStepDone($('#stepPdf'));
+    if (meta.accountNo){
+      $('#acctTag').textContent = 'Account ' + meta.accountNo + (meta.periodFrom ? ' \u00b7 ' + meta.periodFrom + ' \u2013 ' + meta.periodTo : '');
+    }
+    maybeEnableRun();
+  }catch(err){
+    setStatus($('#pdfStatus'), 'Could not parse PDF: ' + escapeHtml(err.message), 'bad');
+  }
+});
+
+$('#btnRun').addEventListener('click', () => {
+  runReconciliation();
+  markStepDone($('#stepRun'));
+});
+
+$$('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    $$('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    state.activeTab = tab.dataset.tab;
+    $('#searchBox').value = '';
+    renderTable(state.activeTab);
+  });
+});
+
+$('#searchBox').addEventListener('input', (e) => {
+  renderTable(state.activeTab, e.target.value);
+});
+
+$('#btnExportCsv').addEventListener('click', exportActiveTabCsv);
+$('#btnExportXlsx').addEventListener('click', exportAllXlsx);
+
+</script>
+</body>
+</html>

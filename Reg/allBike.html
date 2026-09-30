@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bike Fleet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+<script src="https://effimalik.github.io/Testing/shared/auth.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/dataLayer.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/devPre.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cacheWatcher.js?v=1"></script>
+
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ══ DESIGN TOKENS — all 5 themes ══ */
+:root, [data-theme="dark"] {
+  --bg:#0d1117; --bg2:#161b22; --bg3:#1c2333;
+  --surface:#21262d; --surface2:#2d333b;
+  --border:#30363d; --border2:#444c56;
+  --text:#e6edf3; --text2:#8b949e; --text3:#6e7681;
+  --accent:#58a6ff; --accent-dim:rgba(88,166,255,.12); --accent-glow:rgba(88,166,255,.28);
+  --teal:#39d353; --teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341; --amber-dim:rgba(227,179,65,.12);
+  --red:#f85149; --red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7; --purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e; --orange-dim:rgba(240,136,62,.12);
+  --radius:8px; --radius-lg:12px; --radius-xl:16px;
+  --font:'Sora',sans-serif; --mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4); --shadow-md:0 4px 16px rgba(0,0,0,.5); --shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+[data-theme="light"] {
+  --bg:#f0f2f5; --bg2:#ffffff; --bg3:#e8ecf0;
+  --surface:#ffffff; --surface2:#e2e7ed;
+  --border:#c8d0d9; --border2:#9aa5b1;
+  --text:#0d1117; --text2:#3d454f; --text3:#5a6370;
+  --accent:#0550ae; --accent-dim:rgba(5,80,174,.12); --accent-glow:rgba(5,80,174,.22);
+  --teal:#116329; --teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00; --amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b; --red-dim:rgba(168,17,27,.11);
+  --purple:#6639c8; --purple-dim:rgba(102,57,200,.13);
+  --orange:#953800; --orange-dim:rgba(149,56,0,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.10); --shadow-md:0 4px 16px rgba(0,0,0,.12); --shadow-lg:0 8px 32px rgba(0,0,0,.15);
+}
+[data-theme="purple"] {
+  --bg:#0f0b1e; --bg2:#17112e; --bg3:#1e1840;
+  --surface:#221a3a; --surface2:#2c2250;
+  --border:#3a2e5e; --border2:#5a4890;
+  --text:#e8e0ff; --text2:#a899d4; --text3:#7a6ca8;
+  --accent:#c084fc; --accent-dim:rgba(192,132,252,.14); --accent-glow:rgba(192,132,252,.3);
+  --teal:#4ade80; --teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24; --amber-dim:rgba(251,191,36,.12);
+  --red:#f87171; --red-dim:rgba(248,113,113,.12);
+  --purple:#c084fc; --purple-dim:rgba(192,132,252,.14);
+  --orange:#fb923c; --orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5); --shadow-md:0 4px 16px rgba(0,0,0,.6); --shadow-lg:0 8px 32px rgba(0,0,0,.7);
+}
+[data-theme="ocean"] {
+  --bg:#071520; --bg2:#0d2035; --bg3:#112840;
+  --surface:#143050; --surface2:#1a3d60;
+  --border:#1e4a72; --border2:#2e6a9e;
+  --text:#d6eeff; --text2:#7db8e8; --text3:#4a87b8;
+  --accent:#38bdf8; --accent-dim:rgba(56,189,248,.14); --accent-glow:rgba(56,189,248,.3);
+  --teal:#34d399; --teal-dim:rgba(52,211,153,.12);
+  --amber:#fbbf24; --amber-dim:rgba(251,191,36,.12);
+  --red:#f87171; --red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa; --purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c; --orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5); --shadow-md:0 4px 16px rgba(0,0,0,.55); --shadow-lg:0 8px 32px rgba(0,0,0,.65);
+}
+[data-theme="slate"] {
+  --bg:#0e1117; --bg2:#1a1f28; --bg3:#222836;
+  --surface:#28303e; --surface2:#313c4e;
+  --border:#3a4556; --border2:#556070;
+  --text:#e2e8f0; --text2:#94a3b8; --text3:#64748b;
+  --accent:#60a5fa; --accent-dim:rgba(96,165,250,.13); --accent-glow:rgba(96,165,250,.28);
+  --teal:#4ade80; --teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24; --amber-dim:rgba(251,191,36,.12);
+  --red:#f87171; --red-dim:rgba(248,113,113,.12);
+  --purple:#a78bfa; --purple-dim:rgba(167,139,250,.12);
+  --orange:#fb923c; --orange-dim:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.45); --shadow-md:0 4px 16px rgba(0,0,0,.5); --shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+
+html, body { height: 100%; overflow: hidden; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: clamp(12px, 1.5vw, 15px); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow: hidden; }
+
+/* ── Page wrapper — fills viewport, clips overflow ── */
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100dvh;
+  min-height: 0;
+  margin: 0 auto;
+  padding: clamp(8px, 2vw, 24px) clamp(10px, 2.5vw, 24px);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ── Page header — title+desc left, search+filters right, single row ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px clamp(10px, 2vw, 20px);
+  flex-shrink: 0;
+  padding-bottom: clamp(8px, 1.4vw, 12px);
+  margin-bottom: clamp(8px, 1.4vw, 12px);
+  border-bottom: 1.5px solid var(--border);
+}
+.page-header-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 160px;
+}
+.page-title { font-size: clamp(15px, 2.2vw, 22px); font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--text); flex-shrink: 0; white-space: nowrap; }
+.page-title i { color: var(--accent); font-size: clamp(17px, 2.6vw, 26px); line-height: 1; }
+.page-desc {
+  font-size: clamp(11px, 1.1vw, 13px);
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding-left: 12px;
+  border-left: 1.5px solid var(--border);
+  overflow: hidden;
+}
+.page-desc i { color: var(--accent); font-size: clamp(14px, 1.6vw, 17px); flex-shrink: 0; line-height: 1; }
+.page-desc span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 760px) { .page-desc { display: none; } }
+
+/* ── Header controls — search + filter pills, right-aligned ── */
+.page-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  margin-left: auto;
+  max-width: 100%;
+}
+.search-group { display: flex; align-items: center; gap: 6px; flex: 1 1 140px; min-width: 90px; max-width: 240px; }
+.search-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: clamp(28px,4vw,34px); height: clamp(28px,4vw,34px); border-radius: var(--radius); border: 1px solid var(--border2); background: var(--surface); color: var(--text3); flex-shrink: 0; cursor: default; font-size: clamp(14px,2vw,17px); }
+.search-input { flex: 1; padding: clamp(6px,1vw,7px) clamp(8px,1.2vw,11px); border: 1px solid var(--border2); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: var(--font); font-size: clamp(11px,1.3vw,13px); transition: border .18s, box-shadow .18s; min-width: 0; width: 100%; }
+.search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.search-input::placeholder { color: var(--text3); }
+.filter-pills { display: flex; gap: 5px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.filter-btn { display: inline-flex; align-items: center; gap: 5px; padding: clamp(5px,.8vw,7px) clamp(9px,1.2vw,13px); border-radius: 20px; border: 1.5px solid var(--border2); background: var(--surface); color: var(--text2); font-family: var(--font); font-size: clamp(10px,1.1vw,12px); font-weight: 600; cursor: pointer; transition: all .18s; white-space: nowrap; flex-shrink: 0; }
+.filter-btn i { font-size: 15px; flex-shrink: 0; line-height: 1; display: inline-flex; align-items: center; }
+.filter-btn:hover { background: var(--surface2); color: var(--text); }
+.filter-btn.active   { background: var(--surface2); color: var(--text); border-color: var(--border2); box-shadow: 0 0 0 2px var(--accent); }
+.filter-btn.expired  { border-color: var(--red);   color: var(--red); }
+.filter-btn.expired.active  { background: var(--red-dim); box-shadow: 0 0 0 2px var(--red); }
+.filter-btn.expiring { border-color: var(--amber); color: var(--amber); }
+.filter-btn.expiring.active { background: var(--amber-dim); box-shadow: 0 0 0 2px var(--amber); }
+.filter-btn.valid    { border-color: var(--teal);  color: var(--teal); }
+.filter-btn.valid.active    { background: var(--teal-dim); box-shadow: 0 0 0 2px var(--teal); }
+@media (max-width: 760px) {
+  .filter-btn span { display: none; }
+  .filter-btn { padding: 7px 8px; gap: 0; }
+  .filter-btn i { font-size: 16px; }
+  .search-group { flex: 0 1 120px; min-width: 80px; max-width: 150px; }
+}
+@media (max-width: 420px) {
+  .search-group { flex: 0 1 90px; min-width: 60px; max-width: 110px; }
+  .filter-btn { padding: 6px 7px; }
+}
+
+/* ── Table card — flex column so footer is always pinned ── */
+.bike-table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.bike-table-wrap { overflow-x: hidden; overflow-y: auto; flex: 1 1 auto; min-height: 60px; -webkit-overflow-scrolling: touch; width: 100%; }
+
+/* ── Footer / pagination bar ── */
+.bike-block-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: clamp(7px,1.2vw,9px) clamp(10px,1.6vw,14px);
+  border-top: 1px solid var(--border);
+  font-size: clamp(10.5px,1.1vw,12px);
+  color: var(--text3);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  background: var(--surface);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.bike-block-nav-pages { display: flex; align-items: center; gap: 4px; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.bike-block-nav-pages::-webkit-scrollbar { display: none; }
+@media (max-width: 600px) {
+  .bike-block-nav { justify-content: center; text-align: center; }
+  .bike-block-nav-pages { order: 3; width: 100%; justify-content: center; }
+}
+.bike-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: clamp(11px, 1.3vw, 13px); }
+.bike-table thead th { position: sticky; top: 0; z-index: 2; background: var(--bg3); text-align: left; font-size: clamp(9px, 1vw, 10.5px); font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; padding: clamp(8px,1.2vw,11px) clamp(8px,1.2vw,14px); border-bottom: 2px solid var(--border); overflow: hidden; text-overflow: ellipsis; }
+.bike-table td { padding: clamp(8px,1.2vw,11px) clamp(8px,1.2vw,14px); border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; }
+.bike-table tr:last-child td { border-bottom: none; }
+.bike-table tbody tr { transition: background .12s; }
+.bike-table tbody tr:hover td { background: var(--bg3); }
+/* Column widths */
+.bike-table th:nth-child(1), .bike-table td:nth-child(1) { width: 26%; }
+.bike-table th:nth-child(2), .bike-table td:nth-child(2) { width: 14%; }
+.bike-table th:nth-child(3), .bike-table td:nth-child(3) { width: 13%; }
+.bike-table th:nth-child(4), .bike-table td:nth-child(4) { width: 11%; }
+.bike-table th:nth-child(5), .bike-table td:nth-child(5) { width: 11%; }
+.bike-table th:nth-child(6), .bike-table td:nth-child(6) { width: 25%; overflow: visible; text-overflow: clip; }
+
+/* ── Badges ── */
+.badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge.valid   { background: rgba(57,211,83,.18);  color: #39d353; border: 1px solid rgba(57,211,83,.35); }
+.badge.expired { background: rgba(248,81,73,.18);  color: #f85149; border: 1px solid rgba(248,81,73,.35); }
+.badge.expiring { background: rgba(227,179,65,.18); color: #e3b341; border: 1px solid rgba(227,179,65,.35); }
+.badge.gray    { background: rgba(110,118,129,.18); color: #8b949e; border: 1px solid rgba(110,118,129,.3); }
+
+/* ── Global icon baseline ── */
+[class^="ti-"], [class*=" ti-"] { font-style: normal; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
+
+/* ── Row action buttons ── */
+.row-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; border: 1.5px solid; font-family: var(--font); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .16s; white-space: nowrap; line-height: 1; }
+.row-btn i { font-size: 15px; flex-shrink: 0; line-height: 1; }
+.row-btn-view { background: var(--teal-dim); border-color: var(--teal); color: var(--teal); }
+.row-btn-view:hover { background: var(--teal); color: #fff; box-shadow: 0 0 10px var(--teal-dim); }
+.bike-table td button:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ── Virtual scroll spacers must be invisible ── */
+.vs-spacer-top td, .vs-spacer-bot td { padding: 0 !important; border: none !important; }
+
+/* ── Toast ── */
+.toast { position: fixed; bottom: 28px; right: 28px; background: var(--surface2); color: var(--text); border: 1px solid var(--border2); padding: 13px 20px; border-radius: var(--radius-lg); font-size: 13px; font-weight: 500; z-index: 999; opacity: 0; transform: translateY(12px); transition: all .28s cubic-bezier(.34,1.56,.64,1); pointer-events: none; display: flex; align-items: center; gap: 10px; box-shadow: var(--shadow-lg); max-width: 340px; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: var(--teal-dim); color: var(--teal); border-color: rgba(57,211,83,.25); }
+.toast.error   { background: var(--red-dim);  color: var(--red);  border-color: rgba(248,81,73,.25); }
+
+/* ── Modal ── */
+@keyframes modalIn { from { opacity: 0; transform: scale(.95) translateY(10px); } to { opacity: 1; transform: none; } }
+.modal-header h2 { font-size: clamp(13px,1.6vw,15px); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.modal-header h2 i { color: var(--accent); font-size: 18px; line-height: 1; }
+.tb-btn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--surface); color: var(--text); cursor: pointer; font-size: 13px; font-family: var(--font); font-weight: 500; transition: all .18s; white-space: nowrap; }
+.tb-btn i { font-size: 16px; line-height: 1; flex-shrink: 0; }
+.tb-btn:hover { background: var(--surface2); }
+.tb-btn.icon-only { padding: 8px 10px; }
+.modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 200; align-items: center; justify-content: center; padding: clamp(10px,2vw,24px); backdrop-filter: blur(4px); }
+.modal-backdrop.open { display: flex; }
+.modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius-xl); width: 100%; max-width: min(520px, 96vw); max-height: calc(100dvh - 24px); display: flex; flex-direction: column; box-shadow: var(--shadow-lg); animation: modalIn .22s cubic-bezier(.34,1.56,.64,1); overflow: hidden; }
+.modal-header { padding: clamp(12px,2vw,20px) clamp(14px,2.5vw,24px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.modal-body { padding: clamp(12px,2vw,20px) clamp(14px,2.5vw,24px); overflow-y: auto; flex: 1; min-height: 0; }
+.modal-footer { padding: clamp(10px,1.5vw,16px) clamp(14px,2.5vw,24px); border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0; }
+
+/* ── Detail panel ── */
+#detail-panel { position: fixed; inset: 0; z-index: 300; pointer-events: none; display: flex; justify-content: flex-end; }
+#detail-panel.open { pointer-events: auto; }
+.dp-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(3px); opacity: 0; transition: opacity .28s; }
+#detail-panel.open .dp-backdrop { opacity: 1; }
+.dp-sheet { position: relative; width: min(460px, 100%); height: 100dvh; max-height: 100dvh; background: var(--bg2); border-left: 1px solid var(--border2); display: flex; flex-direction: column; transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1); box-shadow: -8px 0 40px rgba(0,0,0,.4); overflow: hidden; }
+#detail-panel.open .dp-sheet { transform: translateX(0); }
+.dp-header { padding: 20px 22px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-shrink: 0; background: var(--bg2); }
+.dp-header-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.dp-header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.dp-avatar { width: 44px; height: 44px; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.dp-name { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+.dp-sub  { font-size: 12px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+.dp-status-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; border: 1.5px solid; }
+.dp-badge-green  { background: var(--teal-dim);  color: var(--teal);  border-color: var(--teal); }
+.dp-badge-amber  { background: var(--amber-dim); color: var(--amber); border-color: var(--amber); }
+.dp-badge-red    { background: var(--red-dim);   color: var(--red);   border-color: var(--red); }
+.dp-close-btn { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--border2); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text2); transition: all .15s; }
+.dp-close-btn:hover { background: var(--red-dim); color: var(--red); border-color: var(--red); }
+.dp-close-btn i { font-size: 15px; }
+.dp-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0; display: flex; flex-direction: column; gap: 0; min-height: 0; }
+.dp-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 60px 24px; color: var(--text3); font-size: 13px; }
+.dp-spinner { width: 28px; height: 28px; border: 2.5px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: dpSpin .75s linear infinite; }
+@keyframes dpSpin { to { transform: rotate(360deg); } }
+.dp-section { padding: 18px 22px; border-bottom: 1px solid var(--border); }
+.dp-section:last-child { border-bottom: none; }
+.dp-section-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text3); display: flex; align-items: center; gap: 7px; margin-bottom: 14px; }
+.dp-section-title i { color: var(--accent); font-size: 17px; line-height: 1; }
+.dp-fields { display: flex; flex-direction: column; gap: 0; }
+.dp-field { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.dp-field:last-child { border-bottom: none; }
+.dp-fl { color: var(--text3); font-size: 11.5px; flex-shrink: 0; width: 130px; }
+.dp-fv { color: var(--text); text-align: right; flex: 1; word-break: break-word; }
+.dp-mono { font-family: var(--mono); font-size: 12px; }
+.dp-edit-input { width: 100%; padding: 6px 10px; border: 1.5px solid var(--accent); border-radius: 5px; background: var(--bg3); color: var(--text); font-family: var(--font); font-size: 13px; }
+.dp-edit-input:focus { outline: none; box-shadow: 0 0 0 3px var(--accent-dim); }
+[data-theme="light"] .dp-edit-input { background: var(--bg2); }
+/* Doc expiry cards — 3 columns in panel */
+.dp-ex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 4px; }
+.dp-ex-card { border-radius: 8px; padding: 8px 6px; border: 1.5px solid; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.dp-ex-icon  { font-size: 18px; line-height: 1; }
+.dp-ex-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; opacity: .8; }
+.dp-ex-status { font-size: 10.5px; font-weight: 700; }
+.dp-ex-date  { font-size: 9px; font-family: var(--mono); opacity: .75; }
+.dp-ex-valid    { background: var(--teal-dim);  color: var(--teal);  border-color: var(--teal); }
+.dp-ex-expiring { background: var(--amber-dim); color: var(--amber); border-color: var(--amber); }
+.dp-ex-expired  { background: var(--red-dim);   color: var(--red);   border-color: var(--red); }
+.dp-ex-na       { background: var(--surface);   color: var(--text3); border-color: var(--border2); }
+.dp-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; justify-content: flex-end; flex-shrink: 0; flex-wrap: wrap; background: var(--bg2); }
+.dp-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius); font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: all .18s; white-space: nowrap; }
+.dp-btn i { font-size: 16px; line-height: 1; flex-shrink: 0; }
+.dp-btn-secondary { background: var(--surface); color: var(--text2); border-color: var(--border2); }
+.dp-btn-secondary:hover { background: var(--surface2); color: var(--text); }
+.dp-btn-edit { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+.dp-btn-edit:hover { background: var(--accent); color: #fff; box-shadow: 0 0 12px var(--accent-glow); }
+.dp-btn-save { background: var(--teal-dim); color: var(--teal); border-color: var(--teal); }
+.dp-btn-save:hover { background: var(--teal); color: #fff; }
+.dp-btn-save:disabled { opacity: .5; cursor: not-allowed; }
+.dp-btn-cancel { background: var(--surface); color: var(--text3); border-color: var(--border2); }
+.dp-btn-cancel:hover { background: var(--red-dim); color: var(--red); border-color: var(--red); }
+
+/* ── Plate chip ── */
+.plate-chip { font-family: var(--mono); font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 5px; background: var(--bg3); border: 1px solid var(--border2); color: var(--text); letter-spacing: .04em; display: inline-block; }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .bike-table th:nth-child(3), .bike-table td:nth-child(3) { display: none; }
+}
+@media (max-width: 768px) {
+  .filter-pills { flex-wrap: wrap; }
+  .bike-table-wrap { min-height: 40px; }
+  .dp-sheet { width: 100%; border-left: none; }
+  .dp-fl { width: 100px; }
+  .dp-ex-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 600px) {
+  .bike-table th:nth-child(4), .bike-table td:nth-child(4) { display: none; }
+  .bike-table th:nth-child(1), .bike-table td:nth-child(1) { width: 50%; }
+  .bike-table th:nth-child(2), .bike-table td:nth-child(2) { width: 20%; }
+  .bike-table th:nth-child(6), .bike-table td:nth-child(6) { width: 30%; }
+  .row-btn span { display: none; }
+  .row-btn { padding: 5px 7px; gap: 0; }
+  .dp-ex-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-height: 560px) {
+  .page-header { padding-bottom: 6px; margin-bottom: 6px; }
+  .page-desc { display: none; }
+  .bike-table-wrap { min-height: 40px; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ═══ INSTANT THEME SYNC (no flash) ═══ -->
+<script>
+(function(){
+  try {
+    let t = 'dark';
+    try { t = window.parent.document.documentElement.getAttribute('data-theme') || t; } catch(_) {}
+    try { t = sessionStorage.getItem('__ui_theme') || t; } catch(_) {}
+    document.documentElement.setAttribute('data-theme', t);
+  } catch(e) {}
+})();
+</script>
+
+<div class="page">
+
+  <!-- Page header: heading + description (left), search + filters (right) -->
+  <div class="page-header">
+    <div class="page-header-text">
+      <div class="page-title">
+        <i class="ti ti-motorbike"></i>
+        Bike Fleet
+      </div>
+      <p class="page-desc"><i class="ti ti-info-circle"></i><span>Browse, search and manage the full bike fleet — view document expiry statuses, fleet availability, and edit bike details.</span></p>
+    </div>
+
+    <div class="page-header-controls">
+      <div class="search-group">
+        <span class="search-icon-btn" aria-hidden="true"><i class="ti ti-search"></i></span>
+        <input class="search-input" type="text" id="bike-search-input" placeholder="Search plate, make, model, ID, emirate…" oninput="filterBikes(this.value)" />
+      </div>
+      <div class="filter-pills">
+        <button class="filter-btn active"    data-filter="all"      onclick="setFilter('all')"><i class="ti ti-layout-list"></i><span> All</span></button>
+        <button class="filter-btn expired"   data-filter="expired"  onclick="setFilter('expired')"><i class="ti ti-alert-circle"></i><span> Expired</span></button>
+        <button class="filter-btn expiring"  data-filter="expiring" onclick="setFilter('expiring')"><i class="ti ti-clock"></i><span> Expiring</span></button>
+        <button class="filter-btn valid"     data-filter="valid"    onclick="setFilter('valid')"><i class="ti ti-circle-check"></i><span> Valid</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bike-table-card">
+    <div class="bike-table-wrap">
+      <table class="bike-table">
+        <thead>
+          <tr>
+            <th>Bike</th>
+            <th>Plate No</th>
+            <th>Chassis</th>
+            <th>Emirate</th>
+            <th>Doc Health</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bike-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="alert" aria-live="polite">
+  <i id="toast-icon" class="ti ti-circle-check"></i>
+  <span id="toast-msg">Done</span>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════ CONSTANTS ═══════════ */
+const WARN_DAYS = 60;
+
+const AV_FG  = ['#58a6ff','#3fb950','#e3b341','#d2a8ff','#ffa198','#22d3ee'];
+const AV_BG  = ['rgba(31,111,235,.2)','rgba(26,127,55,.2)','rgba(154,103,0,.2)','rgba(110,64,201,.2)','rgba(191,69,66,.2)','rgba(14,116,144,.2)'];
+
+/* ── Pipeline constants ── */
+const VS_ROWS  = 40;   // visible rows in virtual-scroll window
+let   ROW_H    = 56;   // px — updated at runtime from first rendered row
+
+/* ── State ── */
+let bikes          = [];   // Memory-Hoist: full array in RAM
+let bikeSearchQuery = '';
+let currentFilter  = 'all';
+let _vsInstance    = null;
+let _panelId       = null;
+
+/* ═══════════ UTILITY ═══════════ */
+function today()       { return new Date(); }
+function daysUntil(d)  { if (!d) return Infinity; return Math.ceil((new Date(d) - today()) / 86400000); }
+function isExpired(d)  { return daysUntil(d) < 0; }
+function isExpiring(d) { const n = daysUntil(d); return n >= 0 && n <= WARN_DAYS; }
+function hasDate(d)    { return d && String(d).trim().length > 0; }
+
+function computeDoc(daTestingr) {
+  if (!daTestingr || String(daTestingr).trim() === '') return { date: null, status: 'expired', color: 'red' };
+  const d = String(daTestingr).trim();
+  if (isExpired(d))  return { date: d, status: 'expired',  color: 'red'   };
+  if (isExpiring(d)) return { date: d, status: 'expiring', color: 'amber' };
+  return               { date: d, status: 'valid',    color: 'teal'  };
+}
+
+function docHealthStatus(b) {
+  const docs = [b.docs.mulkiya, b.docs.passing, b.docs.insurance];
+  if (docs.some(d => d.status === 'expired'))  return 'expired';
+  if (docs.some(d => d.status === 'expiring')) return 'expiring';
+  return 'valid';
+}
+
+function fleetAvailable(b) {
+  return (b.status || '').toLowerCase().trim() === 'available';
+}
+
+function fmtDaTestingr(d) {
+  if (!d) return null;
+  try { return new Date(d).toLocaleDaTestingring('en-GB', { day:'2-digit', month:'short', year:'numeric' }); } catch { return d; }
+}
+
+/* ═══════════ CACHE — via shared cacheWatcher.js, with a safe fallback ═══════════
+   If cacheWatcher.js fails to load or load in time (blocked, 404, iPad
+   caching a stale/broken copy, etc.) this page must NOT throw and must
+   NOT stop the rest of this script from running. So: if AP2CacheWatcher
+   isn't there, build a tiny local stand-in with the same shape, using
+   the page's own direct (timeout-guarded) IndexedDB read as a fallback.
+   ════════════════════════════════════════════════════════════════════════ */
+const _AP2_CACHE_KEY = 'ap2_bike';
+
+if (typeof window.AP2CacheWatcher === 'undefined') {
+  console.warn('[allBike] cacheWatcher.js did not load — using local fallback');
+  window.AP2CacheWatcher = (function () {
+    const _IDB_NAME = 'ap2_fleet_cache', _IDB_STORE = 'datasets';
+    let _conn = null;
+    function _open() {
+      if (_conn) return Promise.resolve(_conn);
+      return new Promise((res, rej) => {
+        let done = false;
+        const req = indexedDB.open(_IDB_NAME);
+        const t = setTimeout(() => { if (!done) { done = true; rej(new Error('idb-open-timeout')); } }, 2000);
+        req.onsuccess = e => { if (!done) { done = true; clearTimeout(t); _conn = e.target.result; res(_conn); } };
+        req.onerror   = e => { if (!done) { done = true; clearTimeout(t); rej(e.target.error); } };
+      });
+    }
+    return {
+      init() {},
+      subscribe() { return () => {}; }, // no cross-page notifications available in fallback mode
+      notifyNow() {},
+      getStatus() { return { healthy: false, mode: 'local-fallback', lastError: 'cacheWatcher.js not loaded' }; },
+      async readKey(key) {
+        try {
+          const db  = await _open();
+          if (!db.objectStoreNames.contains(_IDB_STORE)) {
+            // Store doesn't exist yet — cache hasn't been warmed in this
+            // browser session yet. That's normal, not an error.
+            return null;
+          }
+          const rec = await new Promise((res, rej) => {
+            const r = db.transaction(_IDB_STORE, 'readonly').objectStore(_IDB_STORE).get(key);
+            r.onsuccess = () => res(r.result || null);
+            r.onerror   = () => rej(r.error);
+          });
+          return (rec && Array.isArray(rec.data) && rec.data.length) ? rec.data : null;
+        } catch (e) {
+          if (e && e.name === 'NotFoundError') return null; // store not created yet — normal
+          console.warn('[allBike] fallback read failed:', e.message);
+          return null;
+        }
+      }
+    };
+  })();
+}
+
+// Thin wrapper kept so the rest of this file doesn't need to change —
+// actual read lives centrally in cacheWatcher.js when it's available,
+// or in the fallback above when it isn't.
+async function _readCache() {
+  return AP2CacheWatcher.readKey(_AP2_CACHE_KEY);
+}
+
+/* ═══════════ NORMALISE ROW ═══════════
+   Handles both array format (from Google Sheets cache) and object format.
+   Column layout (0-based):
+   [0] Timestamp  [1] Bike ID  [2] Plate  [3] Chassis  [4] Make
+   [5] Model      [6] Emirate  [7] Mulkiya Expiry  [8] Passing Expiry
+   [9] Insurance Expiry  [10] Status
+   ════════════════════════════════════════════════════════════════════ */
+function normaliseRow(r, i) {
+  if (!r) return null;
+
+  const _s = v => (v !== null && v !== undefined && v !== '') ? String(v).trim() : '';
+
+  if (Array.isArray(r)) {
+    const plate = _s(r[2]);
+    if (!plate || plate.toLowerCase().includes('plate')) return null;
+    return {
+      _rowIndex:  i + 2,
+      timestamp:  _s(r[0]),
+      bikeId:     _s(r[1]) || String(i + 1),
+      plate,
+      chassis:    _s(r[3]),
+      make:       _s(r[4]) || '—',
+      model:      _s(r[5]) || '—',
+      emirate:    _s(r[6]),
+      status:     (_s(r[10]) || 'active').toLowerCase(),
+      docs: {
+        mulkiya:   computeDoc(_s(r[7])),
+        passing:   computeDoc(_s(r[8])),
+        insurance: computeDoc(_s(r[9])),
+      },
+    };
+  }
+
+  /* Object format */
+  const plate = _s(r.plate || r.plateNumber || r['Plate Number'] || r['plate']);
+  if (!plate) return null;
+  return {
+    _rowIndex:  r._rowIndex || (i + 2),
+    timestamp:  _s(r.timestamp  || r.Timestamp   || ''),
+    bikeId:     _s(r.bikeId     || r['Bike ID']  || String(i + 1)),
+    plate,
+    chassis:    _s(r.chassis    || r['Chassis Number'] || ''),
+    make:       _s(r.make       || r.Make        || '—'),
+    model:      _s(r.model      || r.Model       || '—'),
+    emirate:    _s(r.emirate    || r.Emirate     || ''),
+    status:     (_s(r.status    || r.Status      || 'active')).toLowerCase(),
+    docs: {
+      mulkiya:   computeDoc(_s(r.mulkiyaExp   || r['Mulkiya Expiry']   || '')),
+      passing:   computeDoc(_s(r.passingExp   || r['Passing Expiry']   || '')),
+      insurance: computeDoc(_s(r.insExp       || r['Insurance Expiry'] || '')),
+    },
+  };
+}
+
+/* ═══════════ LOAD — IDB → Memory-Hoist → Slice → Virtual-Scroll ═══════════
+   Single source: ap2_bike key in ap2_fleet_cache IndexedDB.
+   No preload, no stream-query, no API — IDB only.
+   ════════════════════════════════════════════════════════════════════════ */
+async function loadBikes() {
+  const tbody = document.getElementById('bike-tbody');
+  const alreadyHaveData = bikes && bikes.length;
+
+  // Only show the spinner if the screen is genuinely empty. If the parent's
+  // push already rendered good data (a faster path than this IndexedDB
+  // read), don't blink it away with a loading state.
+  if (tbody && !alreadyHaveData) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px 16px;">
+    <div style="color:var(--text3);display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <i class="ti ti-loader" style="font-size:26px;animation:spin 1s linear infinite;display:inline-flex;"></i>
+      <span style="font-size:12px;">Reading ap2_bike cache…</span>
+    </div></td></tr>`;
+
+  try {
+    const rows = await _readCache();
+    const fresh = (rows && rows.length) ? rows.map((r, i) => normaliseRow(r, i)).filter(Boolean) : [];
+
+    if (fresh.length) {
+      // Good data — always safe to apply.
+      bikes = fresh;
+      renderBikeTable(bikes);
+    } else if (!(bikes && bikes.length)) {
+      // Only show the empty state if we don't already have better data on
+      // screen from another source (e.g. the parent's push arrived first
+      // and this slower IndexedDB read simply found nothing new).
+      if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px 16px;color:var(--text3);">
+        <i class="ti ti-database-off" style="font-size:26px;display:block;margin-bottom:8px;"></i>
+        No data in cache yet. Data will appear automatically once
+        <code style="font-size:11px;background:var(--bg3);padding:1px 5px;border-radius:4px;">ap2_bike</code> is populated.
+      </td></tr>`;
+    }
+    // else: this read found nothing, but we already have good data on
+    // screen from elsewhere — do nothing, leave it exactly as is.
+  } catch (err) {
+    console.error('[allBike] loadBikes error:', err);
+    if (!(bikes && bikes.length) && tbody) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px 16px;color:var(--red);">
+        <i class="ti ti-wifi-off" style="font-size:24px;display:block;margin-bottom:6px;"></i>
+        Failed to load bike data — ${err.message}
+      </td></tr>`;
+    }
+  }
+}
+
+/* ═══════════ SILENT REFRESH — every update AFTER the first paint goes through here.
+   No spinner, no tbody wipe unless data is genuinely gone — so nothing blinks.
+   Subscribed to cacheWatcher.js, which fires this on ANY of:
+     - this page's own fast poll (2s) detecting a change or deletion
+     - an instant notifyNow() call from wherever the data was written
+     - a broadcast relayed down from the parent shell (index.html)
+   ════════════════════════════════════════════════════════════════════════ */
+let _emptyReadStreak = 0; // guards against one flaky/transient empty read wiping good data
+async function _applyFromIDB() {
+  try {
+    const rows = await _readCache();
+    if (rows && rows.length) {
+      _emptyReadStreak = 0;
+      bikes = rows.map((r, i) => normaliseRow(r, i)).filter(Boolean);
+      renderBikeTable(bikes);
+    } else if (bikes && bikes.length) {
+      // Don't trust a single empty read — iPad's IndexedDB reads can be
+      // flaky/transient. Only treat it as a genuine deletion after seeing
+      // it twice in a row.
+      _emptyReadStreak++;
+      if (_emptyReadStreak >= 2) {
+        bikes = [];
+        renderBikeTable(bikes);
+        _emptyReadStreak = 0;
+      }
+    }
+  } catch (e) {
+    console.warn('[allBike] background refresh error:', e.message);
+  }
+}
+
+try {
+  AP2CacheWatcher.init();
+  AP2CacheWatcher.subscribe(() => { _applyFromIDB(); });
+} catch (e) {
+  console.warn('[allBike] cacheWatcher wiring failed, continuing without live updates:', e.message);
+}
+
+/* ═══════════ FILTER ═══════════ */
+function getFilteredBikes(list) {
+  const lq = (bikeSearchQuery || '').toLowerCase().trim();
+  return list.filter(b => {
+    if (lq) {
+      const m = [b.plate, b.make, b.model, b.bikeId, b.emirate, b.chassis, b.status]
+                  .some(v => (v || '').toLowerCase().includes(lq));
+      if (!m) return false;
+    }
+    if (currentFilter !== 'all') {
+      const dh = docHealthStatus(b);
+      if (currentFilter === 'expired'  && dh !== 'expired')  return false;
+      if (currentFilter === 'expiring' && dh !== 'expiring') return false;
+      if (currentFilter === 'valid'    && dh !== 'valid')     return false;
+    }
+    return true;
+  });
+}
+
+/* ═══════════ ROW BUILDER ═══════════ */
+function _docDot(doc, label) {
+  const color = doc.status === 'valid' ? 'var(--teal)' : doc.status === 'expiring' ? 'var(--amber)' : 'var(--red)';
+  const tip   = `${label}: ${doc.date ? (fmtDaTestingr(doc.date) || doc.date) : 'missing'}`;
+  return `<span title="${tip}" style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${color};flex-shrink:0;"></span>`;
+}
+
+function _docHealthBadge(b) {
+  const dh = docHealthStatus(b);
+  if (dh === 'valid')    return `<span class="badge valid"><i class="ti ti-circle-check" style="font-size:11px;"></i> Valid</span>`;
+  if (dh === 'expiring') return `<span class="badge expiring"><i class="ti ti-clock" style="font-size:11px;"></i> Expiring</span>`;
+  return                        `<span class="badge expired"><i class="ti ti-alert-triangle" style="font-size:11px;"></i> Expired</span>`;
+}
+
+function buildBikeRow(b, idx) {
+  const dh       = docHealthStatus(b);
+  const avail    = fleetAvailable(b);
+  const rowBorder = dh === 'expired'  ? 'style="border-left:3px solid var(--red);background:rgba(248,81,73,.04);"'
+                  : dh === 'expiring' ? 'style="border-left:3px solid var(--amber);background:rgba(227,179,65,.04);"'
+                  : 'style="border-left:3px solid transparent;"';
+
+  const avBg  = AV_BG[idx % AV_BG.length];
+  const avFg  = AV_FG[idx % AV_FG.length];
+
+  const statusTip = avail ? 'Available' : ((b.status || 'unknown').charAt(0).toUpperCase() + (b.status || '').slice(1));
+
+  return `
+    <tr class="vs-row" ${rowBorder} data-bike-id="${b.bikeId}">
+      <td style="padding:10px 14px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:36px;height:36px;border-radius:var(--radius);flex-shrink:0;background:${avBg};color:${avFg};display:flex;align-items:center;justify-content:center;font-size:16px;">
+            <i class="ti ti-motorbike"></i>
+          </div>
+          <div style="min-width:0;">
+            <div style="font-family:var(--mono);font-size:10.5px;color:var(--text3);line-height:1.2;">#${b.bikeId}</div>
+            <div style="font-weight:600;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;">${b.make} ${b.model}</div>
+            <div style="margin-top:1px;display:inline-flex;align-items:center;gap:5px;flex-shrink:0;">
+              <span title="${statusTip}" style="width:8px;height:8px;border-radius:50%;background:${avail ? 'var(--teal)' : 'var(--red)'};display:inline-block;flex-shrink:0;"></span>
+              <span style="font-size:10px;color:var(--text3);">${statusTip}</span>
+            </div>
+          </div>
+        </div>
+      </td>
+      <td><span class="plate-chip">${b.plate || '—'}</span></td>
+      <td style="font-size:11px;color:var(--text3);font-family:var(--mono);">${b.chassis || '—'}</td>
+      <td style="font-size:12px;">${b.emirate || '—'}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          ${_docHealthBadge(b)}
+          <div style="display:flex;align-items:center;gap:4px;" title="Mulkiya · Passing · Insurance">
+            ${_docDot(b.docs.mulkiya,   'Mulkiya')}
+            ${_docDot(b.docs.passing,   'Passing')}
+            ${_docDot(b.docs.insurance, 'Insurance')}
+          </div>
+        </div>
+      </td>
+      <td style="white-space:nowrap;padding:8px 12px;">
+        <div style="display:flex;gap:5px;align-items:center;flex-wrap:nowrap;">
+          <button class="row-btn row-btn-view" title="View details" data-action="view" data-bike-id="${b.bikeId}">
+            <i class="ti ti-eye"></i><span>View</span>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+}
+
+/* ═══════════ VIRTUAL-SCROLL ENGINE ═══════════ */
+const SLICE_SZ = 200;
+let _currentBlock = 0;
+
+function _renderBikeBlockNav(total, blockIdx) {
+  const tableCard = document.querySelector('.bike-table-card');
+  if (!tableCard) return;
+
+  let nav = document.getElementById('bike-block-nav');
+  const totalBlocks = Math.ceil(total / SLICE_SZ);
+
+  if (!nav) {
+    nav = document.createElement('div');
+    nav.id = 'bike-block-nav';
+    nav.className = 'bike-block-nav';
+    tableCard.appendChild(nav);
+  }
+
+  if (!total || totalBlocks <= 1) { nav.innerHTML = total ? `<span style="color:var(--text3);">${total} bike${total!==1?'s':''}</span>` : ''; return; }
+
+  const start = blockIdx * SLICE_SZ + 1;
+  const end   = Math.min((blockIdx + 1) * SLICE_SZ, total);
+  const btnStyle = (dis, act) => `flex-shrink:0;padding:4px 11px;font-size:11.5px;border-radius:6px;border:1px solid var(--border);background:${act?'var(--accent)':'var(--surface)'};color:${act?'#fff':'var(--text2)'};cursor:${dis?'default':'pointer'};opacity:${dis?'.4':'1'};font-family:var(--font);`;
+
+  let pageButtons = '';
+  for (let b = 0; b < totalBlocks; b++) {
+    pageButtons += `<button onclick="_goBikeBlock(${b})" style="${btnStyle(false, b===blockIdx)}">${b+1}</button>`;
+  }
+
+  nav.innerHTML = `
+    <span style="color:var(--text3);white-space:nowrap;">${start}–${end} <span style="color:var(--text3);opacity:.6;">of</span> ${total}</span>
+    <div class="bike-block-nav-pages">
+      <button onclick="_goBikeBlock(${blockIdx-1})" style="${btnStyle(blockIdx===0,false)}">‹</button>
+      ${pageButtons}
+      <button onclick="_goBikeBlock(${blockIdx+1})" style="${btnStyle(blockIdx>=totalBlocks-1,false)}">›</button>
+    </div>
+    <span style="color:var(--text3);font-size:11px;white-space:nowrap;">Block ${blockIdx+1}/${totalBlocks} · ${SLICE_SZ} rows</span>`;
+}
+
+function _goBikeBlock(blockIdx) {
+  const filtered = getFilteredBikes(bikes);
+  const totalBlocks = Math.ceil(filtered.length / SLICE_SZ);
+  if (blockIdx < 0 || blockIdx >= totalBlocks) return;
+  _currentBlock = blockIdx;
+  const start = blockIdx * SLICE_SZ;
+  const block = filtered.slice(start, start + SLICE_SZ);
+  _buildVS_block(block, filtered.length, blockIdx);
+  document.querySelector('.bike-table-wrap')?.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function _buildVS_block(block, total, blockIdx) {
+  const wrap  = document.querySelector('.bike-table-wrap');
+  const tbody = document.getElementById('bike-tbody');
+  if (!wrap || !tbody) return;
+
+  if (_vsInstance) { _vsInstance.destroy(); _vsInstance = null; }
+
+  if (!block.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px 16px;">
+      <div style="color:var(--text3);display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <i class="ti ti-motorbike" style="font-size:36px;opacity:.4;"></i>
+        <span style="font-size:13px;">No bikes match this filter</span>
+      </div></td></tr>`;
+    _renderBikeBlockNav(0, 0); return;
+  }
+
+  tbody.innerHTML = '';
+  const _trTop = document.createElement('tr'); _trTop.className = 'vs-spacer-top';
+  const tdT = document.createElement('td'); tdT.colSpan = 6; tdT.style.cssText = 'padding:0;height:0;';
+  _trTop.appendChild(tdT);
+  const _trBot = document.createElement('tr'); _trBot.className = 'vs-spacer-bot';
+  const tdB = document.createElement('td'); tdB.colSpan = 6; tdB.style.cssText = 'padding:0;height:0;';
+  _trBot.appendChild(tdB);
+  tbody.appendChild(_trTop);
+  tbody.appendChild(_trBot);
+
+  let _startIdx = 0;
+  const baseIdx = blockIdx * SLICE_SZ;
+
+  function _setSpacers(start) {
+    tdT.style.height = (start * ROW_H) + 'px';
+    tdB.style.height = (Math.max(0, block.length - start - VS_ROWS) * ROW_H) + 'px';
+  }
+
+  function _paint(start) {
+    _startIdx = Math.max(0, Math.min(start, Math.max(0, block.length - VS_ROWS)));
+    const visible = block.slice(_startIdx, _startIdx + VS_ROWS);
+    tbody.querySelectorAll('tr.vs-row').forEach(r => r.remove());
+    _trBot.insertAdjacentHTML('beforebegin', visible.map((b, i) => buildBikeRow(b, baseIdx + _startIdx + i)).join(''));
+    _setSpacers(_startIdx);
+  }
+
+  function _measureRowH() {
+    const firstRow = tbody.querySelector('tr.vs-row');
+    if (firstRow) ROW_H = Math.max(firstRow.getBoundingClientRect().height, 1);
+  }
+
+  function _onScroll() {
+    const newStart = Math.floor(wrap.scrollTop / ROW_H);
+    if (Math.abs(newStart - _startIdx) >= 1) _paint(newStart);
+  }
+
+  wrap.addEventListener('scroll', _onScroll, { passive: true });
+  _paint(0);
+  requestAnimationFrame(_measureRowH);
+
+  _vsInstance = { destroy() { wrap.removeEventListener('scroll', _onScroll); } };
+
+  _renderBikeBlockNav(total, blockIdx);
+}
+
+function _buildVS(rows) {
+  _currentBlock = 0;
+  const block = rows.slice(0, SLICE_SZ);
+  _buildVS_block(block, rows.length, 0);
+}
+
+/* ── Main render entry ── */
+function renderBikeTable(list) {
+  const filtered = getFilteredBikes(list);
+  _currentBlock = 0;
+  _buildVS_block(filtered.slice(0, SLICE_SZ), filtered.length, 0);
+}
+
+function filterBikes(q) {
+  bikeSearchQuery = q || '';
+  renderBikeTable(bikes);
+  document.querySelector('.bike-table-wrap')?.scrollTo({ top: 0 });
+}
+
+function setFilter(type) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === type));
+  renderBikeTable(bikes);
+  document.querySelector('.bike-table-wrap')?.scrollTo({ top: 0 });
+}
+
+/* ═══════════ DETAIL PANEL ═══════════ */
+const EMIRATE_OPTS = ['Dubai','Abu Dhabi','Sharjah','Ras Al Khaimah','Ajman','Fujairah','Umm Al Quwain'];
+
+function _ensurePanel() {
+  if (document.getElementById('detail-panel')) return;
+  const el = document.createElement('div');
+  el.id = 'detail-panel';
+  el.innerHTML = `
+    <div class="dp-backdrop" onclick="closeDetailPanel()"></div>
+    <div class="dp-sheet">
+      <div class="dp-header">
+        <div class="dp-header-info">
+          <div class="dp-avatar" id="dp-avatar"></div>
+          <div>
+            <div class="dp-name" id="dp-name">—</div>
+            <div class="dp-sub"  id="dp-sub">—</div>
+          </div>
+        </div>
+        <div class="dp-header-actions">
+          <span class="dp-status-badge" id="dp-status-badge"></span>
+          <button class="dp-close-btn" onclick="closeDetailPanel()" title="Close"><i class="ti ti-x"></i></button>
+        </div>
+      </div>
+      <div class="dp-body" id="dp-body">
+        <div class="dp-loading"><div class="dp-spinner"></div><span>Loading details…</span></div>
+      </div>
+      <div class="dp-footer">
+        <button class="dp-btn dp-btn-secondary" onclick="closeDetailPanel()"><i class="ti ti-x"></i> Close</button>
+        <button class="dp-btn dp-btn-edit"   id="dp-edit-btn"   onclick="_dpEnterEdit()"><i class="ti ti-pencil"></i> Edit</button>
+        <button class="dp-btn dp-btn-save"   id="dp-save-btn"   onclick="_dpSave()" style="display:none;"><i class="ti ti-device-floppy"></i> Save</button>
+        <button class="dp-btn dp-btn-cancel" id="dp-cancel-btn" onclick="_dpCancelEdit()" style="display:none;"><i class="ti ti-arrow-back-up"></i> Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+}
+
+function closeDetailPanel() {
+  const p = document.getElementById('detail-panel');
+  if (p) p.classList.remove('open');
+  _panelId = null;
+}
+
+function viewBike(bikeId) {
+  const bike = bikes.find(b => String(b.bikeId) === String(bikeId));
+  if (!bike) return;
+  _panelId = bikeId;
+  _ensurePanel();
+
+  const idx    = bikes.indexOf(bike);
+  const avBg   = AV_BG[idx % AV_BG.length];
+  const avFg   = AV_FG[idx % AV_FG.length];
+  const dh     = docHealthStatus(bike);
+  const stBadge  = dh === 'expired' ? 'dp-badge-red' : dh === 'expiring' ? 'dp-badge-amber' : 'dp-badge-green';
+  const stLabel  = dh === 'expired' ? 'Expired' : dh === 'expiring' ? 'Expiring' : 'Valid';
+
+  const av = document.getElementById('dp-avatar');
+  av.style.cssText = `background:${avBg};color:${avFg};`;
+  av.innerHTML = '<i class="ti ti-motorbike" style="font-size:20px;"></i>';
+  document.getElementById('dp-name').textContent     = `${bike.make} ${bike.model}`;
+  document.getElementById('dp-sub').textContent      = `Plate: ${bike.plate}`;
+  document.getElementById('dp-status-badge').className   = 'dp-status-badge ' + stBadge;
+  document.getElementById('dp-status-badge').textContent = stLabel;
+
+  _dpResetButtons();
+  document.getElementById('dp-body').innerHTML = `<div class="dp-loading"><div class="dp-spinner"></div><span>Loading details…</span></div>`;
+  document.getElementById('detail-panel').classList.add('open');
+  _renderBikeDetail(bike);
+}
+
+function _renderBikeDetail(bike) {
+  function fmtD(d) {
+    if (!d) return '<span style="color:var(--text3);">—</span>';
+    try { return new Date(d).toLocaleDaTestingring('en-GB', { day:'2-digit', month:'short', year:'numeric' }); } catch { return d; }
+  }
+  function exCard(label, docObj) {
+    const s   = docObj?.status || 'expired';
+    const d   = docObj?.date   || null;
+    const cls = s === 'valid' ? 'dp-ex-valid' : s === 'expired' ? 'dp-ex-expired' : 'dp-ex-expiring';
+    const icon = s === 'valid' ? 'ti-circle-check' : s === 'expired' ? 'ti-alert-triangle' : 'ti-clock';
+    const lbl  = s === 'valid' ? 'Valid' : s === 'expired' ? 'Expired' : 'Expiring';
+    return `<div class="dp-ex-card ${cls}"><i class="ti ${icon} dp-ex-icon"></i><div class="dp-ex-label">${label}</div><div class="dp-ex-status">${lbl}</div><div class="dp-ex-date">${d ? fmtD(d) : '—'}</div></div>`;
+  }
+
+  const avail = fleetAvailable(bike);
+  const html = `
+    <div class="dp-section">
+      <div class="dp-section-title"><i class="ti ti-motorbike"></i> Bike Information</div>
+      <div class="dp-fields" id="dp-bike-fields">
+        <div class="dp-field"><span class="dp-fl">Bike ID</span><span class="dp-fv dp-mono">${bike.bikeId || '—'}</span></div>
+        <div class="dp-field"><span class="dp-fl">Make</span><span class="dp-fv" data-field="make" data-type="text">${bike.make || '—'}</span></div>
+        <div class="dp-field"><span class="dp-fl">Model</span><span class="dp-fv" data-field="model" data-type="text">${bike.model || '—'}</span></div>
+        <div class="dp-field"><span class="dp-fl">Plate No</span><span class="dp-fv dp-mono" data-field="plate" data-type="text">${bike.plate || '—'}</span></div>
+        <div class="dp-field"><span class="dp-fl">Chassis No</span><span class="dp-fv dp-mono" data-field="chassis" data-type="text">${bike.chassis || '—'}</span></div>
+        <div class="dp-field"><span class="dp-fl">Emirate</span><span class="dp-fv" data-field="emirate" data-type="select-emirate">${bike.emirate || '—'}</span></div>
+        <div class="dp-field"><span class="dp-fl">Status</span><span class="dp-fv" data-field="status" data-type="text">${bike.status || '—'}</span></div>
+        <div class="dp-field"><span class="dp-fl">Fleet</span><span class="dp-fv">
+          <span class="badge ${avail ? 'valid' : 'gray'}">${avail ? 'Available' : 'Unavailable'}</span>
+        </span></div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title"><i class="ti ti-calendar-stats"></i> Document Expiry</div>
+      <div class="dp-ex-grid">
+        ${exCard('Mulkiya',   bike.docs.mulkiya)}
+        ${exCard('Passing',   bike.docs.passing)}
+        ${exCard('Insurance', bike.docs.insurance)}
+      </div>
+      <div class="dp-fields" style="margin-top:6px;">
+        <div class="dp-field" style="display:none;" data-edit-row="mulkiyaExp"><span class="dp-fl">Mulkiya Expiry</span><span class="dp-fv dp-mono" data-field="mulkiyaExp" data-type="date">${bike.docs.mulkiya.date || '—'}</span></div>
+        <div class="dp-field" style="display:none;" data-edit-row="passingExp"><span class="dp-fl">Passing Expiry</span><span class="dp-fv dp-mono" data-field="passingExp" data-type="date">${bike.docs.passing.date || '—'}</span></div>
+        <div class="dp-field" style="display:none;" data-edit-row="insExp"><span class="dp-fl">Insurance Expiry</span><span class="dp-fv dp-mono" data-field="insExp" data-type="date">${bike.docs.insurance.date || '—'}</span></div>
+      </div>
+    </div>`;
+  document.getElementById('dp-body').innerHTML = html;
+}
+
+function _dpResetButtons() {
+  document.getElementById('dp-edit-btn').style.display   = '';
+  document.getElementById('dp-save-btn').style.display   = 'none';
+  document.getElementById('dp-cancel-btn').style.display = 'none';
+}
+
+function _dpEnterEdit() {
+  document.querySelectorAll('#dp-body [data-field]').forEach(span => {
+    const field = span.dataset.field, type = span.dataset.type || 'text';
+    const rawVal = span.textContent.trim() === '—' ? '' : span.textContent.trim();
+    let inp;
+    if (type === 'date') {
+      inp = document.createElement('input'); inp.type = 'date';
+      try { const d = new Date(rawVal); if (!isNaN(d)) inp.value = d.toISOString().split('T')[0]; } catch(e) {}
+      if (!inp.value) inp.value = rawVal;
+    } else if (type === 'select-emirate') {
+      inp = document.createElement('select');
+      EMIRATE_OPTS.forEach(o => {
+        const opt = document.createElement('option');
+        opt.value = o; opt.textContent = o;
+        if (o === rawVal) opt.selected = true;
+        inp.appendChild(opt);
+      });
+    } else {
+      inp = document.createElement('input'); inp.type = type; inp.value = rawVal;
+    }
+    inp.dataset.field = field;
+    inp.className = 'dp-edit-input';
+    span.replaceWith(inp);
+  });
+  document.getElementById('dp-edit-btn').style.display   = 'none';
+  document.getElementById('dp-save-btn').style.display   = '';
+  document.getElementById('dp-cancel-btn').style.display = '';
+  document.querySelectorAll('[data-edit-row]').forEach(r => r.style.display = '');
+}
+
+function _dpCancelEdit() {
+  const bike = bikes.find(b => String(b.bikeId) === String(_panelId));
+  if (bike) _renderBikeDetail(bike);
+  _dpResetButtons();
+}
+
+async function _dpSave() {
+  const saveBtn = document.getElementById('dp-save-btn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<i class="ti ti-loader-2"></i> Saving…';
+
+  const vals = {};
+  document.querySelectorAll('#dp-body [data-field]').forEach(inp => { vals[inp.dataset.field] = inp.value; });
+
+  const bike = bikes.find(b => String(b.bikeId) === String(_panelId));
+  if (!bike) { saveBtn.disabled = false; saveBtn.innerHTML = '<i class="ti ti-device-floppy"></i> Save'; return; }
+
+  if (vals.make      !== undefined) bike.make    = vals.make;
+  if (vals.model     !== undefined) bike.model   = vals.model;
+  if (vals.plate     !== undefined) bike.plate   = vals.plate;
+  if (vals.chassis   !== undefined) bike.chassis = vals.chassis;
+  if (vals.emirate   !== undefined) bike.emirate = vals.emirate;
+  if (vals.status    !== undefined) bike.status  = vals.status;
+  if (vals.mulkiyaExp !== undefined) bike.docs.mulkiya   = computeDoc(vals.mulkiyaExp);
+  if (vals.passingExp !== undefined) bike.docs.passing   = computeDoc(vals.passingExp);
+  if (vals.insExp     !== undefined) bike.docs.insurance = computeDoc(vals.insExp);
+
+  renderBikeTable(bikes);
+  _dpResetButtons();
+  _renderBikeDetail(bike);
+  toast('Bike record updated.');
+
+  saveBtn.disabled = false;
+  saveBtn.innerHTML = '<i class="ti ti-device-floppy"></i> Save';
+}
+
+/* ═══════════ TOAST ═══════════ */
+let _toastTimer;
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  const msgEl = document.getElementById('toast-msg');
+  const icon  = document.getElementById('toast-icon');
+  clearTimeout(_toastTimer);
+  el.className = 'toast';
+  msgEl.textContent = msg;
+  icon.className = type === 'error' ? 'ti ti-x-circle' : 'ti ti-circle-check';
+  requestAnimationFrame(() => { el.classList.add('show', type); });
+  _toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3500);
+}
+
+/* ═══════════ INIT ═══════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  loadBikes();
+
+  /* Event delegation for row action buttons */
+  document.querySelector('.bike-table-wrap')?.addEventListener('click', e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn || btn.disabled) return;
+    const action = btn.dataset.action;
+    const bikeId = btn.dataset.bikeId;
+    if (!bikeId) return;
+    if (action === 'view') viewBike(bikeId);
+  });
+});
+
+/* ── Message listener from parent index.html ──
+   PRIMARY data path on this page: the parent (index.html) already has a
+   working push system that has nothing to do with cacheWatcher.js:
+     - 'ap-cache-preload' : parent proactively pushes ALL cached datasets
+                            the moment they're ready (from its own memory
+                            — no IndexedDB read needed here at all)
+     - 'ap-cache-ready'   : parent's direct reply to our 'ap-cache-request'
+     - 'ap-cache-updated' : parent says something changed — ask it again
+   This sidesteps iPad's IndexedDB flakiness entirely for the common case
+   (page running inside the app). cacheWatcher.js / IndexedDB reads remain
+   as the fallback for when this page is opened standalone (no parent). */
+window.addEventListener('message', (e) => {
+  /* Validate origin — only accept messages from the same origin as the parent */
+  if (!e.data) return;
+  if (e.origin !== window.location.origin &&
+      e.origin !== 'null' /* file:// */ &&
+      !e.origin.startsWith('https://effimalik.github.io')) return;
+
+  /* Theme sync */
+  if (e.data.type === 'ap-theme' && e.data.theme) {
+    document.documentElement.setAttribute('data-theme', e.data.theme);
+  }
+
+  // Parent proactively pushed everything it has — take our slice directly.
+  if (e.data.type === 'ap-cache-preload' && e.data.datasets) {
+    const rows = e.data.datasets[_AP2_CACHE_KEY];
+    if (Array.isArray(rows) && rows.length) {
+      bikes = rows.map((r, i) => normaliseRow(r, i)).filter(Boolean);
+      renderBikeTable(bikes);
+    }
+  }
+
+  // Parent's direct reply to our own ap-cache-request below.
+  if (e.data.type === 'ap-cache-ready' && e.data.key === _AP2_CACHE_KEY) {
+    const rows = e.data.data;
+    if (Array.isArray(rows) && rows.length) {
+      bikes = rows.map((r, i) => normaliseRow(r, i)).filter(Boolean);
+      renderBikeTable(bikes);
+    }
+  }
+
+  // Parent says something changed somewhere — ask it for our dataset again.
+  // (cacheWatcher.js also relays this to our subscribe() callback for the
+  // silent IndexedDB refresh path — the two are complementary, not redundant.)
+  if (e.data.type === 'ap-cache-updated') {
+    try { window.parent.postMessage({ type: 'ap-cache-request', key: _AP2_CACHE_KEY }, '*'); } catch (err) {}
+  }
+});
+
+// Ask the parent for our data right away, in parallel with the IndexedDB
+// read in loadBikes(). Whichever answers first wins — if there's no
+// parent (page opened standalone), this simply gets no reply and the
+// IndexedDB path (loadBikes / cacheWatcher.js) still works on its own.
+try { window.parent.postMessage({ type: 'ap-cache-request', key: _AP2_CACHE_KEY }, '*'); } catch (e) {}
+</script>
+</body>
+</html>

@@ -1,0 +1,2766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Requests & Users · AP2 Fleet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ══ Self-hosted Tabler Icons subset (only the ~26 icons this page uses) ══
+   Previously loaded from cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest —
+   that "@latest" tag is unpinned, and when the CDN request fails/blocked or
+   an icon gets renamed upstream, every <i class="ti ti-*"> silently renders
+   as an empty glyph box with nothing visibly broken in the markup. Embedding
+   a small subsetted font (~4KB) removes the external dependency entirely so
+   icons always render, regardless of network access to jsdelivr. ══ */
+@font-face {
+  font-family: "tabler-icons";
+  src: url(data:font/woff2;base64,d09GMgABAAAAAA64AAsAAAAAMEAAAA5qAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHCoGYACBXArWDMV3ATYCJANACz4ABCAFgQoHgwYbJiezERFsHIBivFWA//qAGyKKawB/hbGgFns8WHBsaZMMCUwy7TRqCxXyKic/yYKgx26mX7yw/m+7HWH3Cm/uS3lTno+QZNb/Zz/37vvmE0dUMockWSyJJYvbEE+B0xch46GqJ5Jez2/aJ6SS+P6IkWvmvbgBFWICuUJEIe683JCK/V8xI1WHmtIp9DyTnFlIajQzQyrH8/g3/rxumicWaBBx8gLKEmhrC6iUPvjXtne4bttTJV+J38AOYXg9++bGdA3OWKGJ+AhO4NquZNKHk/DcnLNiiB0qVMAXTd8t708FTlFU6HTGz/mpJde/uaGt9KD1rwD+/7nP7MuklPJ3BQXoSJghVdcuKnnfy5u+JO99TCmZ4ZaHkyV6H3Z6ZzgLjBIAFKJxq3YdoDArV+g5q3qqdiu0WnUypKvfhOu1aZIB/DmyCuNsay4CIip6iV//OAIiXbFSvHQ5CbLfxq4FuRMR0f+/8+OLeSobSIh33ufUbnw1/NQVvmMmhbbX17faFbrzIjfzs9os+nNhwmYE0nwxBDeAJE4p0VFQLXd9vLb0WNNYw1jzGDv2YOwvI8/oa8wyFhirjS3Gg8Yx47u3wxP4VeerE69FrxvNfO0vtjE5z1/Nz8MPXjZrkLPJm/MT55vOO65GiLOvUy9p9KT3eJ2OI25GvgNvMhuMTvI9w5nmeMfUt3PbAvx0fDPEQGXxSwQipb9FJtHXmhJHWKBgDG9X1rO8iACBTjs3bduam3tpr6y0qpFOd17EUyUSlhsIuJGI5UtuOAEvpDEJ0iKCpUJKCNo+kZjtBC0ww29JP158iKBJ03S8dSjkWq5mz720fUxBKajGBNIvl7qr7GA6ZAHJyTyUEuPohytaTSYC6klt59NnDiCl/Z1TGM6SGuxoVpOmn9JQqnJOLuWwEIQdWca1qmPoH8RO6sVe6qy+2Uuct27foWRhkJK2U5+bR5Y2UzRNbz8vir+ID1SRjmxiL+5N33vZroZHUyTS4pqHltdLfwEcOReXsKsPz58V9FXICjzwgKoyQe1S+1XrAs2b/DiM4KpKU7PtM3NUizRofaopEs4f96iEaNRAiroRqBWQKAS1Q1s18vmeH6oGo+W4iPnO38YVJumr5wncwh6Re8Fo41CfQMRnNYmkayX6yOvXeZQURX9DUqbYx4vFIYtoByhSFEikvkg25WhGZ2JMaAv07otohtIg/XlG3R0KBC7AbUwQi1PYXygLUhStNdJGuIv7mtFQFRndCZMsewwnzsiFlJRVucL6vVRLNUfdYHLd3YS6h9kJ610MixWgper1jEQYvfquJZSuFEoDxM9HrXSj7WIb0+RbrbbNNk872qEa1NL8nK+p+lh7r/M7VR39yllmCcr/Orqz5MU2REZTtwWsk/Vaizq0Bfy+cy3zACvsiloTWmxH0T9nlhntAD5HyoBvdaqABXbj9hhYdvbk/8XORvqZmTwuu3yN7xx1NARUTSXXS6+Q8nqgP+2uREK3wrqT2UraUH1jws1CBvxerCW4lfbzSOM81+Lp4oWStwpU1W8Q77FRg01QdwGG54Nw63ZkMSCUt+HucUMzR6EhW1HVeN1mqnJ1M8BtHPBLhjUDp8Xb6OQtA68kFnrFZK1+JofbaYsEfRRsF7/fX9f32jKwQHr7eyETNcAKKzPJi/sydCTK5kXdd71F6V5ANxbiMkaCp0ZCRSKxdw1S7W0e2+BXaZLkNZuZKpfbEAfUd6X9vjUXrNdr0Brv5QyXHKoiu+XJmvdF8g/N01Mg6nbxYRNzdnBiBLhjdtRwL/nWaUHP9tg4t86jviH15szjkwfLcOZO0qm+lbhUkCANGyXfWfiRVxnHm89rAmsmdKPH7WkMRkkcISoXvCt1+/qSpr1E8oSaRXWO6QI9WhNkDNfXbQlfLCyHK1p9ka6sVzTudjUlPLhJRtOJizgOvexNbXy0l2rOwzuZjdbnFDfNOXUT6IhS7kbPRXcqSKGZDnrqlevit9LU5+PYVchrfZ6vHM9PedXvpX6f9Xkf2NlaEVc3tOqo1EefY1d6Q94A+69fE/t9fwdppV1zcxkqH3gqn34Iiw3PwybTiDJH19efrgAlDNJKrKQHQSk4it9gYBELwHauAhYGMRRtqL4FDEiAQTvDA+kgjRJDxJzHu/2Bx7YLrDRW7LtoAkGSzxwEJE/D+3Cbh3FnWtoIIsdHAHPpJk7PBXajI+wS4X29RB7VzwP9lRAMBBMUKvNugJYdOqZNQHnH75BNN4q4ciL3BQxidtFIMYiZxUpsDMSsmXRIYJ46FLlk2A+J8NKwGfR55LlMMAaI2YyEpgVWDDRtjlozh40mGkGnWYAdMAPLghnMlBFZp8CAKVxGBcZiCR4iyhHVzmpvQDaUKYJJTClQ4f9xhgzbuQoYGMRQdDTqF5olaseNQovdUeHhSeOWITNFUhSZqEHui1Hm1MBbAg2fQbFLpGaCO+++nyGvJI61i4U0CZ9gOD114dUgjd6g2Qtwv16L77u1gebAAY5vT0WNBumQzmzWIjaamxClo02i49vlUGufW4JogulyqBI1JAVMl7KR0cmNTQ94TOn6rsTKeLk8vjLx9wIQWqBkV7U8RllobkhOTkhu6JUCEFqgvLK0qzPWB7jigjAd0kllZf9fXibVovRdGqw5qtZhBmnUag3WYxcs1uAMlTKa8J0N7m9ranCpqHeihaUacDuHgFDd+P6FM5xMjtfow8A0dLrlYv2sZk5eFWdglr9H8uHfvXwuOQtfWTKe+WEsTWAKCI5dCH6QmIeDsTm4MviCzSmBlYkdWM06KIfDM/oF2/ogFjGYiRgD74HBscKuWmAYaqA2SJcMn+DYJVK7i7vRzQw+TWL/5rHVZKlUPJqvVTssNc1iCRfCYYJq7bB4Fko/ihZ5IOjWDa7dzKQoMlGLPBYhehFS9AGaxS6RmnTuJ4Rf11b92G8edg2tHI62t8bvdV3hj1Wh8FzDlZT099IwcUh2dog47HKBgBYoWar2k6amdHWlsN0pyV2ptOjBy4i9MrWeEFKTu7uT2a7klO7UQ9LO77r0l/fDP5K0x2mNXBqAbVBsuSdMEuhQI+Jii2bP08tbb7sPf9GUZ7CyE3kUO18rO7ips8SN673o5dLjEshgARtY979/ucibK4EMFrCB9ZMT2WkGn7RG7mGaJO0GakS6JMExYbGltw0GKKxITFDIE7rlCQmKxMLEkPvi1MXuVmrdD3wCiw8HAXksSrUvjQlPFSPVrqtivoKSvfYiqw1owNqlpgmKvdPRnTqsk0q1mCCNTKZB6Tu1WHv0qB95EkRFXhjSIq3J5O0oDJDAJuCmwUOU0o8CAwcVoCiJOeUEwqtqSAsJJnT/itr0HjC+5WnJ07hljTM72kokTAgaaeN5Nz1jTcEMmLo0dqPT41TuSmDhmX1u3DNgbRAxla1HgGJ1qd8wzZg4ZVIAA0PuEtDlMGEX3PYL9F3CVblpOclVHrUezyK/fTlY7lfp8UKYL5CWhJVFGDilUcWRiTJ+gdW4Yyl9hJopK2PWS9ScjTny5U5HBTsG2g757wtET8oTK17Z/Oz2ARjakGHEQDPuZngwvYnhv0GpG9bOA1f5HvB5/ES4Zmyw4t1azJNOy6D/R9IFATJ5AfhjjnDvLOa93xmTUhiTvMvkveju94dmW+2DdsVS5wyTIWe58vRCBNK/VpuSx48Iteh5cTEAvM5zlLmfYlPhEd0lsz+Tn43t9CuHSgfo3bF3XSZ//lKVy7eXZhji+Cqx4lPXIdPLSPXOSO8Z0f0X/pp8pRBfjW9Xk/Crn0CVq5iYPwCkVTw1obz/qOGOeL/9Bb7iDiZvOvbVSU6+VxHHbbRYLz+VdNQ2HUusu2y6ub50ESWypmSr86hLJp7PRRchOVdT5Wridd3lFjqXUKC0WCqSiHd7UCVoG2U79O/8UNc5DUmXP2ZgiTVfSsrhbF98EHX/Pb49vo0sOLO2OU9AyIQW9Yk0PxG30GF/T7zJDZQ+StpidvDkq/2vCwvGz/Mzj9O2UU08vfNwkrDGyp5x5B7VRYrJ9bQShkQBOpNSX6NDuokJB8Sil6HUMMdOrjW7GJbkYbLrMoEj9HS8iMO5tLSGpk8dYIFRMBjC7JzE9cTkt046QSXQ4tI1Ujp0XuvH/2NgPGyubU5RNLFf8OOBRROfYLjYBWbOCbVq6/i/qTq8eJUoS0CZLn5MMRG3XgPiTfLEhjDFoBJClDYpMXTmsphC3ZU5C3Tc23ZiAaLwbg+/misEdRx2+Ol6wjGas/jPXdYQWDA0+ioYdazlpJ8/78yoCaOAdUoLQBmm5S70Jv2Nvq1iCE+2wsECbGH4wc23qpg2F1pJIkW7nK8k1QWXLLdd9TS2R/bDCX4e/WrvZeSP/pUe+g6fA5M1a8qb4U1dhXof/+GirP5mxvGdJFv7IBJGHovH/j+pranDNVfeTvNaYC/fXSaITfCIreudahcaZMwSlEtf3QVN7xu1L/WBy8IZSFXO9D5Q+9NMqwGkYaQ+qK0aLyRWAss7BPp8R9ve9mSqdX6pNsITInpI4ti48/966itvWY5IxYjLXizk0A7qIF/xJTcs0DFG3pjU3ux8aD2mdPr0/5eT9eBCrxFE0PcVzBY5VEg7VIQVkpBiKcPrn1elWqs63cJMqtGhXQ8pGzTou40qWUhDeuzjSX3UqVZbXqZjOfBtZxeGABESZChQoUGHARMWbDhw4cEHPw2UAIIIIYwIooghjgSykE3OorBdENNYtTBM4GprmFIv5XVkZ4LaqrOrK2almiujg8+xLrCiTCDYArNpiv1Hzm85NPd1yn9LEQky0vy2ncxc3BZlJueK9aPX7il2pRvAyERfT5W48I1zIuV/siha37pu20+vk0tzy94ks6ZOsQsJM/yKuIycw0HoqG+klYAKVuZ5Mn8aVsRVSQq08kQluJ4A) format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+.ti {
+  font-family: "tabler-icons" !important;
+  font-style: normal;
+  font-weight: normal;
+  speak: never;
+  display: inline-block;
+  text-decoration: inherit;
+  text-transform: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant: normal;
+  line-height: 1;
+}
+.ti-activity::before { content: "\ed23"; }
+.ti-check::before { content: "\ea5e"; }
+.ti-chevron-down::before { content: "\ea5f"; }
+.ti-chevron-left::before { content: "\ea60"; }
+.ti-chevron-right::before { content: "\ea61"; }
+.ti-chevron-up::before { content: "\ea62"; }
+.ti-circle-check::before { content: "\ea67"; }
+.ti-circle-x::before { content: "\ea6a"; }
+.ti-database::before { content: "\ea88"; }
+.ti-device-floppy::before { content: "\eb62"; }
+.ti-history::before { content: "\ebea"; }
+.ti-inbox::before { content: "\eac4"; }
+.ti-list::before { content: "\eb6b"; }
+.ti-list-details::before { content: "\ef40"; }
+.ti-loader::before { content: "\eca3"; }
+.ti-lock-access::before { content: "\eeaa"; }
+.ti-mail::before { content: "\eae5"; }
+.ti-mail-check::before { content: "\f939"; }
+.ti-shield::before { content: "\eb24"; }
+.ti-table::before { content: "\eba1"; }
+.ti-user-check::before { content: "\eb49"; }
+.ti-user-circle::before { content: "\ef68"; }
+.ti-users::before { content: "\ebf2"; }
+.ti-x::before { content: "\eb55"; }
+.ti-search::before { content: "\eb1c"; }
+</style>
+<script src="https://effimalik.github.io/Testing/shared/auth.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/code.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/dataLayer.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/devPre.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cioView.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/accessGuard.js"></script>
+<script src="https://effimalik.github.io/Testing/shared/cacheWatcher.js?v=1"></script>
+
+<style>
+/* ══ Reset ══ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ══ Design tokens — mirrors allEmp.html exactly ══ */
+:root, [data-theme="dark"] {
+  --bg:#0d1117; --bg2:#161b22; --bg3:#1c2333;
+  --surface:#21262d; --surface2:#2d333b;
+  --border:#30363d; --border2:#444c56;
+  --text:#e6edf3; --text2:#8b949e; --text3:#6e7681;
+  --accent:#58a6ff; --accent-dim:rgba(88,166,255,.12); --accent-glow:rgba(88,166,255,.28);
+  --teal:#39d353; --teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341; --amber-dim:rgba(227,179,65,.12);
+  --red:#f85149; --red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7; --purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e; --orange-dim:rgba(240,136,62,.12);
+  --radius:8px; --radius-lg:12px; --radius-xl:16px;
+  --font:'Sora',sans-serif; --mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4); --shadow-md:0 4px 16px rgba(0,0,0,.5); --shadow-lg:0 8px 32px rgba(0,0,0,.6);
+  --field-h:34px; /* shared height for every toolbar control — search box, filter control, pagination select — so they line up exactly, and match upLog.html */
+}
+[data-theme="light"] {
+  --bg:#f0f2f5; --bg2:#ffffff; --bg3:#e8ecf0;
+  --surface:#ffffff; --surface2:#e2e7ed;
+  --border:#c8d0d9; --border2:#9aa5b1;
+  --text:#0d1117; --text2:#3d454f; --text3:#5a6370;
+  --accent:#0550ae; --accent-dim:rgba(5,80,174,.12); --accent-glow:rgba(5,80,174,.22);
+  --teal:#116329; --teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00; --amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b; --red-dim:rgba(168,17,27,.11);
+  --purple:#6639c8; --purple-dim:rgba(102,57,200,.13);
+  --orange:#953800; --orange-dim:rgba(149,56,0,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.10); --shadow-md:0 4px 16px rgba(0,0,0,.12); --shadow-lg:0 8px 32px rgba(0,0,0,.15);
+}
+[data-theme="purple"] {
+  --bg:#0f0b1e; --bg2:#17112e; --bg3:#1e1840;
+  --surface:#221a3a; --surface2:#2c2250;
+  --border:#3a2e5e; --border2:#5a4890;
+  --text:#e8e0ff; --text2:#a899d4; --text3:#7a6ca8;
+  --accent:#c084fc; --accent-dim:rgba(192,132,252,.14); --accent-glow:rgba(192,132,252,.3);
+  --teal:#4ade80; --teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24; --amber-dim:rgba(251,191,36,.12);
+  --red:#f87171; --red-dim:rgba(248,113,113,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5); --shadow-md:0 4px 16px rgba(0,0,0,.6); --shadow-lg:0 8px 32px rgba(0,0,0,.7);
+}
+[data-theme="ocean"] {
+  --bg:#071520; --bg2:#0d2035; --bg3:#112840;
+  --surface:#143050; --surface2:#1a3d60;
+  --border:#1e4a72; --border2:#2e6a9e;
+  --text:#d6eeff; --text2:#7db8e8; --text3:#4a87b8;
+  --accent:#38bdf8; --accent-dim:rgba(56,189,248,.14); --accent-glow:rgba(56,189,248,.3);
+  --teal:#34d399; --teal-dim:rgba(52,211,153,.12);
+  --amber:#fbbf24; --amber-dim:rgba(251,191,36,.12);
+  --red:#f87171; --red-dim:rgba(248,113,113,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.5); --shadow-md:0 4px 16px rgba(0,0,0,.55); --shadow-lg:0 8px 32px rgba(0,0,0,.65);
+}
+[data-theme="slate"] {
+  --bg:#0e1117; --bg2:#1a1f28; --bg3:#222836;
+  --surface:#28303e; --surface2:#313c4e;
+  --border:#3a4556; --border2:#556070;
+  --text:#e2e8f0; --text2:#94a3b8; --text3:#64748b;
+  --accent:#60a5fa; --accent-dim:rgba(96,165,250,.13); --accent-glow:rgba(96,165,250,.28);
+  --teal:#4ade80; --teal-dim:rgba(74,222,128,.12);
+  --amber:#fbbf24; --amber-dim:rgba(251,191,36,.12);
+  --red:#f87171; --red-dim:rgba(248,113,113,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.45); --shadow-md:0 4px 16px rgba(0,0,0,.5); --shadow-lg:0 8px 32px rgba(0,0,0,.6);
+}
+
+html, body { height: 100%; overflow: hidden; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: clamp(12px,1.5vw,15px); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+/* ══ Page layout ══ */
+.page {
+  display: flex; flex-direction: column;
+  width: 100%; height: 100%; max-height: 100dvh; min-height: 0;
+  padding: clamp(8px,2vw,20px) clamp(10px,2.5vw,22px);
+  overflow: hidden;
+}
+
+/* ══ Tab bar — hosts the tabs AND the active tab's search/filter toolbar,
+   all in one row. Never wraps: if content doesn't fit, the row scrolls
+   horizontally instead (same escape valve already used for tabs alone). ══ */
+.tab-bar {
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 1.5px solid var(--border);
+  padding-bottom: 0; margin-bottom: 14px; flex-shrink: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab-bar-tabs { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.tab-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: var(--radius) var(--radius) 0 0;
+  border: 1.5px solid transparent; border-bottom: none;
+  background: transparent; color: var(--text3);
+  font-family: var(--font); font-size: clamp(11px,1.2vw,13px); font-weight: 600;
+  cursor: pointer; transition: all .16s; white-space: nowrap;
+  position: relative; bottom: -1.5px;
+  /* min-height keeps every tab the same size whether or not it carries a
+     .tab-badge — an icon-only tab with no badge sibling has less inline
+     content than one with a badge, and without a floor here the two can
+     render at visibly different heights (badge-less tab collapsing small
+     enough to look broken/missing). */
+  min-height: var(--field-h); box-sizing: border-box;
+}
+.tab-btn i { font-size: 16px; flex-shrink: 0; line-height: 1; }
+.tab-btn:hover { color: var(--text); background: var(--surface); }
+.tab-btn.active {
+  background: var(--surface); color: var(--accent);
+  border-color: var(--border); border-bottom-color: var(--surface);
+}
+.tab-badge {
+  background: var(--amber-dim); color: var(--amber);
+  border: 1px solid rgba(227,179,65,.3);
+  border-radius: 100px; padding: 1px 7px; font-size: 10px; font-weight: 700;
+  font-family: var(--mono);
+}
+.tab-badge.accent { background: var(--accent-dim); color: var(--accent); border-color: rgba(88,166,255,.25); }
+
+/* ── Toolbar area inside the tab bar — one .tt-panel per tab, only the
+   active one shown. overflow-x:auto — when icons don't all fit, the row
+   scrolls horizontally instead of squeezing them into an overlapping,
+   unreadable pile. Safe to scroll now: the dropdown panels these icons
+   open (.combo-panel) are positioned as fixed/viewport-anchored via JS
+   (see _positionComboPanel), so they're immune to this container
+   clipping/scrolling and always render fully in front regardless. ── */
+.tab-bar-toolbar { flex: 1 1 auto; min-width: 0; display: flex; justify-content: flex-end; padding: 5px 0; overflow: visible; }
+.tt-panel {
+  display: none; align-items: center; gap: 8px; min-width: 0; flex-wrap: nowrap;
+  overflow-x: auto; overflow-y: visible; -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.tt-panel.active { display: flex; }
+.tt-panel::-webkit-scrollbar { height: 5px; }
+.tt-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+.tt-panel::-webkit-scrollbar-track { background: transparent; }
+/* Mobile touch-scroll hides the thin scrollbar above, so overflowing
+   content (e.g. status filter circles on narrow phones) needs its own
+   cue — same fade-mask trick already used on .tab-bar-tabs. */
+.tt-panel.has-overflow {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent 100%);
+          mask-image: linear-gradient(to right, #000 calc(100% - 16px), transparent 100%);
+}
+
+/* ══ Tab panels ══ */
+.tab-panel { display: none; flex: 1 1 auto; min-height: 0; flex-direction: column; overflow: hidden; }
+.tab-panel.active { display: flex; }
+
+/* ══ Section header ══ */
+.sec-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px; margin-bottom: 12px; flex-shrink: 0;
+}
+.sec-title { font-size: clamp(13px,1.6vw,16px); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.sec-title i { color: var(--accent); font-size: clamp(15px,2vw,19px); line-height: 1; }
+.sec-sub { font-size: clamp(10px,1.1vw,12px); color: var(--text3); margin-top: 2px; }
+
+/* ══ Table card ══ */
+.table-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow);
+  overflow: hidden; flex: 1 1 auto; min-height: 0;
+  display: flex; flex-direction: column;
+}
+.table-wrap { overflow-x: auto; overflow-y: auto; flex: 1 1 auto; min-height: 60px; -webkit-overflow-scrolling: touch; }
+
+.data-table {
+  display: grid; width: 100%; font-size: clamp(11px,1.3vw,13px); min-width: 560px;
+}
+.data-table.wide-table { min-width: 760px; }
+.data-table thead, .data-table tbody, .data-table tr { display: contents; }
+.data-table thead th {
+  position: sticky; top: 0; z-index: 2; background: var(--bg3);
+  text-align: left; font-size: clamp(9px,1vw,10.5px); font-weight: 600;
+  color: var(--text3); text-transform: uppercase; letter-spacing: .07em;
+  padding: clamp(8px,1.2vw,11px) clamp(8px,1.2vw,14px);
+  border-bottom: 2px solid var(--border);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.data-table td {
+  padding: clamp(9px,1.2vw,12px) clamp(8px,1.2vw,14px);
+  border-bottom: 1px solid var(--border); color: var(--text);
+  display: flex; align-items: center;
+  overflow: hidden; text-overflow: ellipsis;
+  transition: background .12s;
+}
+.data-table td.cell-action { justify-content: flex-end; }
+.data-table td.truncate { white-space: nowrap; }
+.data-table td[colspan], .data-table th[colspan] { grid-column: 1 / -1; display: block; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: var(--bg3); }
+
+
+/* ══ Empty / loading state ══ */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; padding: 40px 20px; color: var(--text3);
+  font-size: 13px; text-align: center;
+}
+.empty-state i { font-size: 32px; opacity: .5; display: inline-flex; }
+
+/* ══ Buttons ══ */
+.tb-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: var(--radius);
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text); cursor: pointer; font-size: clamp(11px,1.2vw,13px);
+  font-family: var(--font); font-weight: 500; transition: all .16s; white-space: nowrap;
+}
+.tb-btn i { font-size: 15px; line-height: 1; flex-shrink: 0; }
+.tb-btn:hover { background: var(--surface2); }
+.tb-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+.tb-btn.primary:hover { filter: brightness(1.1); }
+.tb-btn.danger { background: var(--red-dim); color: var(--red); border-color: rgba(248,81,73,.3); }
+.tb-btn.danger:hover { background: var(--red); color: #fff; }
+.tb-btn.success { background: var(--teal-dim); color: var(--teal); border-color: rgba(57,211,83,.3); }
+.tb-btn.success:hover { background: var(--teal); color: #fff; }
+.tb-btn.sm { padding: 5px 10px; font-size: 11.5px; }
+.tb-btn:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
+
+/* ══ Badges ══ */
+.badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge.green  { background: rgba(57,211,83,.18);  color: #39d353; border: 1px solid rgba(57,211,83,.35); }
+.badge.red    { background: rgba(248,81,73,.18);  color: #f85149; border: 1px solid rgba(248,81,73,.35); }
+.badge.amber  { background: rgba(227,179,65,.18); color: #e3b341; border: 1px solid rgba(227,179,65,.35); }
+.badge.blue   { background: rgba(88,166,255,.15); color: #58a6ff; border: 1px solid rgba(88,166,255,.3); }
+.badge.purple { background: rgba(163,113,247,.15); color: #a371f7; border: 1px solid rgba(163,113,247,.3); }
+.badge.gray   { background: rgba(110,118,129,.18); color: #8b949e; border: 1px solid rgba(110,118,129,.3); }
+
+/* ══ Avatar ══ */
+.avatar {
+  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 11px; border: 1px solid var(--border);
+}
+.user-cell { display: flex; align-items: center; gap: 9px; }
+.user-cell .uname { font-weight: 600; font-size: clamp(11px,1.3vw,13px); }
+.user-cell .uemail { color: var(--text3); font-size: 10.5px; font-family: var(--mono); margin-top: 1px; }
+
+/* ══ Switch ══ */
+.switch-wrap { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider-sw {
+  position: absolute; inset: 0; border-radius: 100px;
+  background: var(--border2); transition: .18s; cursor: pointer;
+}
+.slider-sw::before {
+  content: ""; position: absolute; width: 14px; height: 14px;
+  left: 3px; top: 3px; background: #fff; border-radius: 50%;
+  transition: .18s; box-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+.switch input:checked + .slider-sw { background: var(--teal); }
+.switch input:checked + .slider-sw::before { transform: translateX(16px); }
+
+/* ══ V/A/E access-bit toggle buttons (replaces old free-text ParamKey field) ══ */
+.vae-toggle { display: flex; gap: 4px; }
+.vae-btn {
+  width: 27px; height: 24px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--bg2); color: var(--text3); font-family: var(--mono);
+  font-size: 10.5px; font-weight: 700; cursor: pointer; transition: all .14s;
+  display: flex; align-items: center; justify-content: center; letter-spacing: 0;
+}
+.vae-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--text); }
+.vae-btn.on { background: var(--teal-dim); color: var(--teal); border-color: rgba(57,211,83,.4); }
+.vae-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ══ Read-only V/A/E badges — Permissions Sheet tab ══ */
+.vae-badges { display: inline-flex; gap: 3px; }
+.vae-badge {
+  width: 20px; height: 18px; border-radius: 4px; font-family: var(--mono);
+  font-size: 9.5px; font-weight: 700; display: inline-flex; align-items: center;
+  justify-content: center; background: var(--bg3); color: var(--text3); border: 1px solid var(--border);
+}
+.vae-badge.on { background: var(--teal-dim); color: var(--teal); border-color: rgba(57,211,83,.35); }
+
+/* ══ Permission cards grid ══ */
+.perm-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px; padding: 2px;
+}
+.perm-card {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: border-color .18s;
+}
+.perm-card.granted { border-color: rgba(57,211,83,.4); }
+.perm-card.disabled-card { opacity: .55; }
+.perm-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.perm-card-title { font-weight: 700; font-size: clamp(12px,1.4vw,14px); display: flex; align-items: center; gap: 6px; }
+.perm-card-title i { color: var(--accent); font-size: 17px; line-height: 1; }
+.perm-card-key { font-family: var(--mono); font-size: 10.5px; color: var(--text3); margin-top: 1px; }
+.perm-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.perm-fields.three { grid-template-columns: 1fr 1fr 1fr; }
+.perm-field { display: flex; flex-direction: column; gap: 4px; }
+.perm-field label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; }
+.perm-field input {
+  padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--bg2); color: var(--text); font-family: var(--mono);
+  font-size: 11.5px; transition: border .16s; width: 100%;
+}
+.perm-field input:focus { outline: none; border-color: var(--accent); background: var(--bg3); }
+.perm-field input:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ══ Modal ══ */
+@keyframes modalIn { from { opacity:0; transform:scale(.96) translateY(8px); } to { opacity:1; transform:none; } }
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  backdrop-filter: blur(3px); display: flex;
+  align-items: center; justify-content: center;
+  z-index: 200; opacity: 0; pointer-events: none; transition: opacity .18s;
+  padding: 16px;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+  width: min(560px, 96vw); max-height: 90vh;
+  overflow-y: auto; animation: modalIn .18s ease;
+}
+.modal.wide { width: min(860px, 96vw); }
+.modal-header {
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  position: sticky; top: 0; z-index: 2; background: var(--surface);
+}
+.modal-header h3 { font-size: clamp(13px,1.6vw,15px); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.modal-header h3 i { color: var(--accent); font-size: 18px; line-height: 1; }
+.modal-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+.modal-footer {
+  padding: 14px 20px 18px; border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; gap: 10px;
+  position: sticky; bottom: 0; background: var(--surface); z-index: 2;
+}
+
+/* ══ Form fields ══ */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 11.5px; font-weight: 600; color: var(--text3); letter-spacing: .02em; }
+.field input, .field select, .field textarea {
+  padding: 9px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: var(--bg2); color: var(--text);
+  font-family: var(--font); font-size: 13px; transition: border .16s, box-shadow .16s; width: 100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.field input.mono, .field select.mono { font-family: var(--mono); }
+.field .hint { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ══ Profile strip in user modal ══ */
+.user-strip {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+.user-strip .avatar { width: 40px; height: 40px; font-size: 14px; border-radius: 10px; }
+.user-strip-meta .name { font-size: 14px; font-weight: 700; }
+.user-strip-meta .email { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* ══ Info row ══ */
+.info-row {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 14px;
+}
+.info-item { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 5px; }
+.info-item i { color: var(--accent); font-size: 14px; }
+.info-item strong { color: var(--text); }
+
+/* ══ Section divider ══ */
+.section-label {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--text3);
+  display: flex; align-items: center; gap: 8px; margin: 4px 0 2px;
+}
+.section-label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+/* ══ Scrollable perm section inside modal ══ */
+.perm-scroll { overflow-y: auto; max-height: 340px; padding: 2px 0; }
+
+/* ══ Toast ══ */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--surface2); color: var(--text); border: 1px solid var(--border2);
+  padding: 12px 18px; border-radius: var(--radius-lg); font-size: 13px; font-weight: 500;
+  z-index: 999; opacity: 0; transform: translateY(12px);
+  transition: all .28s cubic-bezier(.34,1.56,.64,1); pointer-events: none;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--shadow-lg); max-width: 340px;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: var(--teal-dim); color: var(--teal); border-color: rgba(57,211,83,.25); }
+.toast.error { background: var(--red-dim); color: var(--red); border-color: rgba(248,81,73,.25); }
+
+
+
+@keyframes spin { to { transform: rotate(360deg); } }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ══════════════════════════════════════════════
+   NEW: Segmented control (Pending / History style toggles)
+══════════════════════════════════════════════ */
+.segmented { display: inline-flex; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 3px; gap: 2px; }
+.segmented button {
+  border: none; background: transparent; color: var(--text3); cursor: pointer;
+  padding: 6px 13px; border-radius: 6px; font-family: var(--font); font-size: 11.5px; font-weight: 600;
+  transition: all .15s; display: inline-flex; align-items: center; gap: 6px;
+}
+.segmented button.active { background: var(--surface); color: var(--accent); box-shadow: var(--shadow); }
+.segmented .seg-count { font-family: var(--mono); font-size: 10px; background: var(--bg3); padding: 1px 6px; border-radius: 100px; }
+.segmented button.active .seg-count { background: var(--accent-dim); color: var(--accent); }
+
+/* ══ Search + filters — now live inline inside the tab bar (.tt-panel).
+   Search shrinks first so the row never wraps; filters/count stay put. ══ */
+.tt-search { position: relative; flex: 1 1 130px; min-width: 70px; max-width: 220px; }
+.tt-search.combo { flex-basis: 190px; max-width: 280px; }
+.tt-search i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; }
+.tt-search input {
+  width: 100%; height: var(--field-h); box-sizing: border-box; padding: 0 10px 0 30px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--bg2); color: var(--text);
+  font-family: var(--font); font-size: 12.5px; transition: border .16s, box-shadow .16s;
+}
+.tt-search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+
+/* ══ Searchable email combobox (custom dropdown, not a native datalist)
+   Click the trigger to open a real dropdown panel; the search box lives
+   INSIDE the panel, pinned to its top, with the option list scrolling
+   underneath it. Ditto upLog.html. ══ */
+.combo-trigger {
+  width: 100%; height: var(--field-h); box-sizing: border-box; display: flex; align-items: center; gap: 8px;
+  padding: 0 30px 0 30px; border-radius: var(--radius); flex-shrink: 0;
+  border: 1px solid var(--border); background: var(--bg2); color: var(--text);
+  font-family: var(--font); font-size: 12.5px; cursor: pointer; text-align: left;
+  transition: border .16s, box-shadow .16s;
+}
+.combo-trigger:hover { border-color: var(--border2); }
+.combo.open .combo-trigger { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.combo-trigger i.ti-mail { color: var(--text3); font-size: 14px; flex-shrink: 0; }
+.combo-trigger-label {
+  flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--mono);
+}
+.combo-trigger-label.placeholder { font-family: var(--font); color: var(--text3); }
+.email-dot {
+  display: none; width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+  position: absolute; top: 4px; right: 4px; border: 1.5px solid var(--bg2);
+}
+.combo-caret {
+  position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+  color: var(--text3); font-size: 14px; pointer-events: none; transition: transform .14s;
+}
+.combo.open .combo-caret { transform: translateY(-50%) rotate(180deg); color: var(--accent); }
+/* position:fixed (not absolute) + JS-computed coordinates
+   (_positionComboPanel) — see the note on .tt-panel above. Guarantees the
+   panel always renders fully in front, never clipped or stuck underneath
+   other toolbar controls in a congested/narrow layout. z-index is set
+   above every other overlay in the app (modal, drawer, toast) so an open
+   dropdown is unconditionally on top of any table, div, or panel it
+   might appear over. */
+.combo-panel {
+  position: fixed; z-index: 4000;
+  background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); max-height: 280px;
+  display: none; flex-direction: column; overflow: hidden;
+}
+.combo.open .combo-panel { display: flex; }
+.combo-search {
+  position: relative; flex-shrink: 0; padding: 6px; border-bottom: 1px solid var(--border);
+}
+.combo-search i.ti-search { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 13px; }
+.combo-search input {
+  width: 100%; padding: 6px 10px 6px 28px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--bg2); color: var(--text);
+  font-family: var(--font); font-size: 12.5px;
+}
+.combo-search input:focus { outline: none; border-color: var(--accent); }
+.combo-options { overflow-y: auto; padding: 4px; }
+.combo-option {
+  padding: 7px 10px; border-radius: 6px; font-size: 12.5px; font-family: var(--mono);
+  color: var(--text); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.combo-option:hover, .combo-option.hl { background: var(--accent-dim); color: var(--accent); }
+.combo-option.combo-clear {
+  font-family: var(--font); color: var(--text3); font-style: italic;
+  display: flex; align-items: center; gap: 7px;
+}
+.combo-option.combo-clear i.ti-list {
+  font-size: 13px; line-height: 1; flex-shrink: 0;
+  position: static; top: auto; left: auto; transform: none;
+}
+.combo-option.selected { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+.combo-option.combo-clear.selected { font-style: normal; }
+.combo-empty { padding: 10px; font-size: 12px; color: var(--text3); text-align: center; }
+
+/* ══ Icon-only filter button group — sits inline with search, same row/line ══ */
+.tt-filter-group { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; height: var(--field-h); }
+.tt-filter-btn {
+  width: var(--field-h); height: var(--field-h); flex-shrink: 0; padding: 0; border-radius: 50%;
+  border: 1.5px solid var(--border2); background: var(--bg2); color: var(--text3);
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  font-size: 15px; line-height: 1; transition: all .16s;
+}
+.tt-filter-btn i { font-size: 15px; line-height: 1; display: inline-flex; }
+.tt-filter-btn:hover { background: var(--surface2); color: var(--text); }
+.tt-filter-btn.active { background: var(--surface2); color: var(--text); border-color: var(--border2); box-shadow: 0 0 0 2px var(--accent); }
+.tt-filter-btn.tt-filter-ok    { border-color: var(--teal); color: var(--teal); }
+.tt-filter-btn.tt-filter-ok.active    { background: var(--teal-dim); box-shadow: 0 0 0 2px var(--teal); }
+.tt-filter-btn.tt-filter-bad   { border-color: var(--red);  color: var(--red); }
+.tt-filter-btn.tt-filter-bad.active   { background: var(--red-dim); box-shadow: 0 0 0 2px var(--red); }
+.tt-count { font-size: 11px; color: var(--text3); white-space: nowrap; flex-shrink: 0; }
+
+/* ══ Sortable column headers ══ */
+.th-sort { cursor: pointer; user-select: none; display: inline-flex; align-items: center; gap: 4px; }
+.th-sort i { font-size: 12px; opacity: .35; transition: opacity .15s, transform .15s; }
+.th-sort.sort-asc i, .th-sort.sort-desc i { opacity: 1; color: var(--accent); }
+.th-sort.sort-desc i { transform: rotate(180deg); }
+
+/* ══ Pagination footer ══ */
+.pagination-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  flex-wrap: wrap; padding: 9px 14px; border-top: 1px solid var(--border);
+  flex-shrink: 0; background: var(--bg3);
+}
+.pg-info { font-size: 11.5px; color: var(--text3); }
+.pg-controls { display: flex; align-items: center; gap: 6px; }
+.pg-btn {
+  width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border2);
+  background: var(--surface); color: var(--text); cursor: pointer; display: inline-flex;
+  align-items: center; justify-content: center; transition: all .14s; font-size: 13px;
+}
+.pg-btn:hover:not(:disabled) { background: var(--surface2); }
+.pg-btn:disabled { opacity: .4; cursor: not-allowed; }
+.pg-pagenum { font-family: var(--mono); font-size: 11.5px; color: var(--text2); padding: 0 4px; min-width: 50px; text-align: center; }
+.pg-size select {
+  padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface);
+  color: var(--text); font-size: 11.5px; cursor: pointer;
+}
+
+/* ══ Skeleton loading ══ */
+.skel-bar {
+  height: 13px; border-radius: 6px;
+  background: linear-gradient(90deg, var(--bg3) 25%, var(--surface2) 42%, var(--bg3) 63%);
+  background-size: 400% 100%; animation: skel-shimmer 1.4s ease infinite;
+}
+@keyframes skel-shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+tr.skeleton-row td { padding: 13px 14px; }
+tr.skeleton-row:hover td { background: transparent !important; }
+
+/* ══ Table fade-in on update ══ */
+/* Row fade-in animation removed — like allEmp.html, tables here are
+   re-rendered on every silent cache refresh (poll / search / filter),
+   so animating rows on every render made them flash/blink repeatedly
+   instead of just on first paint. Rows now render instantly, same as
+   allEmp.html's virtual-scroll rows. */
+
+/* ══ Status pill for request workflow ══ */
+.badge.gold { background: rgba(227,179,65,.18); color: #e3b341; border: 1px solid rgba(227,179,65,.35); }
+
+/* ══ Reason note ══ */
+.reason-note {
+  font-size: 11.5px; color: var(--text2); max-width: 260px;
+  display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.reason-note:hover { white-space: normal; overflow: visible; }
+
+/* ══════════════════════════════════════════════
+   NEW: Right-side sliding Profile Drawer
+══════════════════════════════════════════════ */
+@keyframes drawerBackdropIn { from { opacity: 0; } to { opacity: 1; } }
+.drawer-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(2px);
+  z-index: 300; opacity: 0; pointer-events: none; transition: opacity .22s;
+}
+.drawer-backdrop.open { opacity: 1; pointer-events: all; }
+.drawer-panel {
+  position: fixed; top: 0; right: 0; height: 100%; width: min(460px, 94vw);
+  background: var(--surface); border-left: 1px solid var(--border2); box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; z-index: 301;
+  transform: translateX(100%); transition: transform .28s cubic-bezier(.32,.72,0,1);
+}
+.drawer-backdrop.open .drawer-panel { transform: translateX(0); }
+.drawer-header {
+  padding: 18px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+.drawer-header .avatar { width: 46px; height: 46px; font-size: 16px; border-radius: 12px; }
+.drawer-header-meta { flex: 1; min-width: 0; }
+.drawer-header-meta .name { font-size: 15.5px; font-weight: 700; }
+.drawer-header-meta .email { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.drawer-close { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border2); background: var(--bg2); color: var(--text); cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+.drawer-close:hover { background: var(--surface2); }
+.drawer-body { flex: 1 1 auto; overflow-y: auto; padding: 18px 20px; display: flex; flex-direction: column; gap: 16px; }
+.drawer-footer {
+  padding: 14px 20px 18px; border-top: 1px solid var(--border); background: var(--surface);
+  display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0;
+}
+.perm-category-block { display: flex; flex-direction: column; gap: 8px; }
+.perm-category-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--accent); display: flex; align-items: center; gap: 7px;
+}
+.perm-category-title .cat-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.perm-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 10px 12px; transition: border-color .15s;
+}
+.perm-row.on { border-color: rgba(57,211,83,.4); }
+.perm-row-label { font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.perm-row-label i { color: var(--accent); font-size: 15px; }
+.perm-row-sub { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 2px; }
+.perm-row-fields { display: flex; gap: 6px; margin-top: 8px; }
+.perm-row-fields .perm-field { flex: 1; }
+.perm-row-fields input, .perm-row-fields select {
+  padding: 5px 7px; font-size: 10.5px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--bg2); color: var(--text); font-family: var(--mono); width: 100%;
+}
+.perm-row-fields input:disabled, .perm-row-fields select:disabled { opacity: .45; cursor: not-allowed; }
+.perm-card-wrap { display: flex; flex-direction: column; gap: 6px; }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+
+/* ── Tablet / narrow desktop ── */
+@media (max-width: 900px) {
+  .field-row { grid-template-columns: 1fr; }
+  .info-row { gap: 8px; }
+  .modal.wide { width: min(700px, 96vw); }
+}
+
+/* ── Mobile: tables become stacked cards ── */
+@media (max-width: 760px) {
+  .page { padding: 8px; }
+
+  /* Tab bar + toolbar stay on ONE line at every width — the icon filter
+     buttons are already compact, so only the search box needs to shrink
+     (down to a usable minimum) and the non-essential record count drops,
+     since it's not a button or a filter. */
+  .tab-bar { gap: 6px; margin-bottom: 10px; padding-bottom: 2px; flex-wrap: nowrap; overflow-x: visible; }
+  /* Tabs strip: allowed to shrink (flex:0 1 auto) so the toolbar keeps its
+     space, but never below its own content — if it still doesn't fit, it
+     scrolls horizontally (overflow-x:auto below) rather than clipping a
+     tab out of existence. max-width raised from a fixed 38% so 2–3
+     icon-only tabs always have genuine room instead of relying on scroll
+     for a case that should just fit. */
+  .tab-bar-tabs {
+    flex: 0 1 auto; max-width: 62%; min-width: 0;
+    overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+  .tab-bar-tabs::-webkit-scrollbar { display: none; }
+  .tab-bar-tabs.has-overflow {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent 100%);
+            mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent 100%);
+  }
+  .tab-btn {
+    flex: 0 0 auto; padding: 9px 12px; font-size: 11.5px;
+    border-radius: var(--radius); border-bottom: 1.5px solid transparent; bottom: 0;
+    min-height: var(--field-h); box-sizing: border-box; scroll-snap-align: start;
+  }
+  .tab-btn.active { border-bottom-color: var(--accent); }
+  .tab-btn i { font-size: 17px; }
+  .tab-btn .tab-label { display: none; }
+  .tab-btn .tab-badge { font-size: 9px; padding: 1px 5px; }
+
+  /* Table row action buttons only: icon-only (label stays in the DOM for
+     screen readers + the title tooltip on tap-and-hold). Modal/drawer
+     buttons keep their text — those have room and need to be unambiguous. */
+  .data-table td.cell-action .tb-btn .tb-btn-label { display: none; }
+  .data-table td.cell-action .tb-btn { padding: 8px; gap: 0; justify-content: center; }
+  .data-table td.cell-action .tb-btn.sm { padding: 7px; }
+
+  .sec-header { margin-bottom: 10px; }
+
+  .tab-bar-toolbar { flex: 1 1 auto; min-width: 0; position: relative; }
+  .tt-panel { gap: 5px; flex-wrap: nowrap; }
+  .tt-search { flex: 1 1 auto; min-width: 60px; max-width: none; }
+  .tt-search input { padding-left: 26px; }
+  .tt-search i { left: 8px; font-size: 12.5px; }
+  .tt-search.combo { flex: 0 0 auto; width: var(--field-h); min-width: var(--field-h); position: relative; }
+  .tt-search.combo .combo-trigger { padding: 0; justify-content: center; }
+  .tt-search.combo .combo-trigger-label { display: none; }
+  .tt-search.combo .combo-caret { display: none; }
+  /* Width capped here as a fallback; actual on-screen position is
+     computed in JS (_positionComboPanel) since the panel is now
+     viewport-fixed rather than positioned against this ancestor. */
+  .tt-search.combo .combo-panel { width: min(260px, calc(100vw - 16px)); }
+  .tt-search.combo.email-active .email-dot { display: block; }
+  .tt-count { display: none; }
+
+
+  .table-wrap { overflow-x: hidden; }
+  .data-table, .data-table.wide-table { display: block; min-width: 0; width: 100%; }
+  .data-table thead { display: none; }
+  .data-table tbody { display: block; }
+  .data-table tbody tr {
+    display: block; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 4px 12px; margin-bottom: 10px;
+  }
+  .data-table tbody tr:last-child { margin-bottom: 0; }
+  .data-table tbody tr:hover td { background: transparent; }
+  .data-table td {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; padding: 9px 0; border-bottom: 1px dashed var(--border);
+    text-align: right; white-space: normal;
+  }
+  .data-table td:last-child { border-bottom: none; }
+  .data-table td::before {
+    content: attr(data-label); flex-shrink: 0;
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--text3); text-align: left;
+  }
+  .data-table td.cell-user {
+    display: block; padding: 12px 0 10px; border-bottom: 1px solid var(--border); margin-bottom: 2px;
+  }
+  .data-table td.cell-user::before { display: none; }
+  .data-table td.cell-action { display: block; padding: 10px 0 12px; }
+  .data-table td.cell-action::before { display: none; }
+  /* Multi-button rows (e.g. Approve/Reject) are wrapped in a <div> by the
+     renderers — split those evenly so two icon buttons never fight for
+     the same 100% width and overlap. A bare button with no wrapping div
+     (e.g. the Users "Profile" action) gets the full-width tap target. */
+  .data-table td.cell-action > div { width: 100%; display: flex; gap: 8px; }
+  .data-table td.cell-action > div > * { flex: 1 1 0; min-width: 0; width: auto; }
+  .data-table td.cell-action > button { width: 100%; }
+  .data-table td[colspan] {
+    display: block; text-align: left; padding: 0; border-bottom: none;
+  }
+  .data-table td[colspan]::before { display: none; }
+
+  .pagination-bar { justify-content: center; text-align: center; }
+  .pg-info { flex-basis: 100%; text-align: center; }
+  .pg-controls { flex-basis: 100%; justify-content: center; }
+
+  .modal-header, .modal-body, .modal-footer { padding-left: 14px; padding-right: 14px; }
+  .modal-footer { flex-wrap: wrap; }
+  .modal-footer button { flex: 1 1 auto; }
+  .drawer-panel { width: 100vw; }
+  .drawer-footer { flex-wrap: wrap; }
+  .drawer-footer button { flex: 1 1 auto; }
+
+  .field-row { grid-template-columns: 1fr; }
+  .perm-fields.three { grid-template-columns: 1fr 1fr; }
+  .toast { left: 12px; right: 12px; bottom: 12px; max-width: none; }
+}
+
+@media (max-width: 420px) {
+  .perm-fields, .perm-fields.three { grid-template-columns: 1fr; }
+  .tab-btn span.tab-badge { margin-left: 2px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ Main page ══ -->
+<div class="page" id="main-page">
+
+  <!-- Tab bar: tabs + the active tab's search/filter toolbar, one line -->
+  <div class="tab-bar">
+    <div class="tab-bar-tabs">
+      <button class="tab-btn active" data-tab="tab-loginreq" title="Requests Portal" onclick="switchTab('tab-loginreq')">
+        <i class="ti ti-mail-check"></i> <span class="tab-label">Requests Portal</span>
+        <span class="tab-badge" id="badge-loginreq">0</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-users" title="Users" onclick="switchTab('tab-users')">
+        <i class="ti ti-users"></i> <span class="tab-label">Users</span>
+        <span class="tab-badge accent" id="badge-users">0</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-permissions" title="Permissions Sheet" onclick="switchTab('tab-permissions')">
+        <i class="ti ti-lock-access"></i> <span class="tab-label">Permissions Sheet</span>
+      </button>
+    </div>
+
+    <div class="tab-bar-toolbar">
+      <div class="tt-panel active" id="tt-tab-loginreq">
+        <div class="tt-search combo" id="requests-email-combo">
+          <button type="button" class="combo-trigger" id="requests-email-trigger" onclick="_comboToggle('requests')">
+            <i class="ti ti-mail"></i>
+            <span class="combo-trigger-label placeholder" id="requests-email-label">All emails</span>
+            <span class="email-dot"></span>
+          </button>
+          <i class="ti ti-chevron-down combo-caret"></i>
+          <div class="combo-panel" id="requests-email-panel">
+            <div class="combo-search">
+              <i class="ti ti-search"></i>
+              <input type="text" id="requests-email-search" placeholder="Search email…" autocomplete="off"
+                     oninput="_comboFilter('requests')" />
+            </div>
+            <div class="combo-options" id="requests-email-options"></div>
+          </div>
+        </div>
+        <span class="tt-count" id="requests-count"></span>
+      </div>
+      <div class="tt-panel" id="tt-tab-users">
+        <div class="tt-search combo" id="users-email-combo">
+          <button type="button" class="combo-trigger" id="users-email-trigger" onclick="_comboToggle('users')">
+            <i class="ti ti-mail"></i>
+            <span class="combo-trigger-label placeholder" id="users-email-label">All emails</span>
+            <span class="email-dot"></span>
+          </button>
+          <i class="ti ti-chevron-down combo-caret"></i>
+          <div class="combo-panel" id="users-email-panel">
+            <div class="combo-search">
+              <i class="ti ti-search"></i>
+              <input type="text" id="users-email-search" placeholder="Search email…" autocomplete="off"
+                     oninput="_comboFilter('users')" />
+            </div>
+            <div class="combo-options" id="users-email-options"></div>
+          </div>
+        </div>
+        <div class="tt-filter-group" id="users-status-filter">
+          <button type="button" class="tt-filter-btn active" data-status="all" title="All statuses" onclick="_setStatusFilterBtn('users','all',this)"><i class="ti ti-users"></i></button>
+          <button type="button" class="tt-filter-btn tt-filter-ok" data-status="active" title="Active" onclick="_setStatusFilterBtn('users','active',this)"><i class="ti ti-circle-check"></i></button>
+          <button type="button" class="tt-filter-btn tt-filter-bad" data-status="inactive" title="Inactive" onclick="_setStatusFilterBtn('users','inactive',this)"><i class="ti ti-circle-x"></i></button>
+        </div>
+        <span class="tt-count" id="users-count"></span>
+      </div>
+      <div class="tt-panel" id="tt-tab-permissions">
+        <div class="tt-search combo" id="perms-email-combo">
+          <button type="button" class="combo-trigger" id="perms-email-trigger" onclick="_comboToggle('perms')">
+            <i class="ti ti-mail"></i>
+            <span class="combo-trigger-label placeholder" id="perms-email-label">All emails</span>
+            <span class="email-dot"></span>
+          </button>
+          <i class="ti ti-chevron-down combo-caret"></i>
+          <div class="combo-panel" id="perms-email-panel">
+            <div class="combo-search">
+              <i class="ti ti-search"></i>
+              <input type="text" id="perms-email-search" placeholder="Search email…" autocomplete="off"
+                     oninput="_comboFilter('perms')" />
+            </div>
+            <div class="combo-options" id="perms-email-options"></div>
+          </div>
+        </div>
+        <span class="tt-count" id="perms-count"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ TAB: REQUESTS PORTAL (pending only) ══════ -->
+  <div class="tab-panel active" id="tab-loginreq">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title"><i class="ti ti-inbox"></i> Requests Portal</div>
+        <div class="sec-sub">Pending login requests — approve to register a user, or reject with a reason.</div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap">
+        <table class="data-table" style="grid-template-columns:20% 32% 16% 32%;">
+          <thead>
+            <tr>
+              <th class="th-sort" data-key="timestamp" onclick="_setSort('requests','timestamp')">Timestamp <i class="ti ti-chevron-up"></i></th>
+              <th class="th-sort" data-key="email" onclick="_setSort('requests','email')">Email <i class="ti ti-chevron-up"></i></th>
+              <th>Status</th>
+              <th style="text-align:right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="loginreq-tbody">
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-bar" id="requests-pagination"></div>
+    </div>
+  </div>
+
+  <!-- ══════ TAB: USERS ══════ -->
+  <div class="tab-panel" id="tab-users">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title"><i class="ti ti-users"></i> Users</div>
+        <div class="sec-sub">All registered users and their access permissions.</div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap">
+        <table class="data-table" style="grid-template-columns:36% 16% 14% 14% 20%;">
+          <thead>
+            <tr>
+              <th class="th-sort" data-key="name" onclick="_setSort('users','name')">User <i class="ti ti-chevron-up"></i></th>
+              <th class="th-sort" data-key="role" onclick="_setSort('users','role')">Role <i class="ti ti-chevron-up"></i></th>
+              <th class="th-sort" data-key="status" onclick="_setSort('users','status')">Status <i class="ti ti-chevron-up"></i></th>
+              <th class="th-sort" data-key="dsCnt" onclick="_setSort('users','dsCnt')">Datasets <i class="ti ti-chevron-up"></i></th>
+              <th style="text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-bar" id="users-pagination"></div>
+    </div>
+  </div>
+
+  <!-- ══════ TAB: PERMISSIONS SHEET ══════ -->
+  <div class="tab-panel" id="tab-permissions">
+    <div class="sec-header">
+      <div>
+        <div class="sec-title"><i class="ti ti-table"></i> Permissions Sheet</div>
+        <div class="sec-sub">Live view of every active grant — matches the Permissions sheet columns exactly.</div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-wrap">
+        <table class="data-table wide-table" style="grid-template-columns:20% 14% 19% 15% 15% 17%;">
+          <thead>
+            <tr>
+              <th class="th-sort" data-key="email" onclick="_setSort('perms','email')">Email <i class="ti ti-chevron-up"></i></th>
+              <th class="th-sort" data-key="dataset" onclick="_setSort('perms','dataset')">Dataset <i class="ti ti-chevron-up"></i></th>
+              <th>Label</th>
+              <th>ApiKey</th>
+              <th>ParamKey</th>
+              <th>TTL</th>
+            </tr>
+          </thead>
+          <tbody id="perms-tbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination-bar" id="perms-pagination"></div>
+    </div>
+  </div>
+
+
+</div>
+
+
+<!-- Toast -->
+<div class="toast" id="toast" role="alert">
+  <i id="toast-icon" class="ti ti-circle-check"></i>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- ══ MODAL: Approve & Register User ══ -->
+<div class="modal-backdrop" id="modal-activate">
+  <div class="modal wide">
+    <div class="modal-header">
+      <h3><i class="ti ti-user-check"></i> <span id="activate-modal-title">Approve & Register User</span></h3>
+      <button class="tb-btn sm" onclick="closeModal('modal-activate')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Info strip — shows the email from the request -->
+      <div class="user-strip" id="activate-strip">
+        <div class="avatar" id="act-avatar" style="background:rgba(88,166,255,.15);color:var(--accent);">?</div>
+        <div class="user-strip-meta">
+          <div class="name" id="act-req-email">—</div>
+          <div class="email">From Login Request · <span id="act-req-ts">—</span></div>
+        </div>
+      </div>
+
+      <div class="section-label">User Details</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Full Name <span style="color:var(--red)">*</span></label>
+          <input type="text" id="act-name" placeholder="e.g. Afan Haidar" />
+        </div>
+        <div class="field">
+          <label>Email <span style="color:var(--red)">*</span></label>
+          <input type="email" id="act-email" class="mono" readonly />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Role</label>
+          <select id="act-role">
+            <option>Admin</option>
+            <option>HR Manager</option>
+            <option>Manager</option>
+            <option>Staff</option>
+            <option>Visitor</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="act-status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:6px;">Module Permissions</div>
+      <div class="hint" style="font-size:11.5px;color:var(--text3);margin-bottom:6px;">
+        Toggle modules on/off, grouped by category. Fields are pre-filled with defaults — edit as needed before saving.
+      </div>
+
+      <div class="perm-scroll">
+        <div id="act-perm-grid">
+          <!-- Populated dynamically, grouped by category -->
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="tb-btn" onclick="closeModal('modal-activate')"><i class="ti ti-x"></i> Cancel</button>
+      <button class="tb-btn primary" id="act-save-btn" onclick="saveActivatedUser()">
+        <i class="ti ti-device-floppy"></i> Approve & Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Reject Request ══ -->
+<div class="modal-backdrop" id="modal-reject">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="ti ti-circle-x" style="color:var(--red);"></i> Reject Request</h3>
+      <button class="tb-btn sm" onclick="closeModal('modal-reject')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="user-strip">
+        <div class="avatar" id="rej-avatar" style="background:rgba(248,81,73,.15);color:var(--red);">?</div>
+        <div class="user-strip-meta">
+          <div class="name" id="rej-email">—</div>
+          <div class="email">This request will move to Request History</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Rejection Reason <span style="color:var(--red)">*</span></label>
+        <textarea id="rej-reason" rows="3" placeholder="Explain why this request is being rejected…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="tb-btn" onclick="closeModal('modal-reject')"><i class="ti ti-x"></i> Cancel</button>
+      <button class="tb-btn danger" onclick="confirmReject()">
+        <i class="ti ti-circle-x"></i> Reject Request
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROFILE DRAWER (right-side sliding panel) ══ -->
+<div class="drawer-backdrop" id="profile-drawer-backdrop">
+  <div class="drawer-panel" role="dialog" aria-label="User profile">
+    <div class="drawer-header">
+      <div class="avatar" id="pd-avatar" style="background:rgba(88,166,255,.15);color:var(--accent);">?</div>
+      <div class="drawer-header-meta">
+        <div class="name" id="pd-name">—</div>
+        <div class="email" id="pd-email">—</div>
+      </div>
+      <button class="drawer-close" onclick="closeProfileDrawer()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="drawer-body">
+
+      <div class="info-row" id="pd-info-row">
+        <!-- populated: role, status, dataset count -->
+      </div>
+
+      <div class="section-label">User Details</div>
+      <div class="field-row">
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" id="pd-name-input" />
+        </div>
+        <div class="field">
+          <label>Role</label>
+          <select id="pd-role-input">
+            <option>Admin</option>
+            <option>HR Manager</option>
+            <option>Manager</option>
+            <option>Staff</option>
+            <option>Visitor</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="pd-status-input">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div class="section-label" style="margin-top:4px;">Permissions — every module</div>
+      <div class="hint" style="font-size:11.5px;color:var(--text3);margin-top:-8px;">
+        Every module is shown. ON = granted, OFF = not granted. Changes are only saved when you click Save Changes below.
+      </div>
+
+      <div id="pd-perm-groups" style="display:flex;flex-direction:column;gap:18px;">
+        <!-- populated dynamically, grouped by category -->
+      </div>
+
+    </div>
+    <div class="drawer-footer">
+      <button class="tb-btn" onclick="closeProfileDrawer()"><i class="ti ti-x"></i> Cancel</button>
+      <button class="tb-btn primary" id="pd-save-btn" onclick="saveProfileChanges()">
+        <i class="ti ti-device-floppy"></i> Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+   GAS URL — only needed for write actions.
+   All READ data comes from the ap2_loginData IDB cache populated
+   by dataLayer.js exactly as ap2_employee does in allEmp.html.
+═══════════════════════════════════════════════════════ */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzVKlHNj0LRP1OMuyaVWQwZxZxCysgyG3YvfUQA5Gy37uVtNHdYa77TNqYQb9pmAe4d/exec'; // ← paste your GAS URL here (needed for saves only)
+
+/* ═══════════════════════════════════════════════════════
+   CACHE — via shared cacheWatcher.js, with a safe fallback
+   Ditto allEmp.html: if cacheWatcher.js fails to load or load in time
+   (blocked, 404, iPad caching a stale/broken copy, etc.) this page must
+   NOT throw and must NOT stop the rest of this script from running.
+   So: if AP2CacheWatcher isn't there, build a tiny local stand-in with
+   the same shape, using the page's own direct (timeout-guarded)
+   IndexedDB read as a fallback.
+═══════════════════════════════════════════════════════ */
+const _AP2_CACHE_KEY = 'ap2_loginData';
+
+if (typeof window.AP2CacheWatcher === 'undefined') {
+  console.warn('[userAdmin] cacheWatcher.js did not load — using local fallback');
+  window.AP2CacheWatcher = (function () {
+    const _IDB_NAME = 'ap2_fleet_cache', _IDB_STORE = 'datasets';
+    let _conn = null;
+    function _open() {
+      if (_conn) return Promise.resolve(_conn);
+      return new Promise((res, rej) => {
+        let done = false;
+        const req = indexedDB.open(_IDB_NAME);
+        const t = setTimeout(() => { if (!done) { done = true; rej(new Error('idb-open-timeout')); } }, 2000);
+        req.onsuccess = e => { if (!done) { done = true; clearTimeout(t); _conn = e.target.result; res(_conn); } };
+        req.onerror   = e => { if (!done) { done = true; clearTimeout(t); rej(e.target.error); } };
+      });
+    }
+    return {
+      init() {},
+      subscribe() { return () => {}; }, // no cross-page notifications available in fallback mode
+      notifyNow() {},
+      getStatus() { return { healthy: false, mode: 'local-fallback', lastError: 'cacheWatcher.js not loaded' }; },
+      async readKey(key) {
+        try {
+          const db  = await _open();
+          if (!db.objectStoreNames.contains(_IDB_STORE)) {
+            // Store doesn't exist yet — cache hasn't been warmed in this
+            // browser session yet. That's normal, not an error.
+            return null;
+          }
+          const rec = await new Promise((res, rej) => {
+            const r = db.transaction(_IDB_STORE, 'readonly').objectStore(_IDB_STORE).get(key);
+            r.onsuccess = () => res(r.result || null);
+            r.onerror   = () => rej(r.error);
+          });
+          return (rec && rec.data && typeof rec.data === 'object') ? rec.data : null;
+        } catch (e) {
+          if (e && e.name === 'NotFoundError') return null; // store not created yet — normal
+          console.warn('[userAdmin] fallback read failed:', e.message);
+          return null;
+        }
+      }
+    };
+  })();
+}
+
+// Thin wrapper kept so the rest of this file doesn't need to change —
+// actual read lives centrally in cacheWatcher.js when it's available,
+// or in the fallback above when it isn't.
+async function _readCache() {
+  return AP2CacheWatcher.readKey(_AP2_CACHE_KEY);
+}
+
+/* ═══════════════════════════════════════════════════════
+   MASTER DATA STORE — populated from IDB cache
+═══════════════════════════════════════════════════════ */
+let _state = {
+  loginReqs:   [],  // {timestamp,email,status,reason}  status: pending|approved|rejected
+  users:       [],  // {email,name,role,status}          status: active|inactive
+  permissions: [],  // {email,dataset,label,apiKey,paramKey,ttl}
+  logs:        [],  // {timestamp,adminEmail,action,targetEmail,details}
+};
+
+/* Who is performing actions in this session — used when writing Logs rows.
+   Pulls from whatever the real auth.js session actually exposes; falls back
+   to 'unknown' only because that's the same convention your GAS backend
+   already writes into UserLog when it can't resolve a session email. */
+function _currentAdminEmail() {
+  return (window._ap2CurrentAdmin && window._ap2CurrentAdmin.email)
+      || (window.ap_session && window.ap_session.email)
+      || (window.Auth && typeof window.Auth.getCurrentUser === 'function' && window.Auth.getCurrentUser()?.email)
+      || 'unknown';
+}
+
+let _cacheReady = false;
+
+/* Module catalogue is derived entirely from the Permissions cache at runtime —
+   see _buildDatasets() below. Nothing here is hardcoded: whatever unique
+   Dataset values exist across ALL users' Permissions rows becomes a toggle,
+   so a brand-new dataset granted to anyone shows up automatically for every
+   user's profile/approve view (ON if they have that row, OFF if not).
+   CATEGORY_ORDER / byCategory grouping is likewise built from whatever
+   categories are actually present — currently a single 'Modules' bucket,
+   since the Permissions sheet has no Category column. Add a Category column
+   to the sheet later and this will group by it automatically. */
+let CATEGORY_ORDER = ['Modules'];
+let _datasets = [];
+
+/* User-friendly TTL options — UI shows the label, backend/storage only ever sees ms. */
+const TTL_OPTIONS = [
+  { ms: 300000,    label: '5 Minutes' },
+  { ms: 900000,    label: '15 Minutes' },
+  { ms: 1800000,   label: '30 Minutes' },
+  { ms: 3600000,   label: '1 Hour' },
+  { ms: 21600000,  label: '6 Hours' },
+  { ms: 43200000,  label: '12 Hours' },
+  { ms: 86400000,  label: '24 Hours' },
+];
+function _msToLabel(ms) {
+  ms = Number(ms) || 0;
+  const f = TTL_OPTIONS.find(o => o.ms === ms);
+  if (f) return f.label;
+  const mins = Math.round(ms / 60000);
+  return mins > 0 ? `${mins} Minutes` : '—';
+}
+function _ttlSelectOptions(selectedMs) {
+  const sel = Number(selectedMs) || 900000;
+  let opts = TTL_OPTIONS.map(o => `<option value="${o.ms}" ${o.ms === sel ? 'selected' : ''}>${o.label}</option>`).join('');
+  if (!TTL_OPTIONS.some(o => o.ms === sel)) {
+    opts += `<option value="${sel}" selected>${_msToLabel(sel)}</option>`;
+  }
+  return opts;
+}
+
+/* Colour palette for avatars */
+const AV_FG = ['#58a6ff','#3fb950','#e3b341','#d2a8ff','#ffa198','#22d3ee'];
+const AV_BG = ['rgba(31,111,235,.2)','rgba(26,127,55,.2)','rgba(154,103,0,.2)','rgba(110,64,201,.2)','rgba(191,69,66,.2)','rgba(14,116,144,.2)'];
+
+function _avatarColors(name) {
+  const i = (name || '?').charCodeAt(0) % AV_FG.length;
+  return { fg: AV_FG[i], bg: AV_BG[i] };
+}
+function _initials(name) {
+  if (!name) return '?';
+  const p = name.trim().split(/\s+/);
+  return (p[0][0] + (p[1] ? p[1][0] : '')).toUpperCase();
+}
+function _esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* This app's LoginReq/UserLog rows stamp timestamps as a bare 14-digit
+   DDMMYYYYHHMMSS number/string (no separators) — e.g. 18072026021216 means
+   18 Jul 2026, 02:12:16. It comes through as either a JS number or a numeric
+   string depending on how the sheet/IDB cache serialized it, so detect it
+   from the digit pattern before trying anything else. Returns null if the
+   14-digit shape doesn't decode to valid calendar/time components (so an
+   unrelated 14-digit number doesn't get silently misread as a date). */
+function _parseDdmmyyyyhhmmss(raw) {
+  const s = String(raw).trim();
+  const m = /^(\d{2})(\d{2})(\d{4})(\d{2})(\d{2})(\d{2})$/.exec(s);
+  if (!m) return null;
+  const [, dd, mm, yyyy, hh, mi, ss] = m.map(Number);
+  if (mm < 1 || mm > 12 || dd < 1 || dd > 31 || hh > 23 || mi > 59 || ss > 59) return null;
+  const d = new Date(yyyy, mm - 1, dd, hh, mi, ss);
+  // Guard against e.g. 31 Feb rolling over into March — reject anything the
+  // Date constructor had to "correct".
+  if (d.getFullYear() !== yyyy || d.getMonth() !== mm - 1 || d.getDate() !== dd) return null;
+  return d;
+}
+
+/* Shared parser: turns ANY raw timestamp — this app's DDMMYYYYHHMMSS format,
+   an ISO string from the sheet, a raw Date object, an Excel/Sheets date
+   serial number, an epoch-ms number, or a locale string from
+   new Date().toLocaleString() — into a real Date object, or null if it
+   truly can't be parsed. */
+function _parseDate(raw) {
+  if (raw === undefined || raw === null || raw === '') return null;
+
+  const ddmmyyyy = _parseDdmmyyyyhhmmss(raw);
+  if (ddmmyyyy) return ddmmyyyy;
+
+  let d = null;
+  if (raw instanceof Date) {
+    d = raw;
+  } else if (typeof raw === 'number') {
+    // Sheets/Excel serial (days since 1899-12-30) vs. an epoch-ms timestamp
+    d = raw > 1e11 ? new Date(raw) : new Date(Date.UTC(1899, 11, 30) + raw * 86400000);
+  } else {
+    const s = String(raw).trim();
+    const parsed = new Date(s);
+    d = isNaN(parsed.getTime()) ? null : parsed;
+  }
+  return (!d || isNaN(d.getTime())) ? null : d;
+}
+
+/* { date, time } display parts built on top of _parseDate — used by the
+   Timestamp column formatters below. */
+function _parseDateTimeParts(raw) {
+  const d = _parseDate(raw);
+  if (!d) return null;
+  return {
+    date: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    time: d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+  };
+}
+
+/* Single-line "17 Jul 2026 02:23 PM" — used wherever a plain string is
+   needed (modal fields, etc). Falls back to the raw value if unparseable. */
+function _fmtDateTime(raw) {
+  const p = _parseDateTimeParts(raw);
+  if (!p) return (raw === undefined || raw === null || raw === '') ? '—' : _esc(raw);
+  return `${p.date} ${p.time}`;
+}
+
+/* Two-line "date over time" markup for Timestamp table columns — date on
+   top, time underneath, clearly organized instead of one long string.
+   Matches upLog.html's Timestamp column exactly. */
+function _fmtDateTimeCell(raw) {
+  const p = _parseDateTimeParts(raw);
+  if (!p) {
+    const fallback = (raw === undefined || raw === null || raw === '') ? '—' : _esc(raw);
+    return `<span>${fallback}</span>`;
+  }
+  return `<div style="display:flex;flex-direction:column;gap:1px;line-height:1.35;">`
+       + `<span style="color:var(--text2);">${p.date}</span>`
+       + `<span style="color:var(--text3);font-size:10.5px;">${p.time}</span>`
+       + `</div>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   GAS POST HELPER — writes only
+   Endpoint contract for your Code.gs:
+     POST action=saveUser              { name, email, role, status, permissions:[{dataset,label,apiKey,paramKey,ttl}] }
+     POST action=updateUser            { name, email, role, status }               ← core fields only
+     POST action=updateUserPermissions { email, added:[{dataset,label,apiKey,paramKey,ttl}], removed:[{dataset}] }
+     POST action=updateRequestStatus   { email, status:'approved'|'rejected', reason? }
+   All responses: { success:true } or { error:'message' }
+═══════════════════════════════════════════════════════ */
+async function _gasPost(action, payload = {}) {
+  if (!GAS_URL) {
+    // No backend wired up yet — behave as a working mock so the flow is fully
+    // clickable/testable. Swap GAS_URL in once Code.gs is deployed and this
+    // branch stops being used automatically.
+    console.info(`[userAdmin] MOCK ${action}`, payload);
+    await new Promise(r => setTimeout(r, 250));
+    return { success: true, mock: true };
+  }
+  // Writes must be authenticated the same way reads are (see dataLayer.js
+  // _fetchFromServer): the backend authorizes based on sessionId + token,
+  // not on anything client-side, so both must ride along on every POST.
+  const creds = window.Auth && window.Auth.getCredentials ? window.Auth.getCredentials() : null;
+  if (!creds || !creds.sessionId || !creds.token) {
+    throw new Error('No valid session — please log in again');
+  }
+
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    // IMPORTANT: do not set Content-Type: application/json here. That header
+    // makes the browser send a CORS preflight (OPTIONS) request first, and
+    // Apps Script web apps don't answer OPTIONS — the whole call gets blocked
+    // with a CORS error before your code even runs. text/plain is a "simple
+    // request" that skips preflight entirely. doPost() still reads the raw
+    // body via e.postData.contents and JSON.parses it, so nothing on the
+    // Code.gs side needs to change.
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action, sessionId: creds.sessionId, token: creds.token, ...payload }),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  if (data.status === 'error') throw new Error(data.msg || 'Unknown backend error');
+  return data;
+}
+
+/* ═══════════════════════════════════════════════════════
+   LOAD DATA — IDB only, same as allEmp.html
+═══════════════════════════════════════════════════════ */
+function _normStatus(raw, kind) {
+  const s = (raw || '').toString().toLowerCase().trim();
+  if (kind === 'request') {
+    if (!s || s === 'pending') return 'pending';
+    if (s === 'approved' || s === 'active') return 'approved'; // 'active' kept as legacy alias
+    if (s === 'rejected') return 'rejected';
+    return 'pending';
+  }
+  if (kind === 'user') {
+    return s === 'inactive' ? 'inactive' : 'active';
+  }
+  return s;
+}
+
+function _normaliseState(data) {
+  function _norm(r, map) {
+    if (Array.isArray(r)) return map(r);
+    const out = {};
+    for (const [k, v] of Object.entries(r)) out[k.toLowerCase()] = v;
+    if (out.apikey     !== undefined) { out.apiKey     = out.apikey;     delete out.apikey;     }
+    if (out.paramkey   !== undefined) { out.paramKey   = out.paramkey;   delete out.paramkey;   }
+    if (out['ttl(ms)'] !== undefined) { out.ttl        = out['ttl(ms)']; delete out['ttl(ms)']; }
+    if (out.adminemail !== undefined) { out.adminEmail = out.adminemail; delete out.adminemail; }
+    if (out.targetemail !== undefined) { out.targetEmail = out.targetemail; delete out.targetemail; }
+    if (out.ttl        !== undefined) out.ttl = Number(out.ttl) || 0;
+    return out;
+  }
+
+  _state.loginReqs = (data.LoginReq || []).map(r => {
+    const n = _norm(r, a => ({ timestamp: a[0], email: a[1], status: a[2], reason: a[3] }));
+    n.status = _normStatus(n.status, 'request');
+    n.reason = n.reason || '';
+    return n;
+  });
+  _state.users = (data.Users || []).map(r => {
+    const n = _norm(r, a => ({ email: a[0], name: a[1], role: a[2], status: a[3] }));
+    n.status = _normStatus(n.status, 'user');
+    return n;
+  });
+  _state.permissions = (data.Permissions || []).map(r =>
+    _norm(r, a => ({ email: a[0], dataset: a[1], label: a[2], apiKey: a[3], paramKey: a[4], ttl: Number(a[5]) }))
+  );
+  _state.logs = (data.UserLog || data.Logs || []).map(r =>
+    _norm(r, a => ({ timestamp: a[0], adminEmail: a[1], action: a[2], targetEmail: a[3], details: a[4] }))
+  );
+  _buildDatasets();
+}
+
+/* Build the full module/toggle catalogue purely from what's actually present
+   in the Permissions cache — the union of every unique Dataset value across
+   every user's rows. No dataset key, label, or category is hardcoded here.
+   A user who has never been granted a given dataset still gets a toggle for
+   it (OFF), because the row exists for *some* other user in the sheet. */
+function _buildDatasets() {
+  const byKey = {};
+  const order = [];
+  for (const row of _state.permissions) {
+    const key = row.dataset;
+    if (!key) continue;
+    if (!byKey[key]) {
+      order.push(key);
+      byKey[key] = {
+        key,
+        label:    row.label    || key,
+        category: row.category || 'Modules', // uses a Category column if the sheet ever adds one
+        apiKey:   row.apiKey   || '',
+        paramKey: row.paramKey || 'type',
+        ttl:      Number(row.ttl) || 900000,
+      };
+    } else {
+      // Fill in anything missing from later rows (e.g. one user's row has a
+      // label the others lack), without overwriting values already found.
+      const d = byKey[key];
+      if (!row.category) {/* no-op */} else if (d.category === 'Modules') d.category = row.category;
+      d.label    = d.label    || row.label;
+      d.apiKey   = d.apiKey   || row.apiKey;
+      d.paramKey = d.paramKey || row.paramKey;
+      d.ttl      = d.ttl      || Number(row.ttl) || d.ttl;
+    }
+  }
+  _datasets = order.map(k => byKey[k]);
+  CATEGORY_ORDER = [...new Set(_datasets.map(d => d.category))];
+}
+
+/* Used ONLY for the very first paint — nothing is on screen yet, so a
+   brief skeleton here is fine (there's nothing to blink relative to). */
+async function loadAll() {
+  const alreadyHaveData = _cacheReady;
+
+  // Only show skeletons if the screen is genuinely empty. If the parent's
+  // push already rendered good data (a faster path than this IndexedDB
+  // read), don't blink it away with a loading state.
+  if (!alreadyHaveData) _renderAllSkeletons();
+
+  if (await _tryApplyCache()) return;
+
+  // First read came back empty. This page's script re-runs from scratch
+  // every time it's re-mounted (e.g. switching to another portal tab and
+  // back), which means this exact race replays every single time: the
+  // cache can still be a moment away from being (re)written when our very
+  // first read fires. A single empty read here is NOT proof there's no
+  // data — ditto the 2-strike guard _applyFromIDB() already uses for the
+  // same reason. So: keep the skeleton up and retry a few times instead
+  // of instantly flashing "no cache" over data that's about to arrive.
+  for (let attempt = 0; attempt < 6; attempt++) {
+    await new Promise(r => setTimeout(r, 300 + attempt * 200));
+    if (_cacheReady) return; // arrived via parent postMessage or cacheWatcher meanwhile
+    if (await _tryApplyCache()) return;
+  }
+
+  // Checked LIVE here — not the alreadyHaveData snapshot taken before the
+  // retries — because the parent's postMessage reply can set _cacheReady
+  // true at any point while we were retrying.
+  if (!_cacheReady) _showNoCacheNotice();
+}
+
+/* Single read-and-apply attempt, shared by the initial load and its
+   retries. Returns true if it successfully applied real data. */
+async function _tryApplyCache() {
+  try {
+    const data = await _readCache();
+    if (data) {
+      _cacheReady = true;
+      _normaliseState(data);
+      renderLoginReqs();
+      renderHistory();
+      renderUsers();
+      renderPermissionsSheet();
+      renderLogs();
+      return true;
+    }
+  } catch (err) {
+    console.error('[userAdmin] loadAll error:', err);
+  }
+  return false;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SKELETON / EMPTY STATES
+═══════════════════════════════════════════════════════ */
+function _skeletonRows(cols, count = 5) {
+  return Array.from({ length: count }).map(() =>
+    `<tr class="skeleton-row">${Array.from({ length: cols }).map(() =>
+      `<td><div class="skel-bar" style="width:${40 + Math.round(Math.random() * 45)}%;"></div></td>`
+    ).join('')}</tr>`
+  ).join('');
+}
+function _renderAllSkeletons() {
+  const map = { 'loginreq-tbody': 4, 'history-tbody': 5, 'users-tbody': 5, 'perms-tbody': 6, 'logs-tbody': 5 };
+  Object.entries(map).forEach(([id, cols]) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = _skeletonRows(cols);
+  });
+}
+function _showNoCacheNotice() {
+  // No "no data" message — just keep the animated skeleton shimmer showing
+  // instead of falling back to an empty-state notice.
+  _renderAllSkeletons();
+  ['badge-loginreq','badge-history','badge-users'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '—';
+  });
+  ['requests-count','history-count','users-count','perms-count','logs-count'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.textContent = '';
+  });
+  ['requests-pagination','history-pagination','users-pagination','perms-pagination','logs-pagination'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.innerHTML = '';
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   TABLE CONTROLS — search / filter / sort / pagination
+   Generic per-table UI state + helpers reused by all 4 tables.
+═══════════════════════════════════════════════════════ */
+const _ui = {
+  requests: { search: '', sort: { key: 'timestamp', dir: 'desc' }, page: 1, pageSize: 10 },
+  history:  { search: '', status: 'all', sort: { key: 'timestamp', dir: 'desc' }, page: 1, pageSize: 10 },
+  users:    { search: '', status: 'all', sort: { key: 'name', dir: 'asc' }, page: 1, pageSize: 10 },
+  perms:    { search: '', sort: { key: 'email', dir: 'asc' }, page: 1, pageSize: 10 },
+  logs:     { search: '', action: 'all', sort: { key: 'timestamp', dir: 'desc' }, page: 1, pageSize: 10 },
+};
+const _renderers = {}; // table key -> render fn, wired up below
+
+let _searchDebounce = null;
+function _setSearch(tableKey, value) {
+  clearTimeout(_searchDebounce);
+  _searchDebounce = setTimeout(() => {
+    _ui[tableKey].search = value.trim();
+    _ui[tableKey].page = 1;
+    _renderers[tableKey] && _renderers[tableKey]();
+  }, 180);
+}
+function _setFilter(tableKey, field, value) {
+  _ui[tableKey][field] = value;
+  _ui[tableKey].page = 1;
+  _renderers[tableKey] && _renderers[tableKey]();
+}
+function _setStatusFilterBtn(tableKey, value, btnEl) {
+  const group = btnEl.closest('.tt-filter-group');
+  if (group) group.querySelectorAll('.tt-filter-btn').forEach(b => b.classList.toggle('active', b === btnEl));
+  _setFilter(tableKey, 'status', value);
+}
+function _setSort(tableKey, key) {
+  const ui = _ui[tableKey];
+  if (ui.sort.key === key) ui.sort.dir = ui.sort.dir === 'asc' ? 'desc' : 'asc';
+  else { ui.sort.key = key; ui.sort.dir = 'asc'; }
+  ui.page = 1;
+  _renderers[tableKey] && _renderers[tableKey]();
+}
+function _setPage(tableKey, page) {
+  _ui[tableKey].page = page;
+  _renderers[tableKey] && _renderers[tableKey]();
+}
+function _setPageSize(tableKey, size) {
+  _ui[tableKey].pageSize = Number(size);
+  _ui[tableKey].page = 1;
+  _renderers[tableKey] && _renderers[tableKey]();
+}
+
+function _cmp(a, b) {
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  return String(a ?? '').localeCompare(String(b ?? ''));
+}
+
+function _sortRows(rows, sort, getter) {
+  const sorted = [...rows].sort((a, b) => {
+    const r = _cmp(getter(a, sort.key), getter(b, sort.key));
+    return sort.dir === 'asc' ? r : -r;
+  });
+  return sorted;
+}
+
+function _paginate(rows, ui) {
+  const total = rows.length;
+  const pages = Math.max(1, Math.ceil(total / ui.pageSize));
+  if (ui.page > pages) ui.page = pages;
+  const start = (ui.page - 1) * ui.pageSize;
+  return { pageRows: rows.slice(start, start + ui.pageSize), total, start, pages };
+}
+
+function _tabForTable(tableKey) {
+  return { requests: 'loginreq', history: 'history', users: 'users', perms: 'permissions', logs: 'logs' }[tableKey];
+}
+function _markSortHeaders(tableKey) {
+  const tabId = 'tab-' + _tabForTable(tableKey);
+  const ui = _ui[tableKey];
+  document.querySelectorAll(`#${tabId} .th-sort`).forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    if (th.dataset.key === ui.sort.key) th.classList.add(ui.sort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+  });
+}
+
+function _renderPaginationBar(tableKey, total, ui) {
+  const el = document.getElementById(tableKey + '-pagination');
+  if (!el) return;
+  const pages = Math.max(1, Math.ceil(total / ui.pageSize));
+  const start = total === 0 ? 0 : (ui.page - 1) * ui.pageSize + 1;
+  const end = Math.min(total, ui.page * ui.pageSize);
+  el.innerHTML = `
+    <span class="pg-info">${total === 0 ? 'No records' : `Showing ${start}–${end} of ${total}`}</span>
+    <div class="pg-controls">
+      <div class="pg-size">
+        <select onchange="_setPageSize('${tableKey}', this.value)">
+          ${[10, 25, 50].map(n => `<option value="${n}" ${ui.pageSize === n ? 'selected' : ''}>${n} / page</option>`).join('')}
+        </select>
+      </div>
+      <button class="pg-btn" onclick="_setPage('${tableKey}', ${ui.page - 1})" ${ui.page <= 1 ? 'disabled' : ''}><i class="ti ti-chevron-left"></i></button>
+      <span class="pg-pagenum">${ui.page} / ${pages}</span>
+      <button class="pg-btn" onclick="_setPage('${tableKey}', ${ui.page + 1})" ${ui.page >= pages ? 'disabled' : ''}><i class="ti ti-chevron-right"></i></button>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER: REQUESTS PORTAL (pending only)
+═══════════════════════════════════════════════════════ */
+/* Pull additional "should be pending" candidates out of UserLog: anyone
+   denied login (Action: 'Login Denied - Access Requested') with no
+   matching Users row at all. (Existing users who are inactive are a
+   separate case — see _deriveInactiveLoginAttempts below.)
+   These aren't real LoginReq sheet rows, so they're synthesized here
+   purely for display — approve/reject on them still just calls the
+   normal by-email flow. Only the most recent denial per email is kept. */
+function _deriveDeniedAccessRequests() {
+  const latestByEmail = new Map();
+  for (const log of _state.logs) {
+    if (log.action !== 'Login Denied - Access Requested') continue;
+    const email = (log.targetEmail || '').trim().toLowerCase();
+    if (!email) continue;
+    latestByEmail.set(email, log); // later entries overwrite earlier ones
+  }
+
+  const out = [];
+  latestByEmail.forEach((log, email) => {
+    const user = _state.users.find(u => (u.email || '').toLowerCase() === email);
+    if (user) return; // has a Users row → not this category
+    out.push({ timestamp: log.timestamp, email, status: 'pending', reason: '', _synthetic: true });
+  });
+  return out;
+}
+
+/* Anyone who tried to log in and was denied because their Users row is
+   inactive (Action: 'Login Denied - Inactive'), confirmed still inactive
+   in the current Users cache. Shown in the Requests Portal as its own
+   "Inactive" status with Active/Reject actions rather than Approve. */
+function _deriveInactiveLoginAttempts() {
+  const latestByEmail = new Map();
+  for (const log of _state.logs) {
+    if (log.action !== 'Login Denied - Inactive') continue;
+    const email = (log.targetEmail || '').trim().toLowerCase();
+    if (!email) continue;
+    latestByEmail.set(email, log);
+  }
+
+  const out = [];
+  latestByEmail.forEach((log, email) => {
+    const user = _state.users.find(u => (u.email || '').toLowerCase() === email);
+    if (!user || user.status !== 'inactive') return; // must exist AND still be inactive
+    out.push({ timestamp: log.timestamp, email, status: 'inactive', reason: '', _synthetic: true });
+  });
+  return out;
+}
+
+function renderLoginReqs() {
+  const tbody = document.getElementById('loginreq-tbody');
+  if (!tbody) return; // panel not present in this portal build
+  const ui = _ui.requests;
+
+  const pendingReqs = _state.loginReqs.filter(r => r.status === 'pending');
+  const deniedReqs = _deriveDeniedAccessRequests()
+    .filter(d => !pendingReqs.some(r => (r.email || '').toLowerCase() === d.email));
+  const inactiveReqs = _deriveInactiveLoginAttempts()
+    .filter(d => !pendingReqs.some(r => (r.email || '').toLowerCase() === d.email)
+              && !deniedReqs.some(r => r.email === d.email));
+  let rows = pendingReqs.concat(deniedReqs, inactiveReqs);
+  document.getElementById('badge-loginreq').textContent = rows.length || '0';
+  _updateTabBarOverflow();
+  _fillEmailDatalist('requests', rows.map(r => r.email));
+
+  if (ui.search) {
+    const q = ui.search.toLowerCase();
+    rows = rows.filter(r => (r.email || '').toLowerCase().includes(q));
+  }
+  rows = _sortRows(rows, ui.sort, (r, k) => r[k]);
+  const { pageRows, total } = _paginate(rows, ui);
+  document.getElementById('requests-count').textContent = `${total} request${total !== 1 ? 's' : ''}`;
+  _markSortHeaders('requests');
+
+  if (!total) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="ti ti-inbox"></i><span>${_state.loginReqs.length ? 'No matching requests.' : 'No login requests yet.'}</span></div></td></tr>`;
+    _renderPaginationBar('requests', 0, ui);
+    return;
+  }
+
+  tbody.innerHTML = pageRows.map(row => {
+    const ts = row.timestamp || '—';
+    const email = row.email || '—';
+    const isInactiveRow = row.status === 'inactive';
+
+    let statusBadge, actionBtn;
+    if (isInactiveRow) {
+      statusBadge = `<span class="badge red">Inactive</span>`;
+      actionBtn = `<div style="display:flex;gap:6px;justify-content:flex-end;">
+           <button class="tb-btn sm success" title="Activate" onclick="activateInactiveUser('${_esc(email)}')">
+             <i class="ti ti-check"></i> <span class="tb-btn-label">Active</span>
+           </button>
+         </div>`;
+    } else {
+      statusBadge = `<span class="badge gold">Pending</span>`;
+      const alreadyUser = _state.users.some(u => u.email === email && u.status !== 'inactive');
+      actionBtn = alreadyUser
+        ? `<span style="font-size:11.5px;color:var(--text3);font-family:var(--mono);">Already registered</span>`
+        : `<div style="display:flex;gap:6px;justify-content:flex-end;">
+             <button class="tb-btn sm success" title="Approve" onclick="openActivateModal('${_esc(email)}','${_esc(ts)}')">
+               <i class="ti ti-check"></i> <span class="tb-btn-label">Approve</span>
+             </button>
+             <button class="tb-btn sm danger" title="Reject" onclick="openRejectModal('${_esc(email)}')">
+               <i class="ti ti-x"></i> <span class="tb-btn-label">Reject</span>
+             </button>
+           </div>`;
+    }
+    return `<tr>
+      <td data-label="Timestamp" style="font-family:var(--mono);font-size:11.5px;color:var(--text3);">${_fmtDateTimeCell(ts)}</td>
+      <td data-label="Email" style="font-family:var(--mono);font-size:12px;">${_esc(email)}</td>
+      <td data-label="Status">${statusBadge}</td>
+      <td data-label="Action" class="cell-action">${actionBtn}</td>
+    </tr>`;
+  }).join('');
+  _renderPaginationBar('requests', total, ui);
+}
+_renderers.requests = renderLoginReqs;
+
+/* ═══════════════════════════════════════════════════════
+   EMAIL DROPDOWN (real dropdown, not a live-typing search box)
+   — powers the email filter on the Requests Portal. Ditto upLog.html.
+   Click the trigger to open a panel; a search box pinned to the top
+   of that panel narrows the option list; clicking an option applies
+   the filter and closes the panel.
+═══════════════════════════════════════════════════════ */
+// On touch devices, autofocusing the search box pops the on-screen
+// keyboard the instant the dropdown opens, shrinking the viewport —
+// same guard as upLog.html, so behavior matches across the app.
+const _isCoarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+const _combo = {
+  requests: { emails: [], selected: '' },
+  users:    { emails: [], selected: '' },
+  perms:    { emails: [], selected: '' },
+};
+
+/* Basic email shape check — used to keep the dropdown to real addresses only. */
+const _EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/* Called from each renderer with the raw set of email-ish values found in
+   that table's data (may include duplicates). Dedupes, drops anything that
+   isn't a real email address, and sorts. The panel itself is only
+   (re)built when it's open, so this never fights with what the person is
+   currently doing in the field. */
+function _fillEmailDatalist(comboKey, emails) {
+  const trigger = document.getElementById(`${comboKey}-email-trigger`);
+  if (!trigger) return; // panel not present in this portal build
+  const seen = new Set();
+  const unique = [];
+  emails.filter(Boolean).forEach(raw => {
+    const trimmed = String(raw).trim();
+    if (!_EMAIL_RE.test(trimmed)) return;
+    const norm = trimmed.toLowerCase(); // fold case so "User@x.com" / "user@x.com" collapse to one entry
+    if (seen.has(norm)) return;
+    seen.add(norm);
+    unique.push(norm);
+  });
+  _combo[comboKey].emails = unique.sort((a, b) => a.localeCompare(b));
+  const wrap = document.getElementById(`${comboKey}-email-combo`);
+  if (wrap && wrap.classList.contains('open')) _comboRenderOptions(comboKey);
+}
+
+function _comboRenderOptions(key) {
+  const optionsEl = document.getElementById(`${key}-email-options`);
+  const searchEl = document.getElementById(`${key}-email-search`);
+  if (!optionsEl) return;
+  const q = (searchEl ? searchEl.value : '').trim().toLowerCase();
+  const matches = q ? _combo[key].emails.filter(e => e.toLowerCase().includes(q)) : _combo[key].emails;
+  const selected = _combo[key].selected;
+
+  let html = `<div class="combo-option combo-clear ${selected ? '' : 'selected'}" onclick="_comboSelect('${key}','')"><i class="ti ti-list"></i> All emails</div>`;
+  if (!matches.length) {
+    html += `<div class="combo-empty">No matching emails</div>`;
+  } else {
+    html += matches.map(e =>
+      `<div class="combo-option ${e === selected ? 'selected' : ''}" onclick="_comboSelect('${key}','${_esc(e).replace(/'/g, "\\'")}')">${_esc(e)}</div>`
+    ).join('');
+  }
+  optionsEl.innerHTML = html;
+}
+
+function _comboUpdateLabel(key) {
+  const label = document.getElementById(`${key}-email-label`);
+  const trigger = document.getElementById(`${key}-email-trigger`);
+  const wrap = document.getElementById(`${key}-email-combo`);
+  if (!label) return;
+  const selected = _combo[key].selected;
+  label.textContent = selected || 'All emails';
+  label.classList.toggle('placeholder', !selected);
+  if (trigger) trigger.title = selected || 'All emails';
+  if (wrap) wrap.classList.toggle('email-active', !!selected);
+}
+
+/* preventScroll on the search input's focus() below: the panel is
+   position:fixed, already fully on-screen the instant it opens, but
+   focusing an input still makes some browsers "scroll it into view" as
+   if it might not be — since nothing actually needs to move, that
+   scroll snaps back immediately and reads as a quick vertical-scrollbar
+   blink right where the toolbar sits. preventScroll skips that step. */
+function _comboToggle(key) {
+  const wrap = document.getElementById(`${key}-email-combo`);
+  if (!wrap) return;
+  if (wrap.classList.contains('open')) { _comboClose(key); return; }
+  document.querySelectorAll('.combo.open').forEach(w => w.classList.remove('open'));
+  wrap.classList.add('open');
+  _comboPositionPanel(key);
+  const searchEl = document.getElementById(`${key}-email-search`);
+  if (searchEl) searchEl.value = '';
+  _comboRenderOptions(key);
+  if (searchEl && !_isCoarsePointer) setTimeout(() => searchEl.focus({ preventScroll: true }), 0);
+}
+
+/* Drops the panel below the WHOLE .tab-bar row (tabs + toolbar), not just
+   below the trigger button. Computed in real screen pixels via
+   getBoundingClientRect, so at any viewport width the panel opens
+   underneath every button in the row instead of ever covering one —
+   the tab buttons stay visible and clickable while it's open. */
+function _comboPositionPanel(key) {
+  const panel = document.getElementById(`${key}-email-panel`);
+  const trigger = document.getElementById(`${key}-email-trigger`);
+  const tabBar = document.querySelector('.tab-bar');
+  if (!panel || !trigger || !tabBar) return;
+  const barRect = tabBar.getBoundingClientRect();
+  const trigRect = trigger.getBoundingClientRect();
+  const margin = 12;
+  const width = Math.min(300, window.innerWidth - margin * 2);
+  let left = trigRect.right - width; // right-align under the trigger by default
+  left = Math.max(margin, Math.min(left, window.innerWidth - width - margin));
+  panel.style.position = 'fixed';
+  panel.style.top = Math.round(barRect.bottom + 6) + 'px';
+  panel.style.left = Math.round(left) + 'px';
+  panel.style.right = 'auto';
+  panel.style.width = Math.round(width) + 'px';
+}
+
+function _comboClose(key) {
+  const wrap = document.getElementById(`${key}-email-combo`);
+  if (wrap) wrap.classList.remove('open');
+}
+
+/* Typing in the panel's own search box only narrows the visible option
+   list — it does NOT touch the table filter until an option is clicked. */
+function _comboFilter(key) {
+  _comboRenderOptions(key);
+}
+
+function _comboSelect(key, email) {
+  _combo[key].selected = email;
+  _comboUpdateLabel(key);
+  _comboClose(key);
+  _setSearch(key, email);
+}
+
+// Close any open dropdown panel when clicking outside it.
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.combo.open').forEach(wrap => {
+    if (!wrap.contains(e.target)) wrap.classList.remove('open');
+  });
+});
+// Escape closes the currently open panel too.
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.querySelectorAll('.combo.open').forEach(w => w.classList.remove('open'));
+});
+// Resize (e.g. device rotation) invalidates the computed fixed position — close rather than leave it stale.
+// IMPORTANT: on mobile, focusing the panel's search input opens the on-screen
+// keyboard, which shrinks the viewport and fires this same 'resize' event.
+// A width-agnostic listener was closing the panel the instant it opened —
+// looked like a blink and made the dropdown seem broken/unclickable on
+// phones. A real rotation/resize always changes the WIDTH; the keyboard
+// only changes height, so we ignore height-only resizes here.
+let _comboViewportWidth = window.innerWidth;
+window.addEventListener('resize', () => {
+  if (window.innerWidth === _comboViewportWidth) return; // keyboard open/close, not a real resize
+  _comboViewportWidth = window.innerWidth;
+  document.querySelectorAll('.combo.open').forEach(w => w.classList.remove('open'));
+});
+
+/* Toggles a fade hint on the tab strip only when it actually has more
+   tabs than fit — an always-on fade would visually clip the last tab
+   even when there's nothing to scroll to. */
+function _updateTabBarOverflow() {
+  document.querySelectorAll('.tab-bar-tabs, .tt-panel').forEach(el => {
+    el.classList.toggle('has-overflow', el.scrollWidth > el.clientWidth + 1);
+  });
+}
+window.addEventListener('resize', _updateTabBarOverflow);
+document.querySelectorAll('.tab-bar-tabs, .tt-panel').forEach(el => el.addEventListener('scroll', () => {
+  el.classList.toggle('has-overflow', Math.ceil(el.scrollLeft) + el.clientWidth < el.scrollWidth - 1);
+}));
+// Toolbar content (search width, filter buttons) can change size after a
+// tab switch or a re-render — re-check overflow whenever either happens,
+// not just on load/resize/scroll.
+const _origSwitchTab = window.switchTab;
+if (typeof _origSwitchTab === 'function') {
+  window.switchTab = function (...args) {
+    const result = _origSwitchTab.apply(this, args);
+    setTimeout(_updateTabBarOverflow, 0);
+    return result;
+  };
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER: REQUEST HISTORY (approved + rejected, permanent)
+═══════════════════════════════════════════════════════ */
+function renderHistory() {
+  const tbody = document.getElementById('history-tbody');
+  if (!tbody) return; // panel not present in this portal build
+  const ui = _ui.history;
+
+  let rows = _state.loginReqs.filter(r => r.status === 'approved' || r.status === 'rejected');
+  document.getElementById('badge-history').textContent = rows.length || '0';
+
+  if (ui.status !== 'all') rows = rows.filter(r => r.status === ui.status);
+  if (ui.search) {
+    const q = ui.search.toLowerCase();
+    rows = rows.filter(r => (r.email || '').toLowerCase().includes(q));
+  }
+  rows = _sortRows(rows, ui.sort, (r, k) => r[k]);
+  const { pageRows, total } = _paginate(rows, ui);
+  document.getElementById('history-count').textContent = `${total} record${total !== 1 ? 's' : ''}`;
+  _markSortHeaders('history');
+
+  if (!total) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ti ti-history"></i><span>No history yet — approved and rejected requests will appear here permanently.</span></div></td></tr>`;
+    _renderPaginationBar('history', 0, ui);
+    return;
+  }
+
+  tbody.innerHTML = pageRows.map(row => {
+    const ts = row.timestamp || '—';
+    const email = row.email || '—';
+    const isApproved = row.status === 'approved';
+    const badge = isApproved ? `<span class="badge green">Approved</span>` : `<span class="badge red">Rejected</span>`;
+    const reason = isApproved ? `<span style="color:var(--text3);">—</span>` : `<span class="reason-note" title="${_esc(row.reason)}">${_esc(row.reason || '—')}</span>`;
+    const userExists = _state.users.some(u => u.email === email);
+    const action = isApproved && userExists
+      ? `<button class="tb-btn sm" title="View Profile" onclick="switchTab('tab-users'); openProfileDrawer('${_esc(email)}')"><i class="ti ti-user-circle"></i> <span class="tb-btn-label">View Profile</span></button>`
+      : `<span style="color:var(--text3);font-size:11.5px;">—</span>`;
+    return `<tr>
+      <td data-label="Timestamp" style="font-family:var(--mono);font-size:11.5px;color:var(--text3);">${_fmtDateTimeCell(ts)}</td>
+      <td data-label="Email" style="font-family:var(--mono);font-size:12px;">${_esc(email)}</td>
+      <td data-label="Status">${badge}</td>
+      <td data-label="Reason">${reason}</td>
+      <td data-label="Action" class="cell-action">${action}</td>
+    </tr>`;
+  }).join('');
+  _renderPaginationBar('history', total, ui);
+}
+_renderers.history = renderHistory;
+
+/* ═══════════════════════════════════════════════════════
+   RENDER: USERS TABLE
+═══════════════════════════════════════════════════════ */
+function _dsCount(email) { return _state.permissions.filter(p => p.email === email).length; }
+
+function renderUsers() {
+  const tbody = document.getElementById('users-tbody');
+  if (!tbody) return; // panel not present in this portal build
+  const ui = _ui.users;
+
+  let rows = _state.users.map(u => ({ ...u, dsCnt: _dsCount(u.email) }));
+  document.getElementById('badge-users').textContent = rows.length || '0';
+  _updateTabBarOverflow();
+  _fillEmailDatalist('users', rows.map(u => u.email));
+
+  if (ui.status !== 'all') rows = rows.filter(u => u.status === ui.status);
+  if (ui.search) {
+    const q = ui.search.toLowerCase();
+    rows = rows.filter(u => (u.email || '').toLowerCase().includes(q));
+  }
+  rows = _sortRows(rows, ui.sort, (r, k) => r[k]);
+  const { pageRows, total } = _paginate(rows, ui);
+  document.getElementById('users-count').textContent = `${total} user${total !== 1 ? 's' : ''}`;
+  _markSortHeaders('users');
+
+  if (!total) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ti ti-users"></i><span>${_state.users.length ? 'No matching users.' : 'No users registered yet.'}</span></div></td></tr>`;
+    _renderPaginationBar('users', 0, ui);
+    return;
+  }
+
+  tbody.innerHTML = pageRows.map(row => {
+    const email = row.email || '';
+    const name = row.name || email;
+    const role = row.role || '—';
+    const status = row.status;
+    const initials = _initials(name);
+    const av = _avatarColors(name);
+    const statusBadge = status === 'active' ? `<span class="badge green">Active</span>` : `<span class="badge red">Inactive</span>`;
+    const roleBadge = _roleBadge(role);
+
+    return `<tr>
+      <td class="cell-user">
+        <div class="user-cell">
+          <div class="avatar" style="background:${av.bg};color:${av.fg};">${initials}</div>
+          <div>
+            <div class="uname">${_esc(name)}</div>
+            <div class="uemail">${_esc(email)}</div>
+          </div>
+        </div>
+      </td>
+      <td data-label="Role">${roleBadge}</td>
+      <td data-label="Status">${statusBadge}</td>
+      <td data-label="Datasets">
+        <span>
+          <span style="font-family:var(--mono);font-size:12px;color:var(--text2);">${row.dsCnt}</span>
+          <span style="font-size:11px;color:var(--text3);"> module${row.dsCnt !== 1 ? 's' : ''}</span>
+        </span>
+      </td>
+      <td data-label="Actions" class="cell-action">
+        <button class="tb-btn sm primary" onclick="openProfileDrawer('${_esc(email)}')">
+          <i class="ti ti-user-circle"></i> <span class="tb-btn-label">Profile</span>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+  _renderPaginationBar('users', total, ui);
+}
+_renderers.users = renderUsers;
+
+function _roleBadge(role) {
+  const map = { 'Admin': 'purple', 'HR Manager': 'amber', 'Manager': 'blue', 'Staff': 'gray', 'Visitor': 'gray' };
+  const cls = map[role] || 'gray';
+  return `<span class="badge ${cls}">${_esc(role)}</span>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER: PERMISSIONS SHEET TAB
+═══════════════════════════════════════════════════════ */
+function renderPermissionsSheet() {
+  const tbody = document.getElementById('perms-tbody');
+  if (!tbody) return; // panel not present in this portal build
+  const ui = _ui.perms;
+
+  let rows = _state.permissions;
+  _fillEmailDatalist('perms', rows.map(r => r.email));
+  if (ui.search) {
+    const q = ui.search.toLowerCase();
+    rows = rows.filter(r => (r.email || '').toLowerCase().includes(q));
+  }
+  rows = _sortRows(rows, ui.sort, (r, k) => r[k]);
+  const { pageRows, total } = _paginate(rows, ui);
+  document.getElementById('perms-count').textContent = `${total} grant${total !== 1 ? 's' : ''}`;
+  _markSortHeaders('perms');
+
+  if (!total) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="ti ti-lock-access"></i><span>${_state.permissions.length ? 'No matching permissions.' : 'No permissions found.'}</span></div></td></tr>`;
+    _renderPaginationBar('perms', 0, ui);
+    return;
+  }
+
+  tbody.innerHTML = pageRows.map(row => `<tr>
+      <td data-label="Email" style="font-family:var(--mono);font-size:11.5px;">${_esc(row.email)}</td>
+      <td data-label="Dataset" style="font-family:var(--mono);font-size:11.5px;">${_esc(row.dataset)}</td>
+      <td data-label="Label">${_esc(row.label)}</td>
+      <td data-label="ApiKey" style="font-family:var(--mono);font-size:11.5px;">${_esc(row.apiKey)}</td>
+      <td data-label="ParamKey" style="font-family:var(--mono);font-size:11.5px;">${_accessBadges(row.paramKey)}</td>
+      <td data-label="TTL" style="font-family:var(--mono);font-size:11.5px;"><span>${_esc(row.ttl)} <span style="color:var(--text3);">(${_msToLabel(row.ttl)})</span></span></td>
+    </tr>`).join('');
+  _renderPaginationBar('perms', total, ui);
+}
+_renderers.perms = renderPermissionsSheet;
+
+
+/* ═══════════════════════════════════════════════════════
+   RENDER: ACTIVITY LOG
+═══════════════════════════════════════════════════════ */
+function renderLogs() {
+  const tbody = document.getElementById('logs-tbody');
+  if (!tbody) return; // panel not present in this portal build
+  const ui = _ui.logs;
+
+  let rows = [..._state.logs];
+  if (ui.action !== 'all') rows = rows.filter(r => r.action === ui.action);
+  if (ui.search) {
+    const q = ui.search.toLowerCase();
+    rows = rows.filter(r =>
+      (r.adminEmail || '').toLowerCase().includes(q) ||
+      (r.targetEmail || '').toLowerCase().includes(q) ||
+      (r.action || '').toLowerCase().includes(q));
+  }
+  rows = _sortRows(rows, ui.sort, (r, k) => r[k]);
+  const { pageRows, total } = _paginate(rows, ui);
+  document.getElementById('logs-count').textContent = `${total} entr${total !== 1 ? 'ies' : 'y'}`;
+  _markSortHeaders('logs');
+
+  if (!total) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ti ti-list-details"></i><span>${_state.logs.length ? 'No matching log entries.' : 'No activity recorded yet.'}</span></div></td></tr>`;
+    _renderPaginationBar('logs', 0, ui);
+    return;
+  }
+
+  tbody.innerHTML = pageRows.map(row => `<tr>
+      <td data-label="Timestamp" style="font-family:var(--mono);font-size:11.5px;color:var(--text3);">${_fmtDateTimeCell(row.timestamp)}</td>
+      <td data-label="Admin" style="font-family:var(--mono);font-size:11.5px;">${_esc(row.adminEmail)}</td>
+      <td data-label="Action">${_esc(row.action)}</td>
+      <td data-label="Target" style="font-family:var(--mono);font-size:11.5px;">${_esc(row.targetEmail)}</td>
+      <td data-label="Details" style="font-size:12px;color:var(--text2);">${_esc(row.details || '—')}</td>
+    </tr>`).join('');
+  _renderPaginationBar('logs', total, ui);
+}
+_renderers.logs = renderLogs;
+
+/* Record one action, both locally (instant UI feedback) and via the backend
+   (updateRequestStatus/saveUser/etc already write their own Logs row server-side —
+   see Code.gs. This local push just means you don't have to wait for a reload
+   to see it appear in the Activity Log tab). */
+function _logLocal(action, targetEmail, details) {
+  _state.logs.unshift({
+    timestamp: new Date().toLocaleString(),
+    adminEmail: _currentAdminEmail(),
+    action,
+    targetEmail,
+    details: details || '',
+  });
+  renderLogs();
+}
+
+/* ═══════════════════════════════════════════════════════
+   ACCESS BITS — "1|1|1" (view|add|editDelete) stored in the
+   Permissions sheet's ParamKey column. Pipe-delimited so Sheets
+   doesn't auto-format it as a date the way "1-1-1" did.
+═══════════════════════════════════════════════════════ */
+function _parseAccessStr(raw) {
+  const s = String(raw == null ? '' : raw).trim();
+  if (s) {
+    const parts = s.includes('|') ? s.split('|') : (s.includes('-') ? s.split('-') : null);
+    if (parts && parts.length === 3) {
+      return {
+        view       : parts[0].trim() === '1',
+        add        : parts[1].trim() === '1',
+        editDelete : parts[2].trim() === '1',
+      };
+    }
+  }
+  // Empty or legacy non-bit value (e.g. old "type"/"action") — default to view-only
+  // rather than silently granting nothing, so a freshly-toggled-on card is usable.
+  return { view: true, add: false, editDelete: false };
+}
+
+function _accessStrFromBits(view, add, editDelete) {
+  return `${view ? '1' : '0'}|${add ? '1' : '0'}|${editDelete ? '1' : '0'}`;
+}
+
+function _accessBadges(raw) {
+  const a = _parseAccessStr(raw);
+  return `<span class="vae-badges">
+    <span class="vae-badge ${a.view ? 'on' : ''}" title="View">V</span>
+    <span class="vae-badge ${a.add ? 'on' : ''}" title="Add">A</span>
+    <span class="vae-badge ${a.editDelete ? 'on' : ''}" title="Edit / Delete">E</span>
+  </span>`;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PERMISSION CARDS BUILDER — grouped by category
+   Shared by the Approve modal and the Profile drawer.
+   container: DOM element to inject grouped sections into
+   email: '__new__' for a brand-new user (nothing granted yet), else look up existing grants
+═══════════════════════════════════════════════════════ */
+function _buildPermGroups(container, email) {
+  const userPerms = _state.permissions.filter(p => p.email === email);
+
+  const byCategory = {};
+  CATEGORY_ORDER.forEach(c => byCategory[c] = []);
+  _datasets.forEach(ds => { (byCategory[ds.category] || (byCategory[ds.category] = [])).push(ds); });
+
+  container.innerHTML = CATEGORY_ORDER.filter(cat => byCategory[cat] && byCategory[cat].length).map(cat => {
+    const cards = byCategory[cat].map(ds => {
+      const existing = userPerms.find(p => p.dataset === ds.key);
+      const isOn = !!existing;
+      const apiKey   = existing ? (existing.apiKey   || ds.apiKey)   : ds.apiKey;
+      const paramKey = existing ? (existing.paramKey || ds.paramKey) : ds.paramKey;
+      const ttl      = existing ? (existing.ttl      || ds.ttl)      : ds.ttl;
+      // Existing grant → decode its real bits. Freshly toggled-on for the
+      // first time → always start view-only; add/editDelete must be
+      // opted into explicitly rather than inherited from the catalogue
+      // default (which may reflect some other user's fuller grant).
+      const access = existing ? _parseAccessStr(paramKey) : { view: true, add: false, editDelete: false };
+      const cardId = `pcard-${container.id}-${ds.key.replace(/[^a-z0-9]/gi,'_')}`;
+
+      return `<div class="perm-row ${isOn ? 'on' : ''}" id="${cardId}">
+        <div style="flex:1;min-width:0;">
+          <div class="perm-row-label"><i class="ti ti-database"></i> ${_esc(ds.label)}</div>
+          <div class="perm-row-sub">${_esc(ds.key)}</div>
+          <div class="perm-row-fields" style="${isOn ? '' : 'display:none;'}" id="${cardId}-fields">
+            <div class="perm-field"><input type="text" value="${_esc(apiKey)}" data-field="apiKey" data-dskey="${ds.key}" placeholder="ApiKey" ${isOn ? '' : 'disabled'} /></div>
+            <div class="perm-field">
+              <div class="vae-toggle" data-dskey="${ds.key}">
+                <button type="button" class="vae-btn ${access.view ? 'on' : ''}" data-bit="view" title="View" ${isOn ? '' : 'disabled'} onclick="toggleVaeBit(this)">V</button>
+                <button type="button" class="vae-btn ${access.add ? 'on' : ''}" data-bit="add" title="Add" ${isOn ? '' : 'disabled'} onclick="toggleVaeBit(this)">A</button>
+                <button type="button" class="vae-btn ${access.editDelete ? 'on' : ''}" data-bit="editDelete" title="Edit / Delete" ${isOn ? '' : 'disabled'} onclick="toggleVaeBit(this)">E</button>
+              </div>
+            </div>
+            <div class="perm-field">
+              <select data-field="ttl" data-dskey="${ds.key}" ${isOn ? '' : 'disabled'}>${_ttlSelectOptions(ttl)}</select>
+            </div>
+          </div>
+        </div>
+        <label class="switch-wrap" title="Toggle access">
+          <div class="switch">
+            <input type="checkbox" ${isOn ? 'checked' : ''} data-card="${cardId}" data-dskey="${ds.key}" onchange="togglePermCard(this)" />
+            <span class="slider-sw"></span>
+          </div>
+        </label>
+      </div>`;
+    }).join('');
+
+    return `<div class="perm-category-block">
+      <div class="perm-category-title"><span class="cat-dot"></span> ${_esc(cat)}</div>
+      <div class="perm-card-wrap">${cards}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleVaeBit(btn) {
+  if (btn.disabled) return;
+  btn.classList.toggle('on');
+}
+
+function togglePermCard(chk) {
+  const card   = document.getElementById(chk.dataset.card);
+  const fields = document.getElementById(chk.dataset.card + '-fields');
+  const on = chk.checked;
+  card.classList.toggle('on', on);
+  if (fields) {
+    fields.style.display = on ? '' : 'none';
+    fields.querySelectorAll('input, select, button.vae-btn').forEach(inp => inp.disabled = !on);
+  }
+}
+
+/* Collect currently-ON permissions from a grouped container */
+function _collectPerms(container) {
+  const result = [];
+  container.querySelectorAll('.perm-row').forEach(card => {
+    const chk = card.querySelector('input[type=checkbox]');
+    if (!chk || !chk.checked) return;
+    const dsKey = chk.dataset.dskey;
+    const apiKey = card.querySelector('[data-field="apiKey"]')?.value || '';
+    const view       = card.querySelector('.vae-btn[data-bit="view"]')?.classList.contains('on')       || false;
+    const add        = card.querySelector('.vae-btn[data-bit="add"]')?.classList.contains('on')        || false;
+    const editDelete = card.querySelector('.vae-btn[data-bit="editDelete"]')?.classList.contains('on') || false;
+    const paramKey = _accessStrFromBits(view, add, editDelete);
+    const ttl      = Number(card.querySelector('[data-field="ttl"]')?.value || 900000);
+    const ds = _datasets.find(d => d.key === dsKey);
+    result.push({ dataset: dsKey, label: ds?.label || dsKey, apiKey, paramKey, ttl });
+  });
+  return result;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODAL: APPROVE & REGISTER USER (from a pending request)
+═══════════════════════════════════════════════════════ */
+let _activatingEmail = '';
+let _activatingTs    = '';
+
+function openActivateModal(email, ts) {
+  _activatingEmail = email;
+  _activatingTs    = ts;
+
+  document.getElementById('act-req-email').textContent = email;
+  document.getElementById('act-req-ts').textContent    = _fmtDateTime(ts);
+
+  const initials = _initials(email);
+  const av = _avatarColors(email);
+  const avEl = document.getElementById('act-avatar');
+  avEl.textContent = initials;
+  avEl.style.background = av.bg;
+  avEl.style.color = av.fg;
+
+  document.getElementById('act-name').value   = '';
+  document.getElementById('act-email').value  = email;
+  document.getElementById('act-role').value   = 'Visitor';
+  document.getElementById('act-status').value = 'active';
+
+  _buildPermGroups(document.getElementById('act-perm-grid'), '__new__');
+  openModal('modal-activate');
+}
+
+async function saveActivatedUser() {
+  const name   = document.getElementById('act-name').value.trim();
+  const email  = document.getElementById('act-email').value.trim();
+  const role   = document.getElementById('act-role').value;
+  const status = document.getElementById('act-status').value;
+
+  if (!name)  { toast('Please enter a full name.', 'error'); return; }
+  if (!email) { toast('Email is missing.', 'error'); return; }
+
+  const perms = _collectPerms(document.getElementById('act-perm-grid'));
+
+  const btn = document.getElementById('act-save-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader" style="animation:spin 1s linear infinite;"></i> Saving…';
+
+  try {
+    await _gasPost('saveUser', { name, email, role, status, permissions: perms });
+    await _gasPost('updateRequestStatus', { email, status: 'approved' });
+
+    // Optimistic local update
+    _state.users.push({ email, name, role, status });
+    perms.forEach(p => _state.permissions.push({ email, ...p }));
+    const reqIdx = _state.loginReqs.findIndex(r => r.email === email);
+    if (reqIdx >= 0) _state.loginReqs[reqIdx].status = 'approved';
+
+    renderUsers(); renderLoginReqs(); renderHistory(); renderPermissionsSheet();
+    _logLocal('Request approved', email, `Registered as ${role}${perms.length ? ` with ${perms.length} module${perms.length !== 1 ? 's' : ''}` : ''}`);
+    closeModal('modal-activate');
+    toast(`${name} approved and registered`, 'success');
+  } catch (err) {
+    toast('Save failed: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-device-floppy"></i> Approve & Save';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODAL: REJECT REQUEST
+═══════════════════════════════════════════════════════ */
+let _rejectingEmail = '';
+
+function openRejectModal(email) {
+  _rejectingEmail = email;
+  document.getElementById('rej-email').textContent = email;
+  document.getElementById('rej-reason').value = '';
+  const initials = _initials(email);
+  const av = _avatarColors(email);
+  const avEl = document.getElementById('rej-avatar');
+  avEl.textContent = initials;
+  openModal('modal-reject');
+}
+
+async function confirmReject() {
+  const reason = document.getElementById('rej-reason').value.trim();
+  if (!reason) { toast('Please enter a rejection reason.', 'error'); return; }
+
+  try {
+    await _gasPost('updateRequestStatus', { email: _rejectingEmail, status: 'rejected', reason });
+    const idx = _state.loginReqs.findIndex(r => r.email === _rejectingEmail);
+    if (idx >= 0) { _state.loginReqs[idx].status = 'rejected'; _state.loginReqs[idx].reason = reason; }
+    renderLoginReqs(); renderHistory();
+    _logLocal('Request rejected', _rejectingEmail, reason);
+    closeModal('modal-reject');
+    toast('Request rejected', 'success');
+  } catch (err) {
+    toast('Reject failed: ' + err.message, 'error');
+  }
+}
+
+/* "Active" button on an Inactive-status Requests Portal row — reactivates
+   the existing Users row in place (name/role unchanged) rather than going
+   through the new-registration Approve flow. */
+async function activateInactiveUser(email) {
+  const user = _state.users.find(u => u.email === email);
+  if (!user) { toast('User not found.', 'error'); return; }
+
+  try {
+    await _gasPost('updateUser', { name: user.name, email, role: user.role, status: 'active' });
+    const idx = _state.users.findIndex(u => u.email === email);
+    if (idx >= 0) _state.users[idx].status = 'active';
+    renderUsers(); renderLoginReqs(); renderHistory();
+    _logLocal('User reactivated', email, `Role: ${user.role || '—'}`);
+    toast(`${user.name || email} reactivated`, 'success');
+  } catch (err) {
+    toast('Reactivation failed: ' + err.message, 'error');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   PROFILE DRAWER — right-side sliding panel
+   Shows complete user info + every module (ON/OFF), edits
+   are staged locally and only persisted on Save Changes.
+═══════════════════════════════════════════════════════ */
+let _profileEmail = '';
+let _profileOriginalPerms = []; // snapshot of full {dataset,apiKey,paramKey,ttl} rows granted when drawer opened
+let _profileOriginalUser  = null;
+
+function openProfileDrawer(email) {
+  const user = _state.users.find(u => u.email === email);
+  if (!user) { toast('User not found.', 'error'); return; }
+
+  _profileEmail = email;
+  _profileOriginalUser = { ...user };
+  _profileOriginalPerms = _state.permissions
+    .filter(p => p.email === email)
+    .map(p => ({ dataset: p.dataset, apiKey: p.apiKey, paramKey: p.paramKey, ttl: Number(p.ttl) || 0 }));
+
+  const initials = _initials(user.name);
+  const av = _avatarColors(user.name);
+  document.getElementById('pd-avatar').textContent = initials;
+  document.getElementById('pd-avatar').style.background = av.bg;
+  document.getElementById('pd-avatar').style.color = av.fg;
+  document.getElementById('pd-name').textContent = user.name;
+  document.getElementById('pd-email').textContent = user.email;
+
+  const dsCnt = _dsCount(email);
+  document.getElementById('pd-info-row').innerHTML = `
+    <span class="info-item"><i class="ti ti-mail"></i> <strong>${_esc(user.email)}</strong></span>
+    <span class="info-item"><i class="ti ti-shield"></i> Role: <strong>${_esc(user.role || '—')}</strong></span>
+    <span class="info-item"><i class="ti ti-activity"></i> Status: <strong>${user.status === 'active' ? 'Active' : 'Inactive'}</strong></span>
+    <span class="info-item"><i class="ti ti-database"></i> <strong>${dsCnt}</strong> module${dsCnt !== 1 ? 's' : ''} granted</span>`;
+
+  document.getElementById('pd-name-input').value   = user.name || '';
+  document.getElementById('pd-role-input').value   = user.role || 'Visitor';
+  document.getElementById('pd-status-input').value = user.status || 'active';
+
+  _buildPermGroups(document.getElementById('pd-perm-groups'), email);
+
+  document.getElementById('profile-drawer-backdrop').classList.add('open');
+}
+
+function closeProfileDrawer() {
+  document.getElementById('profile-drawer-backdrop').classList.remove('open');
+}
+
+async function saveProfileChanges() {
+  const email = _profileEmail;
+  const name   = document.getElementById('pd-name-input').value.trim();
+  const role   = document.getElementById('pd-role-input').value;
+  const status = document.getElementById('pd-status-input').value;
+
+  if (!name) { toast('Name cannot be empty.', 'error'); return; }
+
+  const orig = _profileOriginalUser;
+  const coreChanged = orig.name !== name || orig.role !== role || orig.status !== status;
+
+  // Diff permissions: three kinds of change matter —
+  //  - newly enabled datasets            → added
+  //  - newly disabled datasets           → removed
+  //  - still-enabled datasets whose TTL/apiKey/paramKey value was edited → modified
+  const currentPerms = _collectPerms(document.getElementById('pd-perm-groups')); // currently ON
+  const currentKeys  = new Set(currentPerms.map(p => p.dataset));
+  const originalByKey = new Map(_profileOriginalPerms.map(p => [p.dataset, p]));
+  const originalKeys  = new Set(originalByKey.keys());
+
+  const added    = currentPerms.filter(p => !originalKeys.has(p.dataset));
+  const removed  = _profileOriginalPerms.filter(p => !currentKeys.has(p.dataset)).map(({ dataset }) => ({ dataset }));
+  const modified = currentPerms.filter(p => {
+    const before = originalByKey.get(p.dataset);
+    if (!before) return false; // handled by 'added' above
+    return before.apiKey !== p.apiKey || before.paramKey !== p.paramKey || Number(before.ttl) !== Number(p.ttl);
+  });
+
+  if (!coreChanged && !added.length && !removed.length && !modified.length) {
+    toast('No changes to save.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('pd-save-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader" style="animation:spin 1s linear infinite;"></i> Saving…';
+
+  try {
+    if (coreChanged) {
+      await _gasPost('updateUser', { name, email, role, status });
+      const idx = _state.users.findIndex(u => u.email === email);
+      if (idx >= 0) _state.users[idx] = { ...orig, name, role, status };
+    }
+    if (added.length || removed.length || modified.length) {
+      // Backend upserts by the email::dataset composite key, so edited rows
+      // ride along in 'added' — same call, no new endpoint needed.
+      await _gasPost('updateUserPermissions', { email, added: [...added, ...modified], removed });
+      const removedKeys = new Set(removed.map(r => r.dataset));
+      const modifiedKeys = new Set(modified.map(m => m.dataset));
+      _state.permissions = _state.permissions.filter(p =>
+        !(p.email === email && (removedKeys.has(p.dataset) || modifiedKeys.has(p.dataset)))
+      );
+      added.forEach(p => _state.permissions.push({ email, ...p }));
+      modified.forEach(p => _state.permissions.push({ email, ...p }));
+    }
+
+    renderUsers(); renderPermissionsSheet();
+    closeProfileDrawer();
+
+    const parts = [];
+    if (coreChanged) parts.push('details updated');
+    if (added.length) parts.push(`${added.length} module${added.length !== 1 ? 's' : ''} added`);
+    if (removed.length) parts.push(`${removed.length} module${removed.length !== 1 ? 's' : ''} removed`);
+    if (modified.length) parts.push(`${modified.length} module${modified.length !== 1 ? 's' : ''} updated`);
+    if (coreChanged) _logLocal('User details updated', email, `name=${name}, role=${role}, status=${status}`);
+    added.forEach(p => _logLocal('Permission granted', email, `Dataset: ${p.dataset}`));
+    removed.forEach(p => _logLocal('Permission revoked', email, `Dataset: ${p.dataset}`));
+    modified.forEach(p => _logLocal('Permission updated', email, `Dataset: ${p.dataset}, TTL: ${_msToLabel(p.ttl)}`));
+    toast(`${name}: ${parts.join(', ')}`, 'success');
+  } catch (err) {
+    toast('Save failed: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-device-floppy"></i> Save Changes';
+  }
+}
+
+// Close drawer on backdrop click
+document.getElementById('profile-drawer-backdrop').addEventListener('click', e => {
+  if (e.target.id === 'profile-drawer-backdrop') closeProfileDrawer();
+});
+
+/* ═══════════════════════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════════════════════ */
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === id));
+  document.querySelectorAll('.tt-panel').forEach(p => p.classList.toggle('active', p.id === 'tt-' + id));
+  _updateTabBarOverflow();
+}
+
+/* ═══════════════════════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════════════════════ */
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-backdrop').forEach(bd => {
+  bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); });
+});
+
+/* ═══════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════ */
+let _toastTimer;
+function toast(msg, type = 'success') {
+  const el   = document.getElementById('toast');
+  const msgEl = document.getElementById('toast-msg');
+  const icon  = document.getElementById('toast-icon');
+  clearTimeout(_toastTimer);
+  el.className = 'toast';
+  msgEl.textContent = msg;
+  icon.className = type === 'error' ? 'ti ti-circle-x' : 'ti ti-circle-check';
+  requestAnimationFrame(() => el.classList.add('show', type));
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+/* ═══════════ SILENT REFRESH — every update AFTER the first paint goes through here.
+   No skeleton wipe unless data is genuinely gone — so nothing blinks.
+   Subscribed to cacheWatcher.js, which fires this on ANY of:
+     - this page's own fast poll detecting a change or deletion
+     - an instant notifyNow() call from wherever the data was written
+     - a broadcast relayed down from the parent shell (index.html)
+   ════════════════════════════════════════════════════════════════════════ */
+let _emptyReadStreak = 0; // guards against one flaky/transient empty read wiping good data
+async function _applyFromIDB() {
+  try {
+    const data = await _readCache();
+    if (data) {
+      _emptyReadStreak = 0;
+      _cacheReady = true;
+      _normaliseState(data);
+      renderLoginReqs();
+      renderHistory();
+      renderUsers();
+      renderPermissionsSheet();
+      renderLogs();
+    } else if (_cacheReady) {
+      // Don't trust a single empty read — iPad's IndexedDB reads can be
+      // flaky/transient. Only treat it as a genuine deletion after seeing
+      // it twice in a row.
+      _emptyReadStreak++;
+      if (_emptyReadStreak >= 2) {
+        _cacheReady = false;
+        _showNoCacheNotice();
+        _emptyReadStreak = 0;
+      }
+    }
+  } catch (e) {
+    console.warn('[userAdmin] silent refresh error:', e.message);
+  }
+}
+
+try {
+  AP2CacheWatcher.init();
+  AP2CacheWatcher.subscribe(() => { _applyFromIDB(); });
+} catch (e) {
+  console.warn('[userAdmin] cacheWatcher wiring failed, continuing without live updates:', e.message);
+}
+
+/* Listen for messages from parent index.html
+   ── PRIMARY data path on this page: the parent (index.html) already has
+   a working push system that has nothing to do with cacheWatcher.js:
+     - 'ap-cache-preload' : parent proactively pushes ALL cached datasets
+                            the moment they're ready (from its own memory
+                            — no IndexedDB read needed here at all)
+     - 'ap-cache-ready'   : parent's direct reply to our 'ap-cache-request'
+     - 'ap-cache-updated' : parent says something changed — ask it again
+   This sidesteps iPad's IndexedDB flakiness entirely for the common case
+   (page running inside the app). cacheWatcher.js / IndexedDB reads remain
+   as the fallback for when this page is opened standalone (no parent). */
+window.addEventListener('message', (e) => {
+  if (!e.data) return;
+
+  // Parent proactively pushed everything it has — take our slice directly.
+  if (e.data.type === 'ap-cache-preload' && e.data.datasets) {
+    const data = e.data.datasets[_AP2_CACHE_KEY];
+    if (data) {
+      _cacheReady = true;
+      _normaliseState(data);
+      renderLoginReqs();
+      renderHistory();
+      renderUsers();
+      renderPermissionsSheet();
+      renderLogs();
+    }
+  }
+
+  // Parent's direct reply to our own ap-cache-request below.
+  if (e.data.type === 'ap-cache-ready' && e.data.key === _AP2_CACHE_KEY) {
+    const data = e.data.data;
+    if (data) {
+      _cacheReady = true;
+      _normaliseState(data);
+      renderLoginReqs();
+      renderHistory();
+      renderUsers();
+      renderPermissionsSheet();
+      renderLogs();
+    }
+  }
+
+  // Parent says something changed somewhere — ask it for our dataset again.
+  if (e.data.type === 'ap-cache-updated') {
+    try { window.parent.postMessage({ type: 'ap-cache-request', key: _AP2_CACHE_KEY }, '*'); } catch (err) {}
+  }
+
+  // Instant theme sync — parent pushes on every theme change
+  if (e.data.type === 'ap-theme' && e.data.theme) {
+    document.documentElement.setAttribute('data-theme', e.data.theme);
+  }
+});
+
+// Ask the parent for our data right away, in parallel with the IndexedDB
+// read in loadAll(). Whichever answers first wins — if there's no
+// parent (page opened standalone), this simply gets no reply and the
+// IndexedDB path (loadAll / cacheWatcher.js) still works on its own.
+try { window.parent.postMessage({ type: 'ap-cache-request', key: _AP2_CACHE_KEY }, '*'); } catch (e) {}
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', async () => {
+  _updateTabBarOverflow();
+  await loadAll();
+});
+</script>
+</body>
+</html>

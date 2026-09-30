@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Add SIM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<!-- SheetJS for Excel parsing -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root,[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --surface:#21262d;--surface2:#2d333b;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent-dim:rgba(88,166,255,.12);--accent-glow:rgba(88,166,255,.28);
+  --teal:#39d353;--teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341;--amber-dim:rgba(227,179,65,.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7;--purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e;--orange-dim:rgba(240,136,62,.12);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:0 4px 16px rgba(0,0,0,.5);
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#ffffff;--bg3:#e8ecf0;
+  --surface:#ffffff;--surface2:#e2e7ed;
+  --border:#c8d0d9;--border2:#9aa5b1;
+  --text:#0d1117;--text2:#3d454f;--text3:#5a6370;
+  --accent:#0550ae;--accent-dim:rgba(5,80,174,.12);--accent-glow:rgba(5,80,174,.22);
+  --teal:#116329;--teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00;--amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b;--red-dim:rgba(168,17,27,.11);
+  --purple:#6639c8;--purple-dim:rgba(102,57,200,.13);
+  --orange:#953800;--orange-dim:rgba(149,56,0,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.10);
+  --shadow-md:0 4px 16px rgba(0,0,0,.12);
+}
+
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
+
+.page{min-height:100%;padding:20px;overflow-y:auto;}
+@media(max-width:600px){.page{padding:12px;}}
+
+/* Header */
+.page-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.page-header-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:20px;flex-shrink:0;}
+.page-header-title{font-size:16px;font-weight:700;color:var(--text);}
+.page-header-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.page-header-actions{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;}
+.hdr-btn{display:inline-flex;align-items:center;gap:7px;padding:0 14px;height:34px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.hdr-btn i{font-size:15px;flex-shrink:0;}
+.hdr-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.hdr-btn.dl{border-color:var(--teal);color:var(--teal);background:var(--teal-dim);}
+.hdr-btn.dl:hover{filter:brightness(1.1);box-shadow:0 0 8px rgba(57,211,83,.25);}
+.hdr-btn.ul{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);}
+.hdr-btn.ul:hover{filter:brightness(1.1);box-shadow:0 0 8px var(--accent-glow);}
+@media(max-width:540px){.hdr-btn span{display:none;}.hdr-btn{padding:0 10px;width:34px;justify-content:center;}}
+
+/* Form card */
+.form-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-xl);padding:24px;max-width:960px;}
+@media(max-width:600px){.form-card{padding:16px;}}
+
+.form-section-title{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.form-section-title i{font-size:15px;color:var(--accent);}
+
+/* Grid */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px 20px;margin-bottom:24px;}
+@media(max-width:500px){.form-grid{grid-template-columns:1fr;}}
+
+/* Field */
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-size:11.5px;font-weight:600;color:var(--text2);letter-spacing:.02em;}
+.field input,.field select{height:38px;padding:0 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s;appearance:none;-webkit-appearance:none;width:100%;}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.field input::placeholder{color:var(--text3);}
+.field input.invalid{border-color:var(--red);box-shadow:0 0 0 3px var(--red-dim);}
+.field input.valid{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim);}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;}
+.field select option{background:var(--bg2);color:var(--text);}
+
+.field-hint{font-size:11px;color:var(--text3);margin-top:2px;min-height:15px;transition:color .15s;}
+.field-hint.error{color:var(--red);}
+.field-hint.ok{color:var(--teal);}
+
+/* SIM ID display */
+.sim-id-display{height:38px;padding:0 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--accent);font-family:var(--mono);font-size:12px;display:flex;align-items:center;letter-spacing:.06em;user-select:all;}
+
+/* Status pill buttons */
+.status-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px;}
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:0 12px;height:32px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap;}
+.status-pill:hover{border-color:var(--border2);color:var(--text);}
+.status-pill i{font-size:13px;}
+/* unselected tinted states (dim) */
+.status-pill.active-pill   {border-color:rgba(57,211,83,.4);color:var(--text2);}
+.status-pill.inactive-pill {border-color:rgba(227,179,65,.4);color:var(--text2);}
+.status-pill.suspended-pill{border-color:rgba(240,136,62,.4);color:var(--text2);}
+.status-pill.lost-pill     {border-color:rgba(248,81,73,.4);color:var(--text2);}
+/* SELECTED = fully highlighted pill */
+.status-pill.active-pill.selected   {border-color:var(--teal);background:var(--teal-dim);color:var(--teal);box-shadow:0 0 0 3px rgba(57,211,83,.18),0 2px 8px rgba(57,211,83,.22);font-weight:700;}
+.status-pill.inactive-pill.selected {border-color:var(--amber);background:var(--amber-dim);color:var(--amber);box-shadow:0 0 0 3px rgba(227,179,65,.18),0 2px 8px rgba(227,179,65,.22);font-weight:700;}
+.status-pill.suspended-pill.selected{border-color:var(--orange);background:var(--orange-dim);color:var(--orange);box-shadow:0 0 0 3px rgba(240,136,62,.18),0 2px 8px rgba(240,136,62,.22);font-weight:700;}
+.status-pill.lost-pill.selected     {border-color:var(--red);background:var(--red-dim);color:var(--red);box-shadow:0 0 0 3px rgba(248,81,73,.18),0 2px 8px rgba(248,81,73,.22);font-weight:700;}
+
+/* Company pill buttons */
+.company-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px;}
+.company-pill{display:inline-flex;align-items:center;gap:6px;padding:0 14px;height:32px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;}
+.company-pill:hover{border-color:var(--border2);color:var(--text);}
+/* du = green → purple gradient pill when selected */
+.company-pill.du-pill{
+  border-color:var(--purple);
+  background:linear-gradient(135deg,rgba(57,211,83,.15),rgba(163,113,247,.18));
+  color:var(--purple);
+  box-shadow:0 0 0 3px rgba(163,113,247,.18),0 2px 8px rgba(163,113,247,.22);
+  font-weight:700;
+}
+/* e& = red pill when selected */
+.company-pill.eand-pill{
+  border-color:var(--red);
+  background:var(--red-dim);
+  color:var(--red);
+  box-shadow:0 0 0 3px rgba(248,81,73,.18),0 2px 8px rgba(248,81,73,.22);
+  font-weight:700;
+}
+
+/* Actions */
+.form-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:20px;border-top:1px solid var(--border);}
+.tb-btn{display:inline-flex;align-items:center;gap:7px;padding:0 18px;height:36px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.tb-btn i{font-size:15px;}
+.tb-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.tb-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.tb-btn.primary:hover{filter:brightness(1.1);box-shadow:0 0 12px var(--accent-glow);}
+.tb-btn.primary:disabled{opacity:.4;cursor:not-allowed;filter:none;box-shadow:none;}
+.tb-btn.success{background:var(--teal);color:#0d1117;border-color:var(--teal);}
+.tb-btn.success:hover{filter:brightness(1.1);box-shadow:0 0 12px rgba(57,211,83,.35);}
+.tb-btn.success:disabled{opacity:.4;cursor:not-allowed;filter:none;box-shadow:none;}
+.tb-btn.danger{background:var(--red);color:#fff;border-color:var(--red);}
+.tb-btn.danger:hover{filter:brightness(1.1);}
+
+/* Drop zone */
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--radius-xl);padding:36px 24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3);position:relative;}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:var(--accent-dim);}
+.drop-zone i{font-size:36px;color:var(--text3);margin-bottom:10px;display:block;}
+.drop-zone.drag-over i{color:var(--accent);}
+.drop-zone p{color:var(--text2);font-size:13px;margin-bottom:4px;}
+.drop-zone small{color:var(--text3);font-size:11px;}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+
+/* Bulk actions bar */
+.bulk-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0;}
+.bulk-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.stat-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;}
+.stat-badge.total{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent);}
+.stat-badge.valid{background:var(--teal-dim);color:var(--teal);border:1px solid var(--teal);}
+.stat-badge.invalid{background:var(--red-dim);color:var(--red);border:1px solid var(--red);}
+
+/* Preview table */
+.table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border);margin-top:4px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{background:var(--bg3);color:var(--text2);font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap;text-align:left;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--surface);}
+tbody tr.row-invalid{background:rgba(248,81,73,.06);}
+tbody tr.row-valid{background:rgba(57,211,83,.03);}
+tbody td{padding:9px 12px;color:var(--text);vertical-align:middle;}
+tbody td.cell-invalid{color:var(--red);font-weight:500;}
+tbody td.cell-valid{color:var(--text);}
+.row-num{color:var(--text3);font-family:var(--mono);font-size:11px;}
+.val-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;}
+.val-badge.ok{background:var(--teal-dim);color:var(--teal);}
+.val-badge.err{background:var(--red-dim);color:var(--red);}
+.err-tip{font-size:10px;color:var(--red);margin-top:2px;}
+
+/* Progress bar */
+.progress-bar{height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin:12px 0;}
+.progress-fill{height:100%;background:var(--teal);border-radius:4px;transition:width .3s;}
+
+/* Upload log */
+.upload-log{max-height:160px;overflow-y:auto;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-family:var(--mono);font-size:11px;color:var(--text2);margin-top:8px;}
+.log-line{padding:2px 0;line-height:1.5;}
+.log-line.ok{color:var(--teal);}
+.log-line.err{color:var(--red);}
+.log-line.info{color:var(--accent);}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);font-size:13px;font-weight:500;color:var(--text);opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none;z-index:999;max-width:calc(100vw - 40px);}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast i{font-size:17px;flex-shrink:0;}
+.toast.success i{color:var(--teal);}
+.toast.error i{color:var(--red);}
+
+/* Spin animation for save state */
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Draft restore banner */
+.draft-banner{display:none;align-items:center;gap:9px;padding:9px 14px;background:var(--amber-dim);border:1px solid var(--amber);border-radius:var(--radius);margin-bottom:14px;font-size:12px;color:var(--amber);}
+.draft-banner i{font-size:14px;flex-shrink:0;}
+.draft-banner button{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--amber);font-size:12px;text-decoration:underline;font-family:var(--font);}
+
+/* Empty state */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);}
+.empty-state i{font-size:40px;margin-bottom:10px;display:block;opacity:.5;}
+.empty-state p{font-size:13px;}
+
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-icon"><i class="ti ti-sim-card"></i></div>
+    <div>
+      <div class="page-header-title">Register SIM</div>
+      <div class="page-header-sub">Add SIM cards to the fleet — single or bulk</div>
+    </div>
+    <div class="page-header-actions">
+      <button type="button" class="hdr-btn dl" onclick="downloadTemplate()" title="Download Template">
+        <i class="ti ti-file-spreadsheet"></i><span>Download Template</span>
+      </button>
+      <button type="button" class="hdr-btn ul" onclick="document.getElementById('file-input').click();" title="Bulk Upload">
+        <i class="ti ti-table-import"></i><span>Bulk Upload</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ SINGLE ENTRY ══ -->
+  <div id="single-tab">
+    <div class="form-card">
+      <div class="form-section-title">
+        <i class="ti ti-sim-card"></i> SIM Card Information
+      </div>
+
+      <!-- Draft restore banner -->
+      <div class="draft-banner" id="draft-banner">
+        <i class="ti ti-pencil"></i>
+        <span>Unsaved draft restored from your last session.</span>
+        <button onclick="clearDraft();clearForm();">Discard</button>
+      </div>
+
+      <iframe name="hidden_sim_iframe" id="hidden_sim_iframe" style="display:none;"
+        onload="if(window._submitted){setSaveState('done');showToast('SIM registered successfully!','success');clearForm();clearDraft();window._submitted=false;}"></iframe>
+
+      <form id="simForm"
+        action="https://docs.google.com/forms/d/e/1FAIpQLSfHls8BUlIjl1YCoTpKXPo6D2TG-cNvrKc2hF-dK4OKCX8flg/formResponse"
+        method="POST" target="hidden_sim_iframe" onsubmit="return handleSubmit();">
+
+        <input type="hidden" name="entry.601583056" id="sf-sim-id"/>
+        <input type="hidden" name="entry.1355633428" id="sf-status-hidden" value="Active"/>
+
+        <div class="form-grid">
+
+          <!-- SIM ID (first) -->
+          <div class="field">
+            <label>SIM ID <span style="color:var(--text3);font-weight:400;">(auto)</span></label>
+            <div class="sim-id-display" id="sf-sim-id-display">—</div>
+          </div>
+
+          <!-- SIM Number -->
+          <div class="field">
+            <label>SIM Number *</label>
+            <input type="text" name="entry.632107293" id="sf-sim-number"
+              placeholder="971XXXXXXXXX or 0XXXXXXXXX" maxlength="15" autocomplete="off" required/>
+            <div class="field-hint" id="sf-sim-number-hint">Format: 971 + 9 digits or 0 + 9 digits</div>
+          </div>
+
+          <!-- Company pills -->
+          <div class="field">
+            <label>Company *</label>
+            <input type="hidden" name="entry.1017605821" id="sf-company-hidden" value=""/>
+            <div class="company-group" id="sf-company-group">
+              <button type="button" class="company-pill" data-val="du" onclick="selectCompany('du')">
+                <i class="ti ti-building"></i> du
+              </button>
+              <button type="button" class="company-pill" data-val="e&" onclick="selectCompany('e&')">
+                <i class="ti ti-building"></i> e&
+              </button>
+            </div>
+            <div class="field-hint error" id="sf-company-hint" style="display:none;">Please select a company</div>
+          </div>
+
+          <!-- Status pills -->
+          <div class="field">
+            <label>Status *</label>
+            <div class="status-group" id="sf-status-group">
+              <button type="button" class="status-pill active-pill selected" data-val="Active"
+                onclick="selectStatus('Active')">
+                <i class="ti ti-circle-check"></i> Active
+              </button>
+              <button type="button" class="status-pill inactive-pill" data-val="Inactive"
+                onclick="selectStatus('Inactive')">
+                <i class="ti ti-circle-minus"></i> Inactive
+              </button>
+              <button type="button" class="status-pill suspended-pill" data-val="Suspended"
+                onclick="selectStatus('Suspended')">
+                <i class="ti ti-circle-pause"></i> Suspended
+              </button>
+              <button type="button" class="status-pill lost-pill" data-val="Lost"
+                onclick="selectStatus('Lost')">
+                <i class="ti ti-circle-x"></i> Lost
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="tb-btn primary" id="sf-save-btn" disabled>
+            <i class="ti ti-device-floppy"></i> Save SIM
+          </button>
+          <button type="button" class="tb-btn" onclick="clearForm()">
+            <i class="ti ti-refresh"></i> Clear
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div><!-- /.page -->
+
+<div class="toast" id="toast">
+  <i id="toast-icon" class="ti ti-circle-check"></i>
+  <span id="toast-msg">Saved</span>
+</div>
+
+<script>
+'use strict';
+
+/* ─── CONSTANTS ─── */
+const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfHls8BUlIjl1YCoTpKXPo6D2TG-cNvrKc2hF-dK4OKCX8flg/formResponse';
+const ENTRY = {
+  simId:    'entry.601583056',
+  simNum:   'entry.632107293',
+  company:  'entry.1017605821',
+  status:   'entry.1355633428'
+};
+
+const VALID_COMPANIES = ['du','e&'];
+const VALID_STATUSES  = ['active','inactive','suspended','lost'];
+
+/* ─── VALIDATION ─── */
+function validateSimNumber(val) {
+  const v = (val || '').trim();
+  if (/^971\d{9}$/.test(v)) return { valid: true, normalized: v };
+  if (/^0\d{9}$/.test(v))   return { valid: true, normalized: v };
+  return { valid: false };
+}
+function deriveSimId(simNum) {
+  const v = (simNum || '').trim();
+  return v.length >= 9 ? 'SIM-' + v.slice(-9) : '';
+}
+
+/* ─── SINGLE: status pills ─── */
+let selectedStatus  = 'Active';
+let selectedCompany = '';
+
+function selectStatus(val) {
+  selectedStatus = val;
+  document.getElementById('sf-status-hidden').value = val;
+  document.querySelectorAll('#sf-status-group .status-pill').forEach(p => {
+    p.classList.toggle('selected', p.dataset.val === val);
+  });
+  updateSaveBtn();
+  saveDraft();
+}
+
+/* Keep the active/selected state visually distinct from just hover */
+
+/* ─── SINGLE: company pills ─── */
+function selectCompany(val) {
+  selectedCompany = val;
+  document.getElementById('sf-company-hidden').value = val;
+  document.getElementById('sf-company-hint').style.display = 'none';
+  document.querySelectorAll('#sf-company-group .company-pill').forEach(p => {
+    const isPicked = p.dataset.val === val;
+    p.classList.toggle('du-pill',   isPicked && val === 'du');
+    p.classList.toggle('eand-pill', isPicked && val === 'e&');
+    if (!isPicked) { p.classList.remove('du-pill','eand-pill'); }
+  });
+  updateSaveBtn();
+  saveDraft();
+}
+
+/* ─── SINGLE: sim number input ─── */
+const simNumInput  = document.getElementById('sf-sim-number');
+const simIdHidden  = document.getElementById('sf-sim-id');
+const simIdDisplay = document.getElementById('sf-sim-id-display');
+const simNumHint   = document.getElementById('sf-sim-number-hint');
+const saveBtn      = document.getElementById('sf-save-btn');
+
+simNumInput.addEventListener('input', function() {
+  const raw = this.value;
+  const res = validateSimNumber(raw);
+  this.classList.remove('valid','invalid');
+  simNumHint.classList.remove('ok','error');
+  if (!raw) {
+    simNumHint.textContent = 'Format: 971 + 9 digits or 0 + 9 digits';
+    simIdDisplay.textContent = '—'; simIdHidden.value = '';
+  } else if (res.valid) {
+    this.classList.add('valid'); simNumHint.classList.add('ok');
+    simNumHint.textContent = '✓ Valid UAE number';
+    const id = deriveSimId(res.normalized);
+    simIdDisplay.textContent = id; simIdHidden.value = id;
+  } else {
+    this.classList.add('invalid'); simNumHint.classList.add('error');
+    simNumHint.textContent = '✗ Must be 971XXXXXXXXX (12 digits) or 0XXXXXXXXX (10 digits)';
+    simIdDisplay.textContent = '—'; simIdHidden.value = '';
+  }
+  updateSaveBtn();
+  saveDraft();
+});
+
+function updateSaveBtn() {
+  const simValid = validateSimNumber(simNumInput.value).valid;
+  saveBtn.disabled = !(simValid && selectedCompany && selectedStatus);
+}
+
+/* ─── PROFESSIONAL DATA SAVING ─── */
+const DRAFT_KEY = 'adminpro_sim_draft';
+
+function saveDraft() {
+  try {
+    const draft = { simNum: simNumInput.value, company: selectedCompany, status: selectedStatus, ts: Date.now() };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch(e) {}
+}
+
+function restoreDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const draft = JSON.parse(raw);
+    // only restore if < 24h old
+    if (Date.now() - draft.ts > 86400000) { localStorage.removeItem(DRAFT_KEY); return; }
+    if (draft.simNum) {
+      simNumInput.value = draft.simNum;
+      simNumInput.dispatchEvent(new Event('input'));
+    }
+    if (draft.company) selectCompany(draft.company);
+    if (draft.status)  selectStatus(draft.status);
+    if (draft.simNum || draft.company) showDraftBanner();
+  } catch(e) {}
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch(e) {}
+  const b = document.getElementById('draft-banner');
+  if (b) b.style.display = 'none';
+}
+
+function showDraftBanner() {
+  const b = document.getElementById('draft-banner');
+  if (b) b.style.display = 'flex';
+}
+
+function setSaveState(state) {
+  const btn = document.getElementById('sf-save-btn');
+  if (state === 'saving') {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Saving…';
+  } else if (state === 'done') {
+    btn.innerHTML = '<i class="ti ti-circle-check"></i> Saved!';
+    btn.style.background = 'var(--teal)'; btn.style.borderColor = 'var(--teal)';
+    setTimeout(() => { btn.innerHTML = '<i class="ti ti-device-floppy"></i> Save SIM'; btn.style.background = ''; btn.style.borderColor = ''; btn.disabled = false; updateSaveBtn(); }, 2000);
+  } else if (state === 'error') {
+    btn.innerHTML = '<i class="ti ti-circle-x"></i> Retry';
+    btn.style.background = 'var(--red)'; btn.style.borderColor = 'var(--red)';
+    setTimeout(() => { btn.innerHTML = '<i class="ti ti-device-floppy"></i> Save SIM'; btn.style.background = ''; btn.style.borderColor = ''; btn.disabled = false; updateSaveBtn(); }, 2500);
+  }
+}
+
+function handleSubmit() {
+  if (!validateSimNumber(simNumInput.value).valid) { showToast('Invalid SIM number.','error'); return false; }
+  if (!selectedCompany) {
+    document.getElementById('sf-company-hint').style.display = 'block';
+    showToast('Please select a company.','error'); return false;
+  }
+  setSaveState('saving');
+  window._submitted = true;
+  // After iframe load clears form, also clear draft
+  return true;
+}
+
+function clearForm() {
+  document.getElementById('simForm').reset();
+  simNumInput.classList.remove('valid','invalid');
+  simNumHint.classList.remove('ok','error');
+  simNumHint.textContent = 'Format: 971 + 9 digits or 0 + 9 digits';
+  simIdDisplay.textContent = '—'; simIdHidden.value = '';
+  selectedCompany = '';
+  document.querySelectorAll('#sf-company-group .company-pill').forEach(p => p.classList.remove('du-pill','eand-pill'));
+  selectedStatus = 'Active';
+  document.getElementById('sf-status-hidden').value = 'Active';
+  document.querySelectorAll('#sf-status-group .status-pill').forEach(p => {
+    p.classList.toggle('selected', p.dataset.val === 'Active');
+  });
+  saveBtn.disabled = true;
+  clearDraft();
+}
+
+/* init: mark Active as selected visually */
+document.querySelector('.status-pill[data-val="Active"]').classList.add('selected');
+
+/* init: restore any unsaved draft */
+restoreDraft();
+
+/* ─── DOWNLOAD TEMPLATE ─── */
+function downloadTemplate() {
+  // Build minimal XLSX in-browser using SheetJS
+  const ws_data = [
+    ["Sim Number","Company","Status"],
+    ["e.g. 971501234567 or 0501234567","du or e&","Active / Inactive / Suspended / Lost"],
+  ];
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+  ws['!cols'] = [{wch:28},{wch:14},{wch:22}];
+  XLSX.utils.book_append_sheet(wb, ws, "SIM Upload");
+  XLSX.writeFile(wb, "SIM_Upload_Template.xlsx");
+}
+
+/* ─── BULK UPLOAD ─── */
+let parsedRows = [];
+
+function onDragOver(e){ e.preventDefault(); document.getElementById('drop-zone').classList.add('drag-over'); }
+function onDragLeave(e){ document.getElementById('drop-zone').classList.remove('drag-over'); }
+function onDrop(e){
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+function onFileChange(e){ const file = e.target.files[0]; if(file) processFile(file); }
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const wb   = XLSX.read(data, {type:'array'});
+    const ws   = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+
+    // Find header row (first row with recognizable headers)
+    let headerIdx = -1;
+    let colMap = {};
+    for (let i = 0; i < Math.min(5, rows.length); i++) {
+      const r = rows[i].map(c => String(c).toLowerCase().trim());
+      const simIdx     = r.findIndex(c => c.includes('sim') && c.includes('num'));
+      const companyIdx = r.findIndex(c => c.includes('company') || c.includes('provider') || c.includes('operator'));
+      const statusIdx  = r.findIndex(c => c.includes('status'));
+      if (simIdx !== -1) {
+        headerIdx = i;
+        colMap = { simNum: simIdx, company: companyIdx, status: statusIdx };
+        break;
+      }
+    }
+    if (headerIdx === -1) {
+      showToast('Could not find "Sim Number" column in file.','error'); return;
+    }
+
+    // Parse data rows (skip header + any note rows)
+    const dataRows = [];
+    for (let i = headerIdx + 1; i < rows.length; i++) {
+      const r = rows[i];
+      const simNum  = String(r[colMap.simNum]  || '').trim();
+      const company = String(r[colMap.company]  !== undefined ? r[colMap.company] : '').trim();
+      const status  = String(r[colMap.status]   !== undefined ? r[colMap.status]  : '').trim();
+      if (!simNum && !company && !status) continue; // skip blank rows
+      dataRows.push({ rowNum: i+1, simNum, company, status, raw: r });
+    }
+
+    if (!dataRows.length) { showToast('No data rows found.','error'); return; }
+
+    // Validate
+    dataRows.forEach(row => {
+      const errs = [];
+      const simRes = validateSimNumber(row.simNum);
+      row.simValid = simRes.valid;
+      if (!simRes.valid) errs.push('Invalid SIM number (need 971XXXXXXXXX or 0XXXXXXXXX)');
+      else row.simId = deriveSimId(simRes.normalized);
+
+      row.companyValid = VALID_COMPANIES.includes(row.company.toLowerCase()) ||
+                          ['du','e&','etisalat','e and','eand'].includes(row.company.toLowerCase());
+      if (!row.companyValid) errs.push('Company must be "du" or "e&"');
+      else row.companyNorm = row.company.toLowerCase() === 'du' ? 'du' : 'e&';
+
+      row.statusValid = VALID_STATUSES.includes(row.status.toLowerCase());
+      if (!row.statusValid) errs.push('Status must be Active, Inactive, Suspended or Lost');
+      else row.statusNorm = row.status.charAt(0).toUpperCase() + row.status.slice(1).toLowerCase();
+
+      row.valid  = errs.length === 0;
+      row.errors = errs;
+    });
+
+    parsedRows = dataRows;
+    renderPreview(dataRows, colMap, rows[headerIdx]);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderPreview(rows, colMap, headerRow) {
+  const total   = rows.length;
+  const valid   = rows.filter(r => r.valid).length;
+  const invalid = total - valid;
+
+  // Stats
+  document.getElementById('bulk-stats').innerHTML = `
+    <div class="stat-badge total"><i class="ti ti-list"></i> ${total} Total</div>
+    <div class="stat-badge valid"><i class="ti ti-circle-check"></i> ${valid} Valid</div>
+    ${invalid ? `<div class="stat-badge invalid"><i class="ti ti-circle-x"></i> ${invalid} Invalid</div>` : ''}
+  `;
+
+  // Column mapping
+  const colLetters = ['A','B','C','D','E','F','G','H'];
+  const mappings = [
+    {col: colMap.simNum,  label:'Sim Number',  icon:'ti-sim-card'},
+    {col: colMap.company, label:'Company',     icon:'ti-building'},
+    {col: colMap.status,  label:'Status',      icon:'ti-toggle-right'},
+  ];
+  document.getElementById('col-mapping').innerHTML = mappings.map(m =>
+    m.col !== -1 ? `
+      <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;">
+        <span style="font-family:var(--mono);font-weight:700;color:var(--accent);">Col ${colLetters[m.col] || m.col+1}</span>
+        <i class="ti ${m.icon}" style="font-size:13px;color:var(--text3);"></i>
+        <span style="color:var(--text2);">${m.label}</span>
+        <i class="ti ti-arrow-right" style="font-size:11px;color:var(--text3);"></i>
+        <span style="color:var(--teal);font-weight:600;">✓ Mapped</span>
+      </div>` : `
+      <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--red-dim);border:1px solid var(--red);border-radius:var(--radius);font-size:12px;">
+        <i class="ti ${m.icon}" style="font-size:13px;color:var(--red);"></i>
+        <span style="color:var(--red);">${m.label} — Not found</span>
+      </div>`
+  ).join('');
+
+  // Table
+  const tbody = rows.map((row,i) => {
+    const rowCls = row.valid ? 'row-valid' : 'row-invalid';
+    const simCell = row.simValid
+      ? `<td class="cell-valid"><span style="font-family:var(--mono);font-size:11px;">${row.simNum}</span></td>`
+      : `<td class="cell-invalid">${row.simNum || '<em style="opacity:.5">empty</em>'}<div class="err-tip">✗ Invalid format</div></td>`;
+    const idCell = row.simId
+      ? `<td><span style="font-family:var(--mono);font-size:11px;color:var(--accent);">${row.simId}</span></td>`
+      : `<td style="color:var(--text3);">—</td>`;
+    const coCell = row.companyValid
+      ? `<td class="cell-valid">${row.companyNorm}</td>`
+      : `<td class="cell-invalid">${row.company || '<em style="opacity:.5">empty</em>'}<div class="err-tip">✗ Use "du" or "e&"</div></td>`;
+    const stCell = row.statusValid
+      ? `<td class="cell-valid">${row.statusNorm}</td>`
+      : `<td class="cell-invalid">${row.status || '<em style="opacity:.5">empty</em>'}<div class="err-tip">✗ Use Active/Inactive/Suspended/Lost</div></td>`;
+    const badge = row.valid
+      ? `<span class="val-badge ok"><i class="ti ti-check"></i> Valid</span>`
+      : `<span class="val-badge err"><i class="ti ti-x"></i> ${row.errors.length} error${row.errors.length>1?'s':''}</span>`;
+    return `<tr class="${rowCls}">
+      <td class="row-num">${row.rowNum}</td>
+      ${idCell}${simCell}${coCell}${stCell}
+      <td>${badge}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('preview-table-wrap').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>SIM ID (auto)</th><th>Sim Number</th><th>Company</th><th>Status</th><th>Validation</th>
+        </tr>
+      </thead>
+      <tbody>${tbody}</tbody>
+    </table>`;
+
+  // Update warn + button
+  const bulkBtn = document.getElementById('bulk-upload-btn');
+  bulkBtn.disabled = valid === 0;
+  bulkBtn.innerHTML = `<i class="ti ti-cloud-upload"></i> Upload ${valid} Valid Row${valid!==1?'s':''}`;
+
+  const warnEl = document.getElementById('bulk-invalid-warn');
+  if (invalid > 0) {
+    warnEl.style.display = 'flex';
+    document.getElementById('bulk-invalid-count').textContent = `${invalid} row${invalid>1?'s':''} with errors will be skipped`;
+  } else {
+    warnEl.style.display = 'none';
+  }
+
+  document.getElementById('bulk-stats-bar').style.display = 'block';
+}
+
+/* ─── BULK SUBMIT ─── */
+async function startBulkUpload() {
+  const validRows = parsedRows.filter(r => r.valid);
+  if (!validRows.length) return;
+
+  document.getElementById('bulk-upload-btn').disabled = true;
+  document.getElementById('progress-section').style.display = 'block';
+  const log    = document.getElementById('upload-log');
+  const fill   = document.getElementById('progress-fill');
+  const pct    = document.getElementById('progress-pct');
+  const label  = document.getElementById('progress-label');
+  log.innerHTML = '';
+
+  let done = 0, success = 0, failed = 0;
+
+  function addLog(msg, type) {
+    const d = document.createElement('div');
+    d.className = 'log-line ' + type;
+    d.textContent = msg;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  addLog(`Starting upload of ${validRows.length} SIM(s)…`, 'info');
+
+  for (const row of validRows) {
+    const simId = row.simId;
+    const body = new URLSearchParams();
+    body.append(ENTRY.simId,   simId);
+    body.append(ENTRY.simNum,  row.simNum);
+    body.append(ENTRY.company, row.companyNorm);
+    body.append(ENTRY.status,  row.statusNorm);
+
+    try {
+      await fetch(FORM_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: body.toString()
+      });
+      success++;
+      addLog(`✓ Row ${row.rowNum} — ${simId} (${row.companyNorm}, ${row.statusNorm})`, 'ok');
+    } catch(e) {
+      failed++;
+      addLog(`✗ Row ${row.rowNum} — failed: ${e.message}`, 'err');
+    }
+
+    done++;
+    const p = Math.round((done / validRows.length) * 100);
+    fill.style.width  = p + '%';
+    pct.textContent   = p + '%';
+    label.textContent = `Uploading… ${done}/${validRows.length}`;
+
+    // Small delay to avoid rate limiting
+    await new Promise(r => setTimeout(r, 400));
+  }
+
+  label.textContent = `Done! ${success} uploaded${failed ? ', ' + failed + ' failed' : ''}.`;
+  showToast(`${success} SIM${success !== 1 ? 's' : ''} registered successfully!`, 'success');
+  document.getElementById('bulk-upload-btn').disabled = false;
+}
+
+function resetBulk() {
+  parsedRows = [];
+  document.getElementById('bulk-stats-bar').style.display = 'none';
+  document.getElementById('progress-section').style.display = 'none';
+  document.getElementById('file-input').value = '';
+  document.getElementById('upload-log').innerHTML = '';
+  document.getElementById('progress-fill').style.width = '0%';
+}
+
+/* ─── TOAST ─── */
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').className = type==='error' ? 'ti ti-circle-x' : 'ti ti-circle-check';
+  document.getElementById('toast-msg').textContent = msg;
+  t.className = 'toast ' + (type||'success') + ' show';
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* ─── THEME SYNC ─── */
+(function(){
+  try {
+    const pt = window.parent.document.documentElement.getAttribute('data-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', pt);
+    new MutationObserver(() => {
+      document.documentElement.setAttribute('data-theme',
+        window.parent.document.documentElement.getAttribute('data-theme') || 'dark');
+    }).observe(window.parent.document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>

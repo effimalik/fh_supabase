@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Add Employee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<script src="https://effimalik.github.io/Testing/shared/auth.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root,[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --surface:#21262d;--surface2:#2d333b;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent-dim:rgba(88,166,255,.12);--accent-glow:rgba(88,166,255,.28);
+  --teal:#39d353;--teal-dim:rgba(57,211,83,.12);--teal-border:rgba(57,211,83,.25);
+  --amber:#e3b341;--amber-dim:rgba(227,179,65,.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,.12);--red-border:rgba(248,81,73,.3);
+  --purple:#a371f7;--purple-dim:rgba(163,113,247,.12);--purple-border:rgba(163,113,247,.3);
+  --orange:#f0883e;--orange-dim:rgba(240,136,62,.12);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow-md:0 4px 24px rgba(0,0,0,.6);
+  --drawer-w:520px;
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#ffffff;--bg3:#e8ecf0;
+  --surface:#ffffff;--surface2:#e2e7ed;
+  --border:#c8d0d9;--border2:#9aa5b1;
+  --text:#0d1117;--text2:#3d454f;--text3:#5a6370;
+  --accent:#0550ae;--accent-dim:rgba(5,80,174,.12);--accent-glow:rgba(5,80,174,.22);
+  --teal:#116329;--teal-dim:rgba(17,99,41,.13);--teal-border:rgba(17,99,41,.3);
+  --amber:#7d4e00;--amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b;--red-dim:rgba(168,17,27,.11);--red-border:rgba(168,17,27,.3);
+  --purple:#6639c8;--purple-dim:rgba(102,57,200,.13);--purple-border:rgba(102,57,200,.3);
+  --orange:#953800;--orange-dim:rgba(149,56,0,.13);
+  --shadow-md:0 4px 24px rgba(0,0,0,.15);
+}
+
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;}
+
+/* ═══════════ PAGE SHELL ═══════════ */
+.page{min-height:100%;padding:20px 24px 40px;max-width:100%;}
+
+/* ═══════════ PAGE HEADER ═══════════ */
+.page-header{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:24px;padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+  row-gap:10px;
+}
+.page-header-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+.page-header-icon{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  background:var(--accent-dim);display:flex;align-items:center;justify-content:center;
+  color:var(--accent);font-size:20px;
+}
+.page-header-title{font-size:16px;font-weight:700;color:var(--text);white-space:nowrap;}
+.page-header-sub{font-size:11.5px;color:var(--text3);margin-top:2px;}
+.page-header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+/* ═══════════ BUTTONS ═══════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:0 14px;height:36px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text2);font-family:var(--font);font-size:12.5px;font-weight:500;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.btn i{font-size:15px;}
+.btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn.primary:hover{background:#79b8ff;border-color:#79b8ff;box-shadow:0 0 12px var(--accent-glow);}
+.btn.purple{background:var(--purple-dim);color:var(--purple);border-color:var(--purple-border);}
+.btn.purple:hover{background:var(--purple);color:#fff;}
+.btn.teal{background:var(--teal-dim);color:var(--teal);border-color:var(--teal-border);}
+.btn.teal:hover{background:var(--teal);color:#0d1117;border-color:var(--teal);}
+.btn.danger-outline{background:var(--red-dim);color:var(--red);border-color:var(--red-border);}
+.btn.danger-outline:hover{background:var(--red);color:#fff;}
+.btn.sm{height:30px;padding:0 11px;font-size:12px;}
+.btn.sm i{font-size:13px;}
+.btn.full{width:100%;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* ═══════════ FORM CARD ═══════════ */
+.form-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-xl);padding:24px 28px 28px;
+}
+@media(max-width:600px){.form-card{padding:18px 16px 22px;}}
+
+.section-title{
+  display:flex;align-items:center;gap:9px;
+  font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--text3);padding-bottom:14px;border-bottom:1px solid var(--border);
+  margin-bottom:20px;
+}
+.section-title i{font-size:15px;color:var(--accent);}
+
+/* Employee ID badge */
+.emp-id-row{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+.emp-id-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:var(--radius);
+  background:var(--accent-dim);border:1px solid rgba(88,166,255,.22);
+  font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:600;
+  letter-spacing:.04em;
+}
+.emp-id-badge .lbl{
+  font-family:var(--font);font-size:10px;font-weight:700;
+  color:var(--text3);letter-spacing:.08em;text-transform:uppercase;
+}
+.emp-id-badge i{font-size:14px;opacity:.7;}
+
+/* ═══════════ FORM GRID ═══════════ */
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:14px 20px;
+  margin-bottom:24px;
+}
+@media(max-width:480px){.form-grid{grid-template-columns:1fr;}}
+
+/* ═══════════ FIELD ═══════════ */
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{
+  font-size:11.5px;font-weight:600;color:var(--text2);
+  display:flex;align-items:center;gap:5px;
+}
+.field label .req{color:var(--red);font-size:13px;line-height:1;}
+.field input{
+  height:38px;padding:0 12px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);color:var(--text);
+  font-family:var(--font);font-size:13px;outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.field input::placeholder{color:var(--text3);}
+.field input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5);cursor:pointer;}
+.field input.ok{border-color:var(--teal);}
+.field input.err{border-color:var(--red)!important;box-shadow:0 0 0 3px var(--red-dim)!important;}
+.field-msg{font-size:10.5px;min-height:14px;display:flex;align-items:center;gap:4px;}
+.field-msg.error{color:var(--red);}
+.field-msg.hint{color:var(--text3);}
+.field-msg i{font-size:12px;}
+
+/* ═══════════ FORM ACTIONS ═══════════ */
+.form-actions{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding-top:20px;border-top:1px solid var(--border);
+}
+
+/* ═══════════ DRAWER OVERLAY ═══════════ */
+.drawer-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:200;opacity:0;pointer-events:none;
+  transition:opacity .25s;
+}
+.drawer-overlay.open{opacity:1;pointer-events:all;}
+
+/* ═══════════ DRAWER PANEL ═══════════ */
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:var(--drawer-w);max-width:100vw;
+  background:var(--bg2);border-left:1px solid var(--border);
+  z-index:201;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.drawer.open{transform:translateX(0);}
+
+.drawer-head{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.drawer-head-icon{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+}
+.drawer-head-icon.purple{background:var(--purple-dim);color:var(--purple);}
+.drawer-head-icon.teal{background:var(--teal-dim);color:var(--teal);}
+.drawer-head-title{font-size:13.5px;font-weight:700;color:var(--text);flex:1;}
+.drawer-head-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.drawer-close{
+  width:30px;height:30px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:1px solid var(--border);
+  color:var(--text3);cursor:pointer;font-size:15px;
+  transition:all .15s;flex-shrink:0;
+}
+.drawer-close:hover{background:var(--surface2);color:var(--text);}
+
+.drawer-body{flex:1;overflow-y:auto;padding:20px;}
+.drawer-body::-webkit-scrollbar{width:5px;}
+.drawer-body::-webkit-scrollbar-track{background:transparent;}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+
+.drawer-footer{
+  padding:14px 20px;border-top:1px solid var(--border);
+  display:flex;gap:8px;flex-shrink:0;
+  background:var(--bg2);
+}
+
+/* ─── UPLOAD drawer ─── */
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:var(--radius-lg);
+  padding:28px 16px;text-align:center;cursor:pointer;
+  transition:all .2s;position:relative;background:var(--bg3);
+}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--purple);background:var(--purple-dim);}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-zone i.big{font-size:32px;color:var(--purple);margin-bottom:10px;display:block;transition:transform .2s;}
+.upload-zone:hover i.big{transform:translateY(-4px);}
+.upload-zone .uz-title{font-size:13px;font-weight:600;color:var(--text2);}
+.upload-zone .uz-hint{font-size:11px;color:var(--text3);margin-top:4px;}
+
+.file-pill{
+  display:none;margin-top:12px;padding:9px 12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);align-items:center;gap:10px;
+}
+.file-pill.show{display:flex;}
+.file-pill i{color:var(--teal);font-size:16px;flex-shrink:0;}
+.file-pill-name{flex:1;font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-pill-size{font-size:11px;color:var(--text3);flex-shrink:0;}
+.file-pill-rm{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0;line-height:1;flex-shrink:0;}
+.file-pill-rm:hover{color:var(--red);}
+
+/* progress */
+.progress-wrap{display:none;margin-top:12px;}
+.progress-wrap.show{display:block;}
+.prog-bar-bg{height:5px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:6px;}
+.prog-bar{height:100%;background:var(--purple);border-radius:4px;width:0;transition:width .25s ease;}
+.prog-txt{font-size:11px;color:var(--text3);text-align:center;}
+
+/* ─── preview table ─── */
+.preview-wrap{margin-top:16px;display:none;}
+.preview-wrap.show{display:block;}
+.preview-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;flex-wrap:wrap;gap:6px;
+}
+.preview-meta-title{font-size:12px;font-weight:700;color:var(--text);}
+.preview-stats{display:flex;gap:8px;}
+.stat-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;
+}
+.stat-chip.ok{background:var(--teal-dim);color:var(--teal);border:1px solid var(--teal-border);}
+.stat-chip.warn{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(227,179,65,.3);}
+.stat-chip.bad{background:var(--red-dim);color:var(--red);border:1px solid var(--red-border);}
+
+.tbl-scroll{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border);}
+.tbl{width:100%;border-collapse:collapse;font-size:11.5px;}
+.tbl th{
+  padding:9px 10px;text-align:left;
+  font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text3);background:var(--bg3);
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.tbl td{
+  padding:9px 10px;border-bottom:1px solid var(--border);
+  color:var(--text2);vertical-align:middle;white-space:nowrap;
+}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--surface);}
+.tbl td.expired{color:var(--red);font-weight:600;}
+.tbl td.expiring{color:var(--amber);font-weight:600;}
+.tbl td.ok-date{color:var(--teal);}
+.tbl td.name-cell{color:var(--text);font-weight:500;max-width:130px;overflow:hidden;text-overflow:ellipsis;}
+.tbl td.err-cell{color:var(--red);font-size:10.5px;max-width:200px;}
+.row-status{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;
+}
+.row-status.valid{background:var(--teal-dim);color:var(--teal);}
+.row-status.invalid{background:var(--red-dim);color:var(--red);}
+.row-status.warn{background:var(--amber-dim);color:var(--amber);}
+
+/* legend */
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text3);}
+.legend-dot{width:8px;height:8px;border-radius:50%;}
+
+/* ─── Download template drawer ─── */
+.template-col-list{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+  margin-bottom:16px;
+}
+@media(max-width:420px){.template-col-list{grid-template-columns:1fr;}}
+.template-col-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);font-size:11.5px;color:var(--text2);
+}
+.template-col-item i{font-size:13px;flex-shrink:0;}
+.template-col-item .req-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.template-col-item .req-dot.r{background:var(--red);}
+.template-col-item .req-dot.o{background:var(--border2);}
+
+.info-box{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:14px;margin-bottom:14px;
+}
+.info-box-title{font-size:11.5px;font-weight:700;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.info-box-title i{color:var(--accent);}
+.info-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:11.5px;}
+.info-row:last-child{margin-bottom:0;}
+.info-row i{color:var(--text3);font-size:13px;flex-shrink:0;margin-top:1px;}
+.info-row span{color:var(--text2);line-height:1.55;}
+.info-row code{font-family:var(--mono);background:var(--surface);padding:1px 5px;border-radius:4px;color:var(--accent);font-size:11px;}
+
+/* ═══════════ TOAST ═══════════ */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  display:flex;align-items:center;gap:10px;
+  padding:12px 18px;background:var(--surface2);
+  border:1px solid var(--border2);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);font-size:13px;font-weight:500;color:var(--text);
+  opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;
+  pointer-events:none;z-index:999;max-width:340px;
+}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast i{font-size:17px;flex-shrink:0;}
+.toast.success i{color:var(--teal);}
+.toast.error i{color:var(--red);}
+.toast.info i{color:var(--accent);}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media(max-width:600px){
+  .page{padding:14px 14px 32px;}
+  .btn .btn-label{display:none;}
+  .btn{padding:0 10px;}
+  .page-header-actions{gap:6px;}
+  .drawer{width:100vw;}
+}
+@media(min-width:601px) and (max-width:860px){
+  .drawer{width:90vw;}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════════ PAGE HEADER ═══════════ -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-icon"><i class="ti ti-user-plus"></i></div>
+      <div>
+        <div class="page-header-title">Add Employee</div>
+        <div class="page-header-sub">Register a new staff member</div>
+      </div>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn" onclick="openDrawer('upload')">
+        <i class="ti ti-file-upload"></i>
+        <span class="btn-label">Bulk Import</span>
+      </button>
+      <button class="btn teal" onclick="openDrawer('template')">
+        <i class="ti ti-file-download"></i>
+        <span class="btn-label">Download Template</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════ FORM CARD ═══════════ -->
+  <div class="form-card">
+    <div class="section-title">
+      <i class="ti ti-user-circle"></i> Personal Information
+    </div>
+
+    <!-- Employee ID Badge -->
+    <div class="emp-id-row">
+      <div class="emp-id-badge">
+        <span class="lbl">Employee ID</span>
+        <i class="ti ti-id-badge-2"></i>
+        <span id="empIdDisplay">—</span>
+      </div>
+      <span style="font-size:11px;color:var(--text3);">Auto-generated from last 8 digits of EID</span>
+    </div>
+
+    <!-- Hidden iframe -->
+    <iframe name="__frm" id="__frm" style="display:none;"
+      onload="if(window._submitted){showToast('Employee saved successfully!','success');resetForm();window._submitted=false;}"></iframe>
+
+    <form id="employeeForm"
+      action="https://docs.google.com/forms/d/e/1FAIpQLSekyWrAEOqXpE2Zb3k5dGV0Y_4Ka1pUSrnEWev_hH-HJxL87A/formResponse"
+      method="POST" target="__frm" onsubmit="return handleSubmit(event);">
+
+      <input type="hidden" name="entry.108507522" id="ef-empid"/>
+
+      <div class="form-grid">
+        <!-- Full Name -->
+        <div class="field">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" id="ef-name" name="entry.1124526098" placeholder="Ahmed Al Mansoori"/>
+          <div class="field-msg hint" id="msg-name"></div>
+        </div>
+
+        <!-- EID -->
+        <div class="field">
+          <label>EID Number <span class="req">*</span></label>
+          <input type="text" id="ef-eid" name="entry.605013500" placeholder="784-XXXX-XXXXXXX-X" maxlength="18"/>
+          <div class="field-msg hint" id="msg-eid"><span style="color:var(--text3)">Format: 784-YYYY-XXXXXXX-X</span></div>
+        </div>
+
+        <!-- DOB -->
+        <div class="field">
+          <label>Date of Birth <span class="req">*</span></label>
+          <input type="date" id="ef-dob" name="entry.312378018"/>
+          <div class="field-msg hint" id="msg-dob"><span style="color:var(--text3)">Must be 18+ years old</span></div>
+        </div>
+
+        <!-- UAE Mobile -->
+        <div class="field">
+          <label>UAE Mobile <span class="req">*</span></label>
+          <input type="tel" id="ef-mobile" name="entry.439131661" placeholder="+971 50 123 4567"/>
+          <div class="field-msg hint" id="msg-mobile"></div>
+        </div>
+
+        <!-- Emergency -->
+        <div class="field">
+          <label>Emergency Contact <span class="req">*</span></label>
+          <input type="tel" id="ef-emergency" name="entry.1139688451" placeholder="+971 50 987 6543"/>
+          <div class="field-msg hint" id="msg-emergency"></div>
+        </div>
+
+        <!-- Reference -->
+        <div class="field">
+          <label>Reference <span class="req">*</span></label>
+          <input type="text" id="ef-ref" name="entry.642094797" placeholder="Referred by…"/>
+          <div class="field-msg hint" id="msg-ref"></div>
+        </div>
+
+        <!-- EID Expiry -->
+        <div class="field">
+          <label>EID Expiry Date</label>
+          <input type="date" id="ef-eid-exp" name="entry.1962789080"/>
+          <div class="field-msg hint" id="msg-eid-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
+        </div>
+
+        <!-- License Expiry -->
+        <div class="field">
+          <label>License Expiry</label>
+          <input type="date" id="ef-lic-exp" name="entry.2090960301"/>
+          <div class="field-msg hint" id="msg-lic-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
+        </div>
+
+        <!-- Labour Card -->
+        <div class="field">
+          <label>Labour Card Expiry</label>
+          <input type="date" id="ef-lab-exp" name="entry.1595041081"/>
+          <div class="field-msg hint" id="msg-lab-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
+        </div>
+
+        <!-- Insurance -->
+        <div class="field">
+          <label>Insurance Expiry</label>
+          <input type="date" id="ef-ins-exp" name="entry.203686715"/>
+          <div class="field-msg hint" id="msg-ins-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn primary"><i class="ti ti-device-floppy"></i> Save Employee</button>
+        <button type="button" class="btn" onclick="resetForm()"><i class="ti ti-refresh"></i> Clear</button>
+      </div>
+    </form>
+  </div>
+
+</div><!-- /.page -->
+
+<!-- ═══════════ DRAWER OVERLAY ═══════════ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- ═══════════ UPLOAD DRAWER ═══════════ -->
+<div class="drawer" id="uploadDrawer">
+  <div class="drawer-head">
+    <div class="drawer-head-icon purple"><i class="ti ti-file-upload"></i></div>
+    <div style="flex:1;min-width:0;">
+      <div class="drawer-head-title">Bulk Import Employees</div>
+      <div class="drawer-head-sub">Upload CSV — validated before submission</div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x"></i></button>
+  </div>
+
+  <div class="drawer-body">
+    <!-- Upload zone -->
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="bulkFile" accept=".csv" onchange="onFileSelect(event)"/>
+      <i class="ti ti-cloud-upload big"></i>
+      <div class="uz-title">Drop CSV here or click to browse</div>
+      <div class="uz-hint">CSV only · Max 5 MB</div>
+    </div>
+
+    <!-- File pill -->
+    <div class="file-pill" id="filePill">
+      <i class="ti ti-file-spreadsheet"></i>
+      <span class="file-pill-name" id="filePillName">—</span>
+      <span class="file-pill-size" id="filePillSize"></span>
+      <button class="file-pill-rm" onclick="clearFile()" title="Remove"><i class="ti ti-x"></i></button>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="prog-bar-bg"><div class="prog-bar" id="progBar"></div></div>
+      <div class="prog-txt" id="progTxt">Processing…</div>
+    </div>
+
+    <!-- Preview table -->
+    <div class="preview-wrap" id="previewWrap">
+      <div class="preview-meta">
+        <div class="preview-meta-title" id="previewTitle">Preview</div>
+        <div class="preview-stats" id="previewStats"></div>
+      </div>
+      <div class="tbl-scroll">
+        <table class="tbl" id="previewTbl">
+          <thead id="previewHead"></thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Expired / Invalid</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div> Expires within 30 days</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div> Valid</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-footer">
+    <button class="btn purple" id="submitBulkBtn" onclick="submitBulk()" disabled style="flex:1;">
+      <i class="ti ti-rocket"></i> Submit Valid Rows
+    </button>
+    <button class="btn" onclick="clearFile()"><i class="ti ti-refresh"></i> Reset</button>
+    <button class="btn" onclick="closeDrawer()">Close</button>
+  </div>
+</div>
+
+<!-- ═══════════ TEMPLATE DRAWER ═══════════ -->
+<div class="drawer" id="templateDrawer">
+  <div class="drawer-head">
+    <div class="drawer-head-icon teal"><i class="ti ti-file-download"></i></div>
+    <div style="flex:1;min-width:0;">
+      <div class="drawer-head-title">Download CSV Template</div>
+      <div class="drawer-head-sub">All required columns with sample data</div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x"></i></button>
+  </div>
+
+  <div class="drawer-body">
+    <div class="info-box">
+      <div class="info-box-title"><i class="ti ti-info-circle"></i> Before you start</div>
+      <div class="info-row"><i class="ti ti-check"></i><span>Download the template and fill in your data</span></div>
+      <div class="info-row"><i class="ti ti-check"></i><span>Dates must be formatted as <code>YYYY-MM-DD</code></span></div>
+      <div class="info-row"><i class="ti ti-check"></i><span>EID format: <code>784-YYYY-XXXXXXX-X</code></span></div>
+      <div class="info-row"><i class="ti ti-check"></i><span>Phone numbers must be digits only, e.g. <code>971501234567</code></span></div>
+      <div class="info-row"><i class="ti ti-check"></i><span>Expired dates are flagged in red during preview but will still be uploaded</span></div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+      <i class="ti ti-columns" style="color:var(--teal);"></i> Template Columns
+      <span style="margin-left:auto;font-size:10.5px;font-weight:400;color:var(--text3);display:flex;align-items:center;gap:8px;">
+        <span style="display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;"></span>Required</span>
+        <span style="display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:var(--border2);display:inline-block;"></span>Optional</span>
+      </span>
+    </div>
+
+    <div class="template-col-list">
+      <div class="template-col-item"><i class="ti ti-user" style="color:var(--accent)"></i><div class="req-dot r"></div>Full Name</div>
+      <div class="template-col-item"><i class="ti ti-id" style="color:var(--accent)"></i><div class="req-dot r"></div>EID Number</div>
+      <div class="template-col-item"><i class="ti ti-calendar" style="color:var(--accent)"></i><div class="req-dot r"></div>Date of Birth</div>
+      <div class="template-col-item"><i class="ti ti-phone" style="color:var(--accent)"></i><div class="req-dot r"></div>UAE Mobile</div>
+      <div class="template-col-item"><i class="ti ti-phone-call" style="color:var(--accent)"></i><div class="req-dot r"></div>Emergency Contact</div>
+      <div class="template-col-item"><i class="ti ti-users" style="color:var(--accent)"></i><div class="req-dot r"></div>Reference</div>
+      <div class="template-col-item"><i class="ti ti-calendar-event" style="color:var(--text3)"></i><div class="req-dot o"></div>EID Expiry Date</div>
+      <div class="template-col-item"><i class="ti ti-license" style="color:var(--text3)"></i><div class="req-dot o"></div>License Expiry</div>
+      <div class="template-col-item"><i class="ti ti-briefcase" style="color:var(--text3)"></i><div class="req-dot o"></div>Labour Card Expiry</div>
+      <div class="template-col-item"><i class="ti ti-heart-rate-monitor" style="color:var(--text3)"></i><div class="req-dot o"></div>Insurance Expiry</div>
+    </div>
+  </div>
+
+  <div class="drawer-footer">
+    <button class="btn teal" onclick="downloadTemplate()" style="flex:1;">
+      <i class="ti ti-download"></i> Download Template CSV
+    </button>
+    <button class="btn" onclick="closeDrawer()">Close</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <i id="toastIcon" class="ti ti-circle-check"></i>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const today = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
+const fmtSize = b => b>1048576 ? (b/1048576).toFixed(1)+' MB' : (b/1024).toFixed(0)+' KB';
+
+function showToast(msg, type='success'){
+  const t=$('toast'), ic=$('toastIcon'), ms=$('toastMsg');
+  t.className='toast '+type;
+  ic.className={success:'ti ti-circle-check',error:'ti ti-circle-x',info:'ti ti-info-circle'}[type]||'ti ti-circle-check';
+  ms.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+/* ═══════════════════════════════════════
+   DRAWER
+═══════════════════════════════════════ */
+let activeDrawer=null;
+function openDrawer(which){
+  closeDrawer(true);
+  const id = which==='upload'?'uploadDrawer':'templateDrawer';
+  $('drawerOverlay').classList.add('open');
+  $(id).classList.add('open');
+  activeDrawer=id;
+  document.body.style.overflow='hidden';
+}
+function closeDrawer(silent){
+  if(activeDrawer){ $(activeDrawer).classList.remove('open'); activeDrawer=null; }
+  $('drawerOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrawer(); });
+
+/* ═══════════════════════════════════════
+   VALIDATION RULES
+═══════════════════════════════════════ */
+const EID_RE = /^\d{3}-\d{4}-\d{7}-\d$/;
+const PHONE_RE = /^[+\d][\d\s\-().]{6,19}$/;
+
+function valEID(v){
+  if(!v) return 'EID is required';
+  if(!EID_RE.test(v)) return 'Format must be 784-YYYY-XXXXXXX-X';
+  if(!v.startsWith('784-')) return 'EID must start with 784';
+  return '';
+}
+function valDOB(v){
+  if(!v) return 'Date of birth is required';
+  const d=new Date(v), tod=today();
+  let age=tod.getFullYear()-d.getFullYear();
+  const m=tod.getMonth()-d.getMonth();
+  if(m<0||(m===0&&tod.getDate()<d.getDate())) age--;
+  if(age<18) return 'Employee must be at least 18 years old';
+  if(age>100) return 'Please check the date of birth';
+  return '';
+}
+function valPhone(v, label){
+  if(!v) return `${label} is required`;
+  if(!PHONE_RE.test(v)) return `${label}: enter a valid phone number`;
+  return '';
+}
+function valFutureDate(v, label){
+  if(!v) return ''; // optional
+  const d=new Date(v);
+  if(isNaN(d)) return `${label}: invalid date`;
+  if(d<=today()) return `${label} must be a future date`;
+  return '';
+}
+function valName(v){
+  if(!v||!v.trim()) return 'Full name is required';
+  if(v.trim().length<2) return 'Name is too short';
+  return '';
+}
+function valRef(v){
+  if(!v||!v.trim()) return 'Reference is required';
+  return '';
+}
+
+/* EID → Employee ID (last 8 digits) */
+function extractEmpId(eid){
+  const d=eid.replace(/\D/g,'');
+  return d.length>=8 ? d.slice(-8) : '';
+}
+
+/* ═══════════════════════════════════════
+   LIVE FIELD HOOKS
+═══════════════════════════════════════ */
+function setMsg(msgId, inputEl, errMsg, hintHtml){
+  const m=$(msgId);
+  if(errMsg){
+    m.className='field-msg error';
+    m.innerHTML=`<i class="ti ti-alert-circle"></i>${errMsg}`;
+    inputEl.classList.add('err'); inputEl.classList.remove('ok');
+  } else {
+    m.className='field-msg hint';
+    m.innerHTML=hintHtml||'';
+    if(inputEl.value){ inputEl.classList.add('ok'); inputEl.classList.remove('err'); }
+    else { inputEl.classList.remove('ok','err'); }
+  }
+}
+
+// EID live
+$('ef-eid').addEventListener('input', function(){
+  // Auto-format with dashes
+  let digits=this.value.replace(/[^0-9]/g,'');
+  let parts=[];
+  if(digits.length>0) parts.push(digits.slice(0,3));
+  if(digits.length>3) parts.push(digits.slice(3,7));
+  if(digits.length>7) parts.push(digits.slice(7,14));
+  if(digits.length>14) parts.push(digits.slice(14,15));
+  this.value=parts.join('-');
+  this.maxLength=18;
+
+  const err=valEID(this.value);
+  setMsg('msg-eid',this,err,`<span style="color:var(--text3)">Format: 784-YYYY-XXXXXXX-X</span>`);
+
+  // update emp ID badge
+  const empId=extractEmpId(this.value);
+  $('empIdDisplay').textContent=empId||'—';
+  $('ef-empid').value=empId;
+});
+
+$('ef-dob').addEventListener('change', function(){
+  setMsg('msg-dob',this,valDOB(this.value),`<span style="color:var(--text3)">Must be 18+ years old</span>`);
+});
+
+$('ef-name').addEventListener('blur', function(){
+  setMsg('msg-name',this,valName(this.value),'');
+});
+
+$('ef-mobile').addEventListener('blur', function(){
+  setMsg('msg-mobile',this,valPhone(this.value,'UAE Mobile'),'');
+});
+$('ef-mobile').addEventListener('input', function(){
+  // allow +, digits, spaces, dashes only
+  this.value=this.value.replace(/[^\d+\s\-().]/g,'');
+});
+
+$('ef-emergency').addEventListener('blur', function(){
+  setMsg('msg-emergency',this,valPhone(this.value,'Emergency Contact'),'');
+});
+$('ef-emergency').addEventListener('input', function(){
+  this.value=this.value.replace(/[^\d+\s\-().]/g,'');
+});
+
+$('ef-ref').addEventListener('blur', function(){
+  setMsg('msg-ref',this,valRef(this.value),'');
+});
+
+const expiryFields=[
+  ['ef-eid-exp','msg-eid-exp','EID Expiry'],
+  ['ef-lic-exp','msg-lic-exp','License Expiry'],
+  ['ef-lab-exp','msg-lab-exp','Labour Card Expiry'],
+  ['ef-ins-exp','msg-ins-exp','Insurance Expiry'],
+];
+expiryFields.forEach(([fid,mid,label])=>{
+  $(fid).addEventListener('change',function(){
+    const err=valFutureDate(this.value,label);
+    setMsg(mid,this,err,`<span style="color:var(--text3)">Must be a future date if provided</span>`);
+  });
+});
+
+/* ═══════════════════════════════════════
+   FORM SUBMIT
+═══════════════════════════════════════ */
+function handleSubmit(e){
+  let ok=true;
+  function check(errMsg, msgId, inputEl, hint){
+    setMsg(msgId, inputEl, errMsg, hint);
+    if(errMsg) ok=false;
+  }
+  check(valName($('ef-name').value),'msg-name',$('ef-name'),'');
+  check(valEID($('ef-eid').value),'msg-eid',$('ef-eid'),`<span style="color:var(--text3)">Format: 784-YYYY-XXXXXXX-X</span>`);
+  check(valDOB($('ef-dob').value),'msg-dob',$('ef-dob'),`<span style="color:var(--text3)">Must be 18+ years old</span>`);
+  check(valPhone($('ef-mobile').value,'UAE Mobile'),'msg-mobile',$('ef-mobile'),'');
+  check(valPhone($('ef-emergency').value,'Emergency Contact'),'msg-emergency',$('ef-emergency'),'');
+  check(valRef($('ef-ref').value),'msg-ref',$('ef-ref'),'');
+  expiryFields.forEach(([fid,mid,label])=>{
+    check(valFutureDate($(fid).value,label),mid,$(fid),`<span style="color:var(--text3)">Must be a future date if provided</span>`);
+  });
+
+  if(!$('ef-empid').value){
+    setMsg('msg-eid',$('ef-eid'),'EID must be valid to generate Employee ID',`<span style="color:var(--text3)">Format: 784-YYYY-XXXXXXX-X</span>`);
+    ok=false;
+  }
+
+  if(!ok){ e.preventDefault(); showToast('Please fix the highlighted errors.','error'); return false; }
+  window._submitted=true;
+  return true;
+}
+
+function resetForm(){
+  $('employeeForm').reset();
+  $('ef-empid').value='';
+  $('empIdDisplay').textContent='—';
+  document.querySelectorAll('.field input').forEach(i=>{i.classList.remove('ok','err');});
+  document.querySelectorAll('.field-msg').forEach(m=>{
+    m.className='field-msg hint'; m.innerHTML='';
+  });
+  // restore hints
+  $('msg-eid').innerHTML=`<span style="color:var(--text3)">Format: 784-YYYY-XXXXXXX-X</span>`;
+  $('msg-dob').innerHTML=`<span style="color:var(--text3)">Must be 18+ years old</span>`;
+  expiryFields.forEach(([,mid])=>{
+    $(mid).innerHTML=`<span style="color:var(--text3)">Must be a future date if provided</span>`;
+  });
+}
+
+/* ═══════════════════════════════════════
+   DRAG & DROP
+═══════════════════════════════════════ */
+const uz=$('uploadZone');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag');});
+uz.addEventListener('dragleave',()=>uz.classList.remove('drag'));
+uz.addEventListener('drop',e=>{
+  e.preventDefault();uz.classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f) handleFile(f);
+});
+
+let parsedRows=[];
+
+function onFileSelect(e){
+  const f=e.target.files[0];
+  if(f) handleFile(f);
+}
+
+function handleFile(file){
+  if(!file.name.match(/\.csv$/i)){showToast('Please upload a CSV file.','error');return;}
+  if(file.size>5*1024*1024){showToast('File exceeds 5MB limit.','error');return;}
+
+  $('filePillName').textContent=file.name;
+  $('filePillSize').textContent=fmtSize(file.size);
+  $('filePill').classList.add('show');
+
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    parsedRows=parseCSV(ev.target.result);
+    buildPreview(parsedRows);
+    $('submitBulkBtn').disabled=parsedRows.length===0;
+  };
+  reader.readAsText(file);
+}
+
+function clearFile(){
+  $('bulkFile').value='';
+  parsedRows=[];
+  $('filePill').classList.remove('show');
+  $('previewWrap').classList.remove('show');
+  $('progressWrap').classList.remove('show');
+  $('submitBulkBtn').disabled=true;
+  uz.classList.remove('drag');
+}
+
+/* ═══════════════════════════════════════
+   CSV PARSER
+═══════════════════════════════════════ */
+function parseCSV(text){
+  const lines=text.trim().split('\n').filter(l=>l.trim());
+  if(lines.length<2) return [];
+  const headers=splitCSVLine(lines[0]);
+  return lines.slice(1).map((line,idx)=>{
+    const vals=splitCSVLine(line);
+    const row={_row:idx+2};
+    headers.forEach((h,i)=>row[h.trim()]=vals[i]?vals[i].trim():'');
+    return row;
+  });
+}
+function splitCSVLine(line){
+  const result=[]; let cur=''; let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){result.push(cur);cur='';}
+    else{cur+=c;}
+  }
+  result.push(cur);
+  return result.map(v=>v.replace(/^"|"$/g,'').trim());
+}
+
+/* ═══════════════════════════════════════
+   ROW NORMALISER + VALIDATOR
+═══════════════════════════════════════ */
+function normaliseRow(row){
+  return {
+    name:        row['Full Name']||row['full_name']||row['FullName']||'',
+    eid:         row['EID Number']||row['EID']||row['eid']||'',
+    dob:         row['Date of Birth']||row['DOB']||row['dob']||'',
+    mobile:      row['UAE Mobile']||row['mobile']||row['Mobile']||'',
+    emergency:   row['Emergency Contact']||row['emergency']||'',
+    ref:         row['Reference']||row['reference']||'',
+    eidExp:      row['EID Expiry Date']||row['eid_expiry']||'',
+    licExp:      row['License Expiry']||row['license_expiry']||'',
+    labExp:      row['Labour Card Expiry']||row['labour_expiry']||'',
+    insExp:      row['Insurance Expiry']||row['insurance_expiry']||'',
+  };
+}
+
+function validateRow(r){
+  const errors=[];
+  const e=msg=>errors.push(msg);
+  if(valName(r.name))           e(valName(r.name));
+  if(valEID(r.eid))             e(valEID(r.eid));
+  if(valDOB(r.dob))             e(valDOB(r.dob));
+  if(valPhone(r.mobile,'UAE Mobile'))     e(valPhone(r.mobile,'Mobile'));
+  if(valPhone(r.emergency,'Emergency'))   e(valPhone(r.emergency,'Emergency'));
+  if(valRef(r.ref))             e(valRef(r.ref));
+  // expiry: only invalid date format blocks (past dates allowed but flagged)
+  ['eidExp','licExp','labExp','insExp'].forEach(k=>{
+    const v=r[k];
+    if(v&&isNaN(new Date(v))) e(`Invalid date format: ${v}`);
+  });
+  return errors;
+}
+
+/* date cell class */
+function dateClass(val){
+  if(!val) return '';
+  const d=new Date(val), tod=today();
+  if(isNaN(d)) return 'err-cell';
+  const diff=(d-tod)/(1000*60*60*24);
+  if(diff<0) return 'expired';
+  if(diff<=30) return 'expiring';
+  return 'ok-date';
+}
+function dateLabel(val){
+  if(!val) return '<span style="color:var(--text3)">—</span>';
+  const d=new Date(val), tod=today();
+  if(isNaN(d)) return `<span style="color:var(--red)">${val}</span>`;
+  const diff=Math.ceil((d-tod)/(1000*60*60*24));
+  const cls=dateClass(val);
+  let tag='';
+  if(diff<0) tag=`<span style="font-size:9.5px;margin-left:4px;background:var(--red-dim);color:var(--red);padding:1px 5px;border-radius:10px;">Expired</span>`;
+  else if(diff<=30) tag=`<span style="font-size:9.5px;margin-left:4px;background:var(--amber-dim);color:var(--amber);padding:1px 5px;border-radius:10px;">${diff}d</span>`;
+  return `<span class="${cls}">${val}</span>${tag}`;
+}
+
+/* ═══════════════════════════════════════
+   BUILD PREVIEW TABLE
+═══════════════════════════════════════ */
+function buildPreview(rows){
+  if(!rows.length){ showToast('No data rows found in file.','error'); return; }
+
+  const wrap=$('previewWrap');
+  let valid=0, warned=0, invalid=0;
+
+  // Build head
+  const head=$('previewHead');
+  head.innerHTML=`<tr>
+    <th>#</th><th>Status</th><th>Emp ID</th><th>Full Name</th>
+    <th>EID Number</th><th>DOB</th><th>Mobile</th><th>Emergency</th>
+    <th>Reference</th><th>EID Exp</th><th>Lic Exp</th>
+    <th>Labour Exp</th><th>Ins Exp</th><th>Issues</th>
+  </tr>`;
+
+  const body=$('previewBody');
+  body.innerHTML='';
+
+  rows.forEach((rawRow, i)=>{
+    const r=normaliseRow(rawRow);
+    const errors=validateRow(r);
+    const empId=extractEmpId(r.eid);
+
+    // check expiry warnings (past dates, row still valid for upload)
+    const expiryDates=[r.eidExp,r.licExp,r.labExp,r.insExp];
+    const hasExpired=expiryDates.some(v=>{ if(!v) return false; const d=new Date(v); return !isNaN(d)&&d<today(); });
+
+    let statusHtml, rowClass='';
+    if(errors.length){
+      invalid++;
+      statusHtml=`<span class="row-status invalid"><i class="ti ti-x"></i> Invalid</span>`;
+    } else if(hasExpired){
+      warned++;
+      statusHtml=`<span class="row-status warn"><i class="ti ti-alert-triangle"></i> Has Expired Dates</span>`;
+    } else {
+      valid++;
+      statusHtml=`<span class="row-status valid"><i class="ti ti-check"></i> Valid</span>`;
+    }
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="color:var(--text3);font-family:var(--mono)">${rawRow._row}</td>
+      <td>${statusHtml}</td>
+      <td style="font-family:var(--mono);color:var(--accent);font-size:11px;">${empId||'—'}</td>
+      <td class="name-cell" title="${r.name}">${r.name||'<span style="color:var(--red)">—</span>'}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--text2)">${r.eid||'<span style="color:var(--red)">—</span>'}</td>
+      <td>${r.dob||'—'}</td>
+      <td>${r.mobile||'<span style="color:var(--red)">—</span>'}</td>
+      <td>${r.emergency||'<span style="color:var(--red)">—</span>'}</td>
+      <td>${r.ref||'<span style="color:var(--red)">—</span>'}</td>
+      <td>${dateLabel(r.eidExp)}</td>
+      <td>${dateLabel(r.licExp)}</td>
+      <td>${dateLabel(r.labExp)}</td>
+      <td>${dateLabel(r.insExp)}</td>
+      <td class="err-cell">${errors.length?errors.join(' · '):'<span style="color:var(--teal)">—</span>'}</td>
+    `;
+    body.appendChild(tr);
+  });
+
+  // Stats chips
+  $('previewTitle').textContent=`Preview — ${rows.length} row${rows.length!==1?'s':''}`;
+  const stats=$('previewStats');
+  stats.innerHTML='';
+  if(valid)   stats.innerHTML+=`<span class="stat-chip ok"><i class="ti ti-check"></i>${valid} Ready</span>`;
+  if(warned)  stats.innerHTML+=`<span class="stat-chip warn"><i class="ti ti-alert-triangle"></i>${warned} Warnings</span>`;
+  if(invalid) stats.innerHTML+=`<span class="stat-chip bad"><i class="ti ti-x"></i>${invalid} Invalid</span>`;
+
+  wrap.classList.add('show');
+  showToast(`Loaded ${rows.length} rows — ${invalid} invalid, ${warned} with expired dates`, invalid?'info':'success');
+}
+
+/* ═══════════════════════════════════════
+   SUBMIT BULK
+═══════════════════════════════════════ */
+async function submitBulk(){
+  if(!parsedRows.length) return;
+  const validRows=parsedRows.map(normaliseRow).filter(r=>validateRow(r).length===0);
+  if(!validRows.length){ showToast('No valid rows to submit.','error'); return; }
+
+  const bar=$('progBar'), txt=$('progTxt'), wrap=$('progressWrap');
+  const btn=$('submitBulkBtn');
+  wrap.classList.add('show');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i> Submitting…';
+
+  const URL='https://docs.google.com/forms/d/e/1FAIpQLSekyWrAEOqXpE2Zb3k5dGV0Y_4Ka1pUSrnEWev_hH-HJxL87A/formResponse';
+  let done=0;
+  for(const r of validRows){
+    const params=new URLSearchParams({
+      'entry.108507522': extractEmpId(r.eid),
+      'entry.1124526098': r.name,
+      'entry.605013500': r.eid,
+      'entry.312378018': r.dob,
+      'entry.439131661': r.mobile,
+      'entry.1139688451': r.emergency,
+      'entry.642094797': r.ref,
+      'entry.1962789080': r.eidExp,
+      'entry.2090960301': r.licExp,
+      'entry.1595041081': r.labExp,
+      'entry.203686715': r.insExp,
+    });
+    try{ await fetch(URL,{method:'POST',mode:'no-cors',body:params}); }catch(e){}
+    done++;
+    const pct=Math.round((done/validRows.length)*100);
+    bar.style.width=pct+'%';
+    txt.textContent=`Submitting ${done} of ${validRows.length}…`;
+    await new Promise(res=>setTimeout(res,280));
+  }
+
+  bar.style.width='100%';
+  txt.textContent=`Done! ${done} employee${done!==1?'s':''} submitted.`;
+  btn.disabled=false;
+  btn.innerHTML='<i class="ti ti-rocket"></i> Submit Valid Rows';
+  showToast(`${done} employee${done!==1?'s':''} submitted successfully!`,'success');
+  clearFile();
+}
+
+/* ═══════════════════════════════════════
+   DOWNLOAD TEMPLATE
+═══════════════════════════════════════ */
+function downloadTemplate(){
+  const h=['Full Name','EID Number','Date of Birth','UAE Mobile','Emergency Contact','Reference','EID Expiry Date','License Expiry','Labour Card Expiry','Insurance Expiry'];
+  const s=['Ahmed Al Mansoori','784-1990-1234567-1','1990-06-15','971501234567','971509876543','HR Department','2027-01-01','2027-06-30','2027-12-31','2028-03-01'];
+  const csv=h.join(',')+'\n'+s.join(',')+'\n';
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),download:'employee_bulk_template.csv'});
+  a.click(); URL.revokeObjectURL(a.href);
+  showToast('Template downloaded!','success');
+}
+
+/* ═══════════════════════════════════════
+   THEME SYNC
+═══════════════════════════════════════ */
+(function(){
+  try{
+    const t=window.parent.document.documentElement.getAttribute('data-theme')||'dark';
+    document.documentElement.setAttribute('data-theme',t);
+    new MutationObserver(()=>{
+      document.documentElement.setAttribute('data-theme',
+        window.parent.document.documentElement.getAttribute('data-theme')||'dark');
+    }).observe(window.parent.document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Advance Requests</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/@tabler/icons@3.31.0/icons-react/dist/index.umd.min.js"></script>
+
+
+  
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root,[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;
+  --surface:#21262d;--surface2:#2d333b;
+  --border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --accent:#58a6ff;--accent-dim:rgba(88,166,255,.12);
+  --teal:#39d353;--teal-dim:rgba(57,211,83,.12);
+  --amber:#e3b341;--amber-dim:rgba(227,179,65,.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,.12);
+  --purple:#a371f7;--purple-dim:rgba(163,113,247,.12);
+  --orange:#f0883e;--orange-dim:rgba(240,136,62,.12);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.5);--shadow-lg:0 8px 32px rgba(0,0,0,.6);
+  --card-shadow:0 2px 8px rgba(0,0,0,.45);
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--bg2:#fff;--bg3:#e8ecf0;
+  --surface:#fff;--surface2:#e2e7ed;
+  --border:#c8d0d9;--border2:#9aa5b1;
+  --text:#0d1117;--text2:#3d454f;--text3:#5a6370;
+  --accent:#0550ae;--accent-dim:rgba(5,80,174,.12);
+  --teal:#116329;--teal-dim:rgba(17,99,41,.13);
+  --amber:#7d4e00;--amber-dim:rgba(125,78,0,.13);
+  --red:#a8111b;--red-dim:rgba(168,17,27,.11);
+  --purple:#6639c8;--purple-dim:rgba(102,57,200,.13);
+  --orange:#953800;--orange-dim:rgba(149,56,0,.13);
+  --shadow:0 1px 3px rgba(0,0,0,.10);--shadow-md:0 4px 16px rgba(0,0,0,.12);--shadow-lg:0 8px 32px rgba(0,0,0,.15);
+  --card-shadow:0 2px 8px rgba(0,0,0,.10);
+}
+html,body{min-height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.page{min-height:100vh;padding:20px 20px 40px;}
+
+/* SECTION HEADER */
+.section-header{margin-bottom:8px;}
+.section-header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.section-title-group h2{font-size:18px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px;}
+.section-sep{height:1px;background:var(--border);margin:10px 0 14px;}
+.section-desc{font-size:12px;color:var(--text3);margin-top:3px;display:flex;align-items:center;gap:6px;}
+.section-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+/* SVG ICON */
+.ico{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ico svg{display:block;}
+
+/* TOP BAR */
+.top-bar{display:flex;align-items:stretch;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.summary-cards{display:flex;gap:10px;flex:1 1 auto;flex-wrap:wrap;min-width:0;}
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:11px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--card-shadow);transition:transform .15s,box-shadow .15s;flex:1 1 130px;min-width:0;}
+.summary-card:hover{transform:translateY(-1px);box-shadow:var(--shadow-md);}
+.summary-card-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.summary-card-icon.purple{background:var(--purple-dim);color:var(--purple);}
+.summary-card-icon.teal{background:var(--teal-dim);color:var(--teal);}
+.summary-card-icon.amber{background:var(--amber-dim);color:var(--amber);}
+.summary-card-icon.accent{background:var(--accent-dim);color:var(--accent);}
+.summary-card-icon.red{background:var(--red-dim);color:var(--red);}
+.summary-card-icon.orange{background:var(--orange-dim);color:var(--orange);}
+.summary-card-body{min-width:0;}
+.summary-card-value{font-size:16px;font-weight:700;font-family:var(--mono);color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.summary-card-label{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:1px;white-space:nowrap;display:flex;align-items:center;gap:4px;}
+
+/* FILTER PANEL */
+.filter-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px;box-shadow:var(--shadow);display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;flex-shrink:0;}
+.filter-field{display:flex;flex-direction:column;gap:4px;}
+.filter-label{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:5px;}
+.filter-input{padding:7px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:12.5px;outline:none;transition:border-color .15s,box-shadow .15s;width:148px;}
+.filter-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--purple-dim);}
+.filter-input.err{border-color:var(--red)!important;box-shadow:0 0 0 3px var(--red-dim)!important;}
+.filter-err-msg{font-size:10px;color:var(--red);margin-top:2px;display:none;white-space:nowrap;}
+.filter-err-msg.show{display:block;}
+.filter-divider{width:1px;background:var(--border);align-self:stretch;margin:0 2px;}
+.cache-info{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.cache-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block;}
+.cache-dot.stale{background:var(--amber);}
+
+/* BUTTONS */
+.tb-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;font-size:12.5px;font-family:var(--font);font-weight:600;transition:all .18s;white-space:nowrap;}
+.tb-btn:hover{background:var(--surface2);}
+.tb-btn.danger{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.tb-btn.danger:hover{background:var(--red);color:#fff;}
+.tb-btn.success{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.tb-btn.success:hover{background:var(--teal);color:#fff;}
+.tb-btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.tb-btn.primary:hover{background:var(--accent);color:#fff;}
+.tb-btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+.tb-btn.icon-only{padding:8px;}
+.tb-btn.sm{padding:6px 11px;font-size:11.5px;}
+
+/* TABLE CARD */
+.data-table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;}
+.data-table-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;}
+.data-table-title{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;}
+.data-table-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.data-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+/* TABLE — no column dividers, clean alignment */
+.data-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.data-table-wrap{overflow-x:hidden;}
+.data-table thead th{
+  position:sticky;top:0;z-index:2;
+  background:var(--bg3);
+  text-align:left;
+  font-size:10px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.08em;
+  padding:8px 10px;
+  border-bottom:2px solid var(--border);
+  border-right:none;border-left:none;
+  white-space:nowrap;
+}
+.data-table td{
+  padding:9px 10px;
+  border-bottom:1px solid var(--border);
+  border-right:none;border-left:none;
+  color:var(--text);
+  vertical-align:middle;
+}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tbody tr{transition:background .12s;}
+.data-table tbody tr:hover td{background:rgba(255,255,255,.03);}
+.empty-state{text-align:center;padding:56px 20px;color:var(--text3);}
+.empty-state p{font-size:13px;margin-top:10px;}
+.empty-state small{font-size:11px;color:var(--text3);display:block;margin-top:4px;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap;}
+.badge.green{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(57,211,83,.3);}
+.badge.amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(227,179,65,.3);}
+.badge.red{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.3);}
+.badge.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(163,113,247,.3);}
+.badge.gray{background:rgba(110,118,129,.18);color:#8b949e;border:1px solid rgba(110,118,129,.3);}
+
+/* STATUS PILL */
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.status-pill.pending{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(227,179,65,.35);}
+.status-pill.approved{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(57,211,83,.35);}
+.status-pill.rejected{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,81,73,.35);}
+
+/* ACTION BUTTONS */
+.action-pair{display:flex;gap:4px;flex-wrap:wrap;}
+.act-btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;font-size:10.5px;font-family:var(--font);font-weight:700;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.act-btn.accept{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.act-btn.accept:hover{background:var(--teal);color:#fff;}
+.act-btn.reject{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.act-btn.reject:hover{background:var(--red);color:#fff;}
+@media(max-width:1100px){.act-btn .btn-label{display:none;}.act-btn{padding:5px 7px;gap:0;}}
+@media(min-width:1101px){.act-btn .btn-label{display:inline;}}
+
+/* PAGINATION */
+.pagination-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;background:var(--surface);}
+.pagination-info{font-size:12px;color:var(--text3);}
+.pagination-controls{display:flex;align-items:center;gap:5px;}
+.page-btn{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 6px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;font-size:12.5px;font-family:var(--mono);font-weight:600;transition:all .15s;}
+.page-btn:hover:not(:disabled):not(.active){background:var(--surface2);}
+.page-btn.active{background:var(--purple-dim);border-color:var(--purple);color:var(--purple);}
+.page-btn:disabled{opacity:.35;cursor:not-allowed;}
+.page-btn.ellipsis{border:none;background:none;cursor:default;color:var(--text3);}
+.rpp-select{padding:5px 8px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:12px;outline:none;}
+.rpp-label{font-size:12px;color:var(--text3);}
+.pagination-right{display:flex;align-items:center;gap:8px;}
+
+/* MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:400;align-items:center;justify-content:center;padding:16px;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);width:100%;max-width:520px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.modal-header h2{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;}
+.modal-body{padding:18px 20px;overflow-y:auto;flex:1;}
+.modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.detail-modal{max-width:580px;}
+.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.detail-row{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;}
+.detail-row.full{grid-column:1/-1;}
+.detail-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px;display:flex;align-items:center;gap:4px;}
+.detail-value{font-size:13px;color:var(--text);font-weight:500;}
+.detail-value.mono{font-family:var(--mono);font-size:12px;}
+.detail-value.purple{color:var(--purple);font-weight:700;}
+.detail-value.teal{color:var(--teal);font-weight:700;}
+.detail-value.accent{color:var(--accent);font-weight:700;}
+.detail-value.amber{color:var(--amber);font-weight:700;}
+.emp-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;font-size:12.5px;color:var(--text2);margin-bottom:14px;}
+.emp-strip strong{color:var(--text);}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;}
+.field select{padding:9px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;outline:none;}
+.field select:focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--purple-dim);}
+.info-box{display:flex;align-items:flex-start;gap:10px;background:var(--accent-dim);border:1px solid rgba(88,166,255,.25);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--text2);margin-bottom:14px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:11px 16px;display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;color:var(--text);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;max-width:340px;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast-icon-wrap{flex-shrink:0;}
+.toast.warn .toast-icon-wrap svg{color:var(--amber);}
+.toast.error .toast-icon-wrap svg{color:var(--red);}
+.toast .toast-icon-wrap svg{color:var(--teal);}
+
+@keyframes pulse-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.pulse{animation:pulse-spin .7s linear infinite;display:inline-flex;}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.new-row{animation:fadeSlideIn .22s ease-out;}
+
+/* MOBILE */
+@media(max-width:680px){
+  .page{padding:12px 12px 40px;}
+  .section-header-top{flex-direction:column;gap:10px;}
+  .section-actions{width:100%;justify-content:flex-start;}
+  .desktop-table{display:none!important;}
+  .mobile-cards-list{display:flex!important;}
+  .pagination-bar{flex-direction:column;align-items:flex-start;}
+  .top-bar{flex-direction:column;}
+  .filter-input{width:100%;}
+  .filter-field{flex:1 1 120px;}
+}
+@media(min-width:681px){.mobile-cards-list{display:none!important;}}
+
+.mobile-cards-list{padding:10px 14px;display:none;flex-direction:column;gap:10px;}
+.mob-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px 14px;}
+.mob-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.mob-card-name{font-size:13.5px;font-weight:700;color:var(--text);}
+.mob-card-ref{font-family:var(--mono);font-size:10.5px;color:var(--text3);margin-top:2px;}
+.mob-card-amount{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--purple);white-space:nowrap;}
+.mob-card-meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:10px;}
+.mob-card-meta-item{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;}
+.mob-card-meta-item strong{color:var(--text2);}
+.mob-card-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.mob-accept-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--teal);background:var(--teal-dim);color:var(--teal);font-size:11.5px;font-weight:700;cursor:pointer;font-family:var(--font);flex:1;justify-content:center;}
+.mob-reject-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--red);background:var(--red-dim);color:var(--red);font-size:11.5px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.mob-view-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--accent);background:var(--accent-dim);color:var(--accent);font-size:11.5px;font-weight:700;cursor:pointer;font-family:var(--font);flex:1;justify-content:center;}
+
+#scroll-top{position:fixed;bottom:70px;right:22px;width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;box-shadow:var(--shadow-md);z-index:100;}
+#scroll-top.show{opacity:1;pointer-events:auto;}
+#scroll-top:hover{background:var(--surface2);}
+
+/* Search */
+.search-wrap{position:relative;display:flex;align-items:center;}
+.search-wrap .search-ico{position:absolute;left:9px;pointer-events:none;color:var(--text3);}
+.search-input{padding:7px 10px 7px 30px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:12.5px;outline:none;transition:border-color .15s,box-shadow .15s;width:200px;}
+.search-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--purple-dim);}
+
+/* Stacked name+eid cell */
+.cell-name-eid{display:flex;flex-direction:column;gap:1px;}
+.cell-name{font-weight:700;color:var(--text);font-size:12.5px;display:flex;align-items:center;gap:5px;}
+.cell-eid{font-family:var(--mono);font-size:10.5px;color:var(--text3);display:flex;align-items:center;gap:4px;margin-top:1px;}
+</style>
+</head>
+<body>
+<div class="page" id="main-page">
+
+  <!-- SECTION HEADER -->
+  <div class="section-header">
+    <div class="section-header-top">
+      <div class="section-title-group">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Advance Requests — Master Sheet
+        </h2>
+        <div class="section-desc">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          Live data from IndexedDB cache · Pending requests
+        </div>
+      </div>
+      <div class="section-actions">
+        <button class="tb-btn success" id="btn-accept-sel" onclick="acceptSelected()" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Accept <span id="sel-count">0</span>
+        </button>
+        <button class="tb-btn danger" id="btn-reject-sel" onclick="rejectSelected()" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          Reject Selected
+        </button>
+      </div>
+    </div>
+    <div class="section-sep"></div>
+  </div>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="summary-cards">
+      <!-- Pending Requests -->
+      <div class="summary-card">
+        <div class="summary-card-icon amber">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-value" id="card-pending">0</div>
+          <div class="summary-card-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+            Req-Pending
+          </div>
+        </div>
+      </div>
+      <!-- Total Requested Amount (pending only) -->
+      <div class="summary-card">
+        <div class="summary-card-icon orange">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-value" id="card-req-amount">AED 0</div>
+          <div class="summary-card-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+            Req-Amount
+          </div>
+        </div>
+      </div>
+      <!-- Installments -->
+      <div class="summary-card">
+        <div class="summary-card-icon purple">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-value" id="card-installments">0</div>
+          <div class="summary-card-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+            Req-Installment
+          </div>
+        </div>
+      </div>
+      <!-- Lump-sum -->
+      <div class="summary-card">
+        <div class="summary-card-icon accent">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-value" id="card-lumpsum">0</div>
+          <div class="summary-card-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+             1-Payment
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER PANEL -->
+    <div class="filter-panel">
+      <div class="filter-field">
+        <div class="filter-label">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          From Date
+        </div>
+        <input type="date" class="filter-input" id="f-from" onchange="validateDateRange(); applyFilters();" />
+        <span class="filter-err-msg" id="f-from-err">After To date.</span>
+      </div>
+      <div class="filter-field">
+        <div class="filter-label">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          To Date
+        </div>
+        <input type="date" class="filter-input" id="f-to" onchange="validateDateRange(); applyFilters();" />
+        <span class="filter-err-msg" id="f-to-err">Before From date.</span>
+      </div>
+      <div class="filter-divider"></div>
+      <div style="display:flex;flex-direction:column;gap:5px;justify-content:flex-end;">
+        <button class="tb-btn sm" onclick="clearFilters()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Clear
+        </button>
+        <span class="cache-info" id="cache-info"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA TABLE CARD -->
+  <div class="data-table-card">
+    <div class="data-table-header">
+      <div class="data-table-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        Requests
+        <span class="badge amber" id="pending-badge" style="margin-left:4px;">0</span>
+      </div>
+      <div class="data-table-toolbar">
+        <div class="search-wrap">
+          <span class="search-ico">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+          <input type="text" class="search-input" id="f-search" placeholder="Search name, ref, EID…" oninput="applyFilters()" />
+        </div>
+        <label style="font-size:12px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:5px;">
+          <input type="checkbox" id="chk-all-pending" onchange="toggleAllPending(this.checked)" style="width:14px;height:14px;" />
+          Select All
+        </label>
+      </div>
+    </div>
+
+    <!-- Desktop table -->
+    <div class="data-table-wrap desktop-table">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:32px;padding-left:10px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </th>
+            <th style="width:12%;">REF ID</th>
+            <th style="width:7%;">Emp ID</th>
+            <th style="width:24%;">Name &amp; EID</th>
+            <th style="width:22%;">Amount (AED) &amp; Reason</th>
+            <th style="width:20%;">Ret Req Months</th>
+            <th style="width:15%;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="pending-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="mobile-cards-list" id="mobile-cards-list"></div>
+
+    <!-- Pagination -->
+    <div class="pagination-bar" id="pagination-bar">
+      <div class="pagination-info" id="pagination-info">Showing 0–0 of 0</div>
+      <div class="pagination-controls" id="pagination-controls"></div>
+      <div class="pagination-right">
+        <span class="rpp-label">Rows:</span>
+        <select class="rpp-select" id="rpp-select" onchange="onRppChange()">
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCEPT MODAL -->
+<div class="modal-backdrop" id="modal-accept">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Accept Advance Request
+      </h2>
+      <button class="tb-btn icon-only" onclick="closeModal('modal-accept')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="emp-strip" id="accept-strip"></div>
+      <div class="info-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Accept as-is or override the repayment plan before confirming.
+      </div>
+      <div class="field">
+        <label>Accept Mode</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:8px 14px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);flex:1;">
+            <input type="radio" name="accept-mode" value="asis" checked onchange="toggleAcceptMode(this.value)" style="width:14px;height:14px;" />
+            Accept As-Is <span style="font-size:10.5px;color:var(--text3);">(employee's plan)</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:8px 14px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);flex:1;">
+            <input type="radio" name="accept-mode" value="override" onchange="toggleAcceptMode(this.value)" style="width:14px;height:14px;" />
+            Override Plan
+          </label>
+        </div>
+      </div>
+      <div id="accept-override-wrap" style="display:none;">
+        <div class="field">
+          <label>Override Repayment Plan</label>
+          <select id="accept-months-override" onchange="updateAcceptPreview()">
+            <option value="0">No Installments (Lump-Sum)</option>
+            <option value="1">1 Month — Next Salary Deduction</option>
+            <option value="2">2 Monthly Installments</option>
+            <option value="3">3 Monthly Installments</option>
+            <option value="4">4 Monthly Installments</option>
+            <option value="5">5 Monthly Installments</option>
+            <option value="6">6 Monthly Installments</option>
+            <option value="9">9 Monthly Installments</option>
+            <option value="12">12 Monthly Installments</option>
+          </select>
+        </div>
+      </div>
+      <div id="accept-preview" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;font-size:12px;margin-top:4px;">
+        <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:5px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Effective Plan Preview
+        </div>
+        <div id="accept-preview-body" style="color:var(--text2);"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="tb-btn" onclick="closeModal('modal-accept')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancel
+      </button>
+      <button class="tb-btn danger" onclick="decideFromModal('rejected')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Reject Instead
+      </button>
+      <button class="tb-btn success" onclick="decideFromModal('approved')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Confirm Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-backdrop" id="modal-detail">
+  <div class="modal detail-modal">
+    <div class="modal-header">
+      <h2>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Request Details
+      </h2>
+      <button class="tb-btn icon-only" onclick="closeModal('modal-detail')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modal-detail-body"></div>
+    <div class="modal-footer">
+      <button class="tb-btn" onclick="closeModal('modal-detail')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Back
+      </button>
+      <button class="tb-btn danger" id="detail-reject-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Reject
+      </button>
+      <button class="tb-btn success" id="detail-accept-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon-wrap" id="toast-icon-wrap">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  </span>
+  <span id="toast-msg">Done</span>
+</div>
+
+<!-- Scroll top -->
+<button id="scroll-top" onclick="scrollToTop()" title="Scroll to top">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+
+const GOOGLE_FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSfPkgYXjfSLC9HdQVHVQ1NEWpQ99LqST36ekWqh323kx_BrzQ/formResponse';
+const _AP2_CACHE_KEY = 'ap2_master';
+async function clearCache(){try{await _idbDel(_AP2_CACHE_KEY);}catch(e){}}
+
+// ── IndexedDB helpers ────────────────────────────────────────
+function _getDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open('ap2_fleet_cache',2);
+    req.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains('datasets'))db.createObjectStore('datasets');};
+    req.onsuccess=e=>res(e.target.result);
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+async function _idbGet(key){
+  const db=await _getDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('datasets','readonly');
+    const req=tx.objectStore('datasets').get(key);
+    req.onsuccess=e=>res(e.target.result??null);
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+async function _idbSet(key,value){
+  const db=await _getDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('datasets','readwrite');
+    const req=tx.objectStore('datasets').put(value,key);
+    req.onsuccess=()=>res();
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+async function _idbDel(key){
+  const db=await _getDB();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction('datasets','readwrite');
+    const req=tx.objectStore('datasets').delete(key);
+    req.onsuccess=()=>res();
+    req.onerror=e=>rej(e.target.error);
+  });
+}
+
+
+
+let allRequests=[],filteredList=[],currentPage=1,rowsPerPage=20;
+let selectedRefs=new Set(),pendingAcceptRef=null,detailRef=null;
+
+function fmt(n){return Number(n).toLocaleString('en-AE',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtShort(n){return Number(n).toLocaleString('en-AE',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function esc(v){if(!v&&v!==0)return'';return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtMonth(val){if(!val)return'—';try{const d=new Date(val);if(isNaN(d))return esc(val);return d.toLocaleDateString('en-GB',{month:'short',year:'numeric'});}catch(e){return esc(val);}}
+function fmtDate(val){if(!val)return'—';try{const d=new Date(val);if(isNaN(d))return esc(val);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return esc(val);}}
+function refToDate(ref){const m=String(ref).match(/ADV-(\d{4})(\d{2})(\d{2})-/);if(!m)return null;return`${m[1]}-${m[2]}-${m[3]}`;}
+
+// SVG ICON HELPERS (inline, always visible)
+const SVG={
+  hash:`<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
+  user:`<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  id:`<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+  fingerprint:`<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10"/><path d="M12 8c-2.21 0-4 1.79-4 4"/><path d="M12 16c0 2.21-1.79 4-4 4"/><path d="M12 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg>`,
+  dollar:`<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+  msg:`<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  wallet:`<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+  cal:`<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  check:`<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  ban:`<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>`,
+  clock:`<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  shield:`<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  calcheck:`<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>`,
+  activity:`<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+};
+
+// ROW MAPPING (sheet header order — verified against live data)
+// [0]REF ID [1]EmpName [2]EmpID [3]EID No [4]ReqAmount [5]ReqInstallments
+// [6]RetReqMonths [7]ReqForMonth [8]ReqReason [9]Timestamp [10]AppAmount
+// [11]AppInstallments [12]RetAppMonths [13]ReqStatus [14]Amount [15]DissDate
+function rowToRequest(r){
+  const ref=String(r[0]||'').trim();
+  const empName=String(r[1]||'').trim();
+  const empId=parseInt(r[2])||0;
+  const eidNo=String(r[3]||'').trim();
+  const reqAmount=parseFloat(r[4])||0;
+  const reqInstallments=parseInt(r[5])||0;
+  const retReqMonths=String(r[6]||'').trim();
+  const reqForMonth=String(r[7]||'').trim();
+  const reqReason=String(r[8]||'').trim();
+  const timestamp=String(r[9]||'').trim();
+  const appAmount=parseFloat(r[10])||0;
+  const appInstallments=parseInt(r[11])||0;
+  const retAppMonths=String(r[12]||'').trim();
+  const rawStatus=String(r[13]||'').trim();
+  const amount=parseFloat(r[14])||0;
+  const dissDate=String(r[15]||'').trim();
+  if(!ref||!empId)return null;
+  const sl=rawStatus.toLowerCase();
+  let status='pending';
+  if(sl==='approved'||sl==='approve')status='approved';
+  else if(sl==='rejected'||sl==='reject')status='rejected';
+  else if(sl==='pending'||sl==='')status='pending';
+  else status='pending'; // any other/blank-equivalent value treated as pending
+  const reqIsLumpSum=reqInstallments===0;
+  const months=reqIsLumpSum?1:reqInstallments;
+  const repayLabel=reqIsLumpSum?'Lump-Sum':months===1?'Next Month':months+' Installments';
+  return{ref,empId,eidNo,empName,reqAmount,reqInstallments,retReqMonths,reqForMonth,reqReason,timestamp,appAmount,appInstallments,retAppMonths,status,rawStatus,amount,dissDate,reqDate:refToDate(ref),months,isLumpSum:reqIsLumpSum,repayLabel};
+}
+
+function statusBadge(status){
+  if(status==='approved')return`<span class="status-pill approved">${SVG.check} Approved</span>`;
+  if(status==='rejected')return`<span class="status-pill rejected">${SVG.ban} Rejected</span>`;
+  return`<span class="status-pill pending">${SVG.clock} Pending</span>`;
+}
+
+// TOAST
+let toastTimer;
+const TOAST_SVGS={
+  ok:`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+  warn:`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>`,
+  error:`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+};
+function showToast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-icon-wrap').innerHTML=TOAST_SVGS[type]||TOAST_SVGS.ok;
+  document.getElementById('toast-msg').textContent=msg;
+  t.className='toast'+(type!=='ok'?' '+type:'');
+  requestAnimationFrame(()=>t.classList.add('show'));
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// LOAD DATA — IndexedDB only (ap2_fleet_cache → ap2_master)
+async function loadData(){
+  allRequests=[];selectedRefs.clear();updateSelectionUI();
+  try{
+    const entry=await _idbGet(_AP2_CACHE_KEY).catch(()=>null);
+    // Diagnose what is actually stored so issues are visible in console
+    console.group('[loadData] IDB diagnostic — key:',_AP2_CACHE_KEY);
+    console.log('raw entry:',entry);
+    if(entry===null||entry===undefined){
+      console.warn('→ Key not found in ap2_fleet_cache / datasets store.');
+    }else if(Array.isArray(entry)){
+      console.log('→ Entry is a plain array, length:',entry.length);
+    }else if(entry&&typeof entry==='object'){
+      console.log('→ Entry is an object. Keys:',Object.keys(entry));
+      if(entry.data)console.log('  entry.data length:',Array.isArray(entry.data)?entry.data.length:'not an array');
+      if(entry.rows)console.log('  entry.rows length:',Array.isArray(entry.rows)?entry.rows.length:'not an array');
+    }else{
+      console.warn('→ Entry is unexpected type:',typeof entry,entry);
+    }
+    console.groupEnd();
+
+    // Resolve rows — handle: plain array, {data:[...]}, {rows:[...]}, or any other wrapper
+    let rows=null;
+    if(Array.isArray(entry)){
+      rows=entry;
+    }else if(entry&&Array.isArray(entry.data)){
+      rows=entry.data;
+    }else if(entry&&Array.isArray(entry.rows)){
+      rows=entry.rows;
+    }
+
+    if(rows&&rows.length){
+      processFetchedData(rows);
+      updateCacheInfo(0,false);
+    }else{
+      const reason=entry===null
+        ?'Key <code>ap2_master</code> not found in <code>ap2_fleet_cache</code>'
+        :entry&&!Array.isArray(entry)&&!entry.data&&!entry.rows
+          ?'Key exists but data array not found — check console for stored shape'
+          :'Cache is empty (0 rows)';
+      document.getElementById('pending-tbody').innerHTML=`<tr><td colspan="9"><div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 10px;display:block;opacity:.3;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p>No data available</p><small>${reason}</small></div></td></tr>`;
+      showToast('Cache empty — check console','warn');
+    }
+  }catch(err){
+    console.error('[loadData] error:',err);
+    showToast('Could not read cache','error');
+  }
+}
+
+function processFetchedData(rows){
+  allRequests=[];
+  for(const r of rows){const req=rowToRequest(r);if(req)allRequests.push(req);}
+  applyFilters();updateSummaryCards();
+}
+
+function updateCacheInfo(age,fresh){
+  const el=document.getElementById('cache-info');if(!el)return;
+  el.innerHTML=`<span class="cache-dot${fresh?'':' stale'}"></span>${fresh?'Live data':`Cached ${age}s ago`}`;
+}
+
+// DATE VALIDATION
+function validateDateRange(){
+  const fe=document.getElementById('f-from'),te=document.getElementById('f-to');
+  const fee=document.getElementById('f-from-err'),tee=document.getElementById('f-to-err');
+  fe.classList.remove('err');te.classList.remove('err');fee.classList.remove('show');tee.classList.remove('show');
+  if(fe.value&&te.value&&fe.value>te.value){fe.classList.add('err');te.classList.add('err');fee.classList.add('show');tee.classList.add('show');return false;}
+  return true;
+}
+
+// FILTERS
+function applyFilters(){
+  if(!validateDateRange())return;
+  const from=document.getElementById('f-from').value;
+  const to=document.getElementById('f-to').value;
+  const search=document.getElementById('f-search').value.toLowerCase().trim();
+  filteredList=allRequests.filter(r=>{
+    if(r.status!=='pending')return false;
+    if(from&&r.reqDate&&r.reqDate<from)return false;
+    if(to&&r.reqDate&&r.reqDate>to)return false;
+    if(search){const hay=(r.ref+r.empName+r.eidNo+r.reqReason+String(r.empId)).toLowerCase();if(!hay.includes(search))return false;}
+    return true;
+  });
+  currentPage=1;renderTable();
+}
+
+function clearFilters(){
+  ['f-from','f-to'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).classList.remove('err');});
+  document.getElementById('f-from-err').classList.remove('show');
+  document.getElementById('f-to-err').classList.remove('show');
+  document.getElementById('f-search').value='';
+  applyFilters();
+}
+
+// SUMMARY CARDS
+function updateSummaryCards(){
+  const pending=allRequests.filter(r=>r.status==='pending');
+  const installments=pending.filter(r=>!r.isLumpSum&&r.months>1);
+  const lumpsum=pending.filter(r=>r.isLumpSum||r.months<=1);
+  document.getElementById('card-pending').textContent=pending.length;
+  document.getElementById('card-req-amount').textContent='AED '+fmtShort(pending.reduce((s,r)=>s+r.reqAmount,0));
+  document.getElementById('card-installments').textContent=installments.length;
+  document.getElementById('card-lumpsum').textContent=lumpsum.length;
+  document.getElementById('pending-badge').textContent=filteredList.length+' records';
+}
+
+// RENDER TABLE
+function renderTable(){
+  updateSummaryCards();
+  selectedRefs.clear();updateSelectionUI();
+  document.getElementById('chk-all-pending').checked=false;
+  const start=(currentPage-1)*rowsPerPage;
+  const end=Math.min(start+rowsPerPage,filteredList.length);
+  renderDesktopTable(filteredList.slice(start,end),start,end);
+  renderMobileCards(filteredList.slice(start,end));
+  renderPagination();
+}
+
+function fmtRetReqMonths(val){
+  if(!val)return'—';
+  return val.split(/[,;]/).map(s=>{
+    s=s.trim();if(!s)return'';
+    const d=new Date(s);
+    if(!isNaN(d)&&s.includes('T')){return d.toLocaleDateString('en-GB',{month:'short',year:'numeric'});}
+    return s;
+  }).filter(Boolean).join(' · ');
+}
+
+function renderDesktopTable(page,start,end){
+  const tbody=document.getElementById('pending-tbody');
+  if(!filteredList.length){
+    tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto;display:block;opacity:.3;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <p>No pending records</p><small>${allRequests.length?'No pending requests at this time.':'No data returned from API.'}</small></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML=page.map(r=>{
+    // Compact REF ID — show last segment only, full on hover
+    const refShort=r.ref.replace(/^ADV-\d{8}-/,'#');
+    const refCell=`<span title="${esc(r.ref)}" style="font-family:var(--mono);font-size:10px;color:var(--accent);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;">${esc(refShort)}</span>`;
+
+    // Emp ID compact
+    const empCell=`<span style="font-family:var(--mono);font-size:11.5px;color:var(--text2);">${r.empId}</span>`;
+
+    // Name + EID stacked
+    const nameEidCell=`<div>
+      <div style="font-weight:700;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(r.empName)}</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:1px;">${esc(r.eidNo)||'—'}</div>
+    </div>`;
+
+    // Amount + Reason stacked
+    const amtReasonCell=`<div>
+      <div style="font-family:var(--mono);font-weight:700;font-size:12.5px;color:var(--purple);">AED ${r.reqAmount?fmt(r.reqAmount):'—'}</div>
+      ${r.reqReason?`<div style="font-size:10.5px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;" title="${esc(r.reqReason)}">${esc(r.reqReason)}</div>`:''}
+    </div>`;
+
+    // Ret Req Months — month pills
+    const months=fmtRetReqMonths(r.retReqMonths);
+    const retCell=r.retReqMonths
+      ?`<div style="display:flex;flex-wrap:wrap;gap:3px;">${months.split(' · ').map(m=>`<span style="background:var(--accent-dim);color:var(--accent);border:1px solid rgba(88,166,255,.25);border-radius:12px;padding:1px 7px;font-size:10px;font-family:var(--mono);white-space:nowrap;">${esc(m)}</span>`).join('')}</div>`
+      :`<span style="color:var(--text3);font-size:11px;">—</span>`;
+
+    // Action — icon+label, label hides on narrow via CSS
+    const actionHtml=`<div class="action-pair">
+      <button class="act-btn accept" onclick="openAcceptModal('${esc(r.ref)}')" title="Accept">${SVG.check}<span class="btn-label"> Accept</span></button>
+      <button class="act-btn reject" onclick="decide('${esc(r.ref)}','rejected')" title="Reject">${SVG.ban}<span class="btn-label"> Reject</span></button>
+    </div>`;
+
+    return`<tr class="new-row" data-ref="${esc(r.ref)}">
+      <td style="width:32px;padding-left:10px;"><input type="checkbox" class="pending-chk" onchange="togglePendingRow('${esc(r.ref)}',this.checked)" style="width:13px;height:13px;cursor:pointer;"/></td>
+      <td>${refCell}</td>
+      <td>${empCell}</td>
+      <td>${nameEidCell}</td>
+      <td>${amtReasonCell}</td>
+      <td>${retCell}</td>
+      <td>${actionHtml}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('pagination-info').textContent=`Showing ${start+1}–${end} of ${filteredList.length}`;
+}
+
+function renderMobileCards(page){
+  const c=document.getElementById('mobile-cards-list');
+  if(!filteredList.length){c.innerHTML=`<div class="empty-state"><p>No records</p></div>`;return;}
+  c.innerHTML=page.map(r=>{
+    return`<div class="mob-card">
+      <div class="mob-card-top">
+        <div>
+          <div class="mob-card-name">${SVG.user} ${esc(r.empName)}</div>
+          <div class="mob-card-ref">${SVG.hash} ${esc(r.ref)}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="mob-card-amount">${SVG.dollar} ${r.reqAmount?fmt(r.reqAmount):'—'}</div>
+          <div style="margin-top:4px;">${statusBadge(r.status)}</div>
+        </div>
+      </div>
+      <div class="mob-card-meta">
+        <div class="mob-card-meta-item">${SVG.id}<strong>ID:</strong> ${r.empId}</div>
+        <div class="mob-card-meta-item">${SVG.fingerprint}<strong>EID:</strong> ${esc(r.eidNo)||'—'}</div>
+        ${r.reqReason?`<div class="mob-card-meta-item">${SVG.msg}<strong>Reason:</strong> ${esc(r.reqReason)}</div>`:''}
+        ${r.amount?`<div class="mob-card-meta-item">${SVG.wallet}<strong>Amount:</strong> AED ${fmt(r.amount)}</div>`:''}
+      </div>
+      <div class="mob-card-actions">
+        <button class="mob-accept-btn" onclick="openAcceptModal('${esc(r.ref)}')">${SVG.check} Accept</button>
+        <button class="mob-reject-btn" onclick="decide('${esc(r.ref)}','rejected')">${SVG.ban} Reject</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// PAGINATION
+function renderPagination(){
+  const total=filteredList.length,pages=Math.max(1,Math.ceil(total/rowsPerPage));
+  const ctrl=document.getElementById('pagination-controls');
+  if(pages<=1){ctrl.innerHTML='';return;}
+  const btns=[];
+  const add=(label,p,active,disabled,ellipsis)=>{
+    if(ellipsis){btns.push(`<span class="page-btn ellipsis">…</span>`);return;}
+    btns.push(`<button class="page-btn${active?' active':''}${disabled?' disabled':''}" onclick="goToPage(${p})"${disabled?' disabled':''}>${label}</button>`);
+  };
+  const chevL=`<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
+  const chevR=`<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+  add(chevL,currentPage-1,false,currentPage===1);
+  add('1',1,currentPage===1,false);
+  if(currentPage>4)add('…',0,false,false,true);
+  for(let p=Math.max(2,currentPage-2);p<=Math.min(pages-1,currentPage+2);p++)add(p,p,p===currentPage,false);
+  if(currentPage<pages-3)add('…',0,false,false,true);
+  if(pages>1)add(pages,pages,currentPage===pages,false);
+  add(chevR,currentPage+1,false,currentPage===pages);
+  ctrl.innerHTML=btns.join('');
+}
+function goToPage(p){const pages=Math.ceil(filteredList.length/rowsPerPage);if(p<1||p>pages)return;currentPage=p;renderTable();document.getElementById('main-page').scrollIntoView({behavior:'smooth',block:'start'});}
+function onRppChange(){rowsPerPage=parseInt(document.getElementById('rpp-select').value);currentPage=1;renderTable();}
+
+// SELECTION
+function updateSelectionUI(){const n=selectedRefs.size;document.getElementById('sel-count').textContent=n;document.getElementById('btn-accept-sel').disabled=n===0;document.getElementById('btn-reject-sel').disabled=n===0;}
+function toggleAllPending(checked){selectedRefs.clear();if(checked)filteredList.filter(r=>r.status==='pending').forEach(r=>selectedRefs.add(r.ref));document.querySelectorAll('.pending-chk').forEach(cb=>{cb.checked=checked;});updateSelectionUI();}
+function togglePendingRow(ref,checked){if(checked)selectedRefs.add(ref);else selectedRefs.delete(ref);updateSelectionUI();}
+async function acceptSelected(){
+  if(!selectedRefs.size)return;
+  // Snapshot all selected refs from filteredList (includes non-rendered pages)
+  const refs=filteredList.filter(r=>r.status==='pending'&&selectedRefs.has(r.ref)).map(r=>r.ref);
+  if(!refs.length)return;
+  const n=refs.length;
+  selectedRefs.clear();updateSelectionUI();
+  document.getElementById('chk-all-pending').checked=false;
+  document.getElementById('btn-accept-sel').disabled=true;
+  document.getElementById('btn-reject-sel').disabled=true;
+  showToast('Processing '+n+' request(s)...','ok');
+  for(let i=0;i<refs.length;i++){
+    const ref=refs[i];
+    const req=allRequests.find(r=>r.ref===ref);if(!req)continue;
+    submitDecisionToGoogleForm(req.ref,req.empId,req.empName,'Approved',req.reqAmount,req.months,buildReturnMonths(req.months));
+    req.status='approved'; // update in memory, no re-render mid-loop
+    showToast('Accepted '+(i+1)+'/'+n+': '+ref,'ok');
+    if(i<refs.length-1)await new Promise(r=>setTimeout(r,2));
+  }
+  clearCache();applyFilters();
+  showToast(n+' request(s) accepted','ok');
+}
+async function rejectSelected(){
+  if(!selectedRefs.size)return;
+  // Snapshot all selected refs from filteredList (includes non-rendered pages)
+  const refs=filteredList.filter(r=>r.status==='pending'&&selectedRefs.has(r.ref)).map(r=>r.ref);
+  if(!refs.length)return;
+  const n=refs.length;
+  selectedRefs.clear();updateSelectionUI();
+  document.getElementById('chk-all-pending').checked=false;
+  document.getElementById('btn-accept-sel').disabled=true;
+  document.getElementById('btn-reject-sel').disabled=true;
+  showToast('Processing '+n+' request(s)...','warn');
+  for(let i=0;i<refs.length;i++){
+    const ref=refs[i];
+    const req=allRequests.find(r=>r.ref===ref);if(!req)continue;
+    submitDecisionToGoogleForm(req.ref,req.empId,req.empName,'Rejected',0,0,'0');
+    req.status='rejected'; // update in memory, no re-render mid-loop
+    showToast('Rejected '+(i+1)+'/'+n+': '+ref,'warn');
+    if(i<refs.length-1)await new Promise(r=>setTimeout(r,2));
+  }
+  clearCache();applyFilters();
+  showToast(n+' request(s) rejected','warn');
+}
+
+// DECIDE
+function decide(ref,verdict,skipForm){
+  const req=allRequests.find(r=>r.ref===ref);if(!req)return;
+  req.status=verdict==='approved'?'approved':'rejected';
+  if(!skipForm)submitDecisionToGoogleForm(req.ref,req.empId,req.empName,verdict==='approved'?'Approved':'Rejected',verdict==='approved'?req.reqAmount:0,verdict==='approved'?req.months:0,verdict==='approved'?buildReturnMonths(req.months):'0');
+  clearCache();
+  const row=document.querySelector(`[data-ref="${ref}"]`);
+  if(row){row.style.transition='opacity .3s';row.style.opacity='0.3';setTimeout(()=>applyFilters(),320);}else applyFilters();
+  showToast((verdict==='approved'?'Accepted — ':'Rejected — ')+ref, verdict==='approved'?'ok':'warn');
+}
+function buildReturnMonths(months){const base=new Date();base.setDate(1);return Array.from({length:months},(_,i)=>{const d=new Date(base);d.setMonth(d.getMonth()+i+1);return d.toLocaleString('en-GB',{month:'short',year:'numeric'});}).join(', ');}
+
+// ACCEPT MODAL
+function openAcceptModal(ref){
+  const req=allRequests.find(r=>r.ref===ref);if(!req)return;
+  pendingAcceptRef=ref;
+  document.getElementById('accept-strip').innerHTML=`
+    <div>${SVG.user} <span>Name: </span><strong>${esc(req.empName)}</strong></div>
+    <div>${SVG.id} <span>Emp ID: </span><strong>${req.empId}</strong></div>
+    <div>${SVG.hash} <span>REF: </span><strong style="font-family:var(--mono);font-size:11px;">${esc(req.ref)}</strong></div>
+    <div>${SVG.dollar} <span>Req Amount: </span><strong style="color:var(--purple);">AED ${fmt(req.reqAmount)}</strong></div>
+    <div style="grid-column:1/-1;">${SVG.cal} <span>Plan: </span><strong style="color:var(--teal);">${esc(req.repayLabel)}</strong></div>
+    ${req.reqReason?`<div style="grid-column:1/-1;">${SVG.msg} <span>Reason: </span><strong>${esc(req.reqReason)}</strong></div>`:''}
+  `;
+  document.querySelectorAll('input[name="accept-mode"]').forEach(r=>{r.checked=r.value==='asis';});
+  document.getElementById('accept-override-wrap').style.display='none';
+  document.getElementById('accept-months-override').value=String(req.isLumpSum?0:req.months);
+  updateAcceptPreview();
+  document.getElementById('modal-accept').classList.add('open');
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.getElementById('modal-accept').addEventListener('click',e=>{if(e.target===document.getElementById('modal-accept'))closeModal('modal-accept');});
+document.getElementById('modal-detail').addEventListener('click',e=>{if(e.target===document.getElementById('modal-detail'))closeModal('modal-detail');});
+
+function toggleAcceptMode(val){document.getElementById('accept-override-wrap').style.display=val==='override'?'block':'none';updateAcceptPreview();}
+
+function updateAcceptPreview(){
+  const req=allRequests.find(r=>r.ref===pendingAcceptRef);if(!req)return;
+  const mode=document.querySelector('input[name="accept-mode"]:checked')?.value||'asis';
+  let months,isLumpSum;
+  if(mode==='asis'){months=req.months;isLumpSum=req.isLumpSum;}
+  else{const v=parseInt(document.getElementById('accept-months-override').value);months=v===0?1:v;isLumpSum=v===0;}
+  const monthly=req.reqAmount/months,startDate=new Date();startDate.setDate(1);
+  let html;
+  if(isLumpSum||months<=1){
+    const due=new Date(startDate);due.setMonth(due.getMonth()+1);
+    html=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span class="badge amber">Lump-Sum</span><span style="font-family:var(--mono);font-weight:700;color:var(--teal);">AED ${fmt(req.reqAmount)}</span><span style="font-size:11px;color:var(--text3);">→ ${due.toLocaleString('en-GB',{month:'short',year:'numeric'})}</span></div>`;
+  }else{
+    const pills=Array.from({length:months},(_,i)=>{const last=i===months-1;const a=last?req.reqAmount-(Math.round(monthly*100)/100)*(months-1):Math.round(monthly*100)/100;const d=new Date(startDate);d.setMonth(d.getMonth()+i+1);return`<span style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;font-family:var(--mono);color:var(--accent);display:inline-flex;gap:4px;align-items:center;"><span style="color:var(--text3);font-size:10px;">#${i+1}</span> AED ${fmt(a)} <span style="color:var(--text2);font-size:10px;">→ ${d.toLocaleString('en-GB',{month:'short',year:'numeric'})}</span></span>`;}).join('');
+    html=`<div style="margin-bottom:8px;display:flex;gap:12px;flex-wrap:wrap;font-size:12px;"><span>Monthly: <strong style="font-family:var(--mono);color:var(--teal);">AED ${fmt(monthly)}</strong></span><span>Months: <strong style="font-family:var(--mono);color:var(--purple);">${months}</strong></span><span>Total: <strong style="font-family:var(--mono);color:var(--accent);">AED ${fmt(req.reqAmount)}</strong></span></div><div style="display:flex;flex-wrap:wrap;gap:5px;">${pills}</div>`;
+  }
+  document.getElementById('accept-preview-body').innerHTML=html;
+}
+
+function decideFromModal(verdict){
+  const req=allRequests.find(r=>r.ref===pendingAcceptRef);if(!req)return;
+  if(verdict==='approved'){const mode=document.querySelector('input[name="accept-mode"]:checked')?.value||'asis';if(mode==='override'){const v=parseInt(document.getElementById('accept-months-override').value);req.isLumpSum=v===0;req.months=v===0?1:v;req.repayLabel=v===0?'Lump-Sum':v===1?'Next Month':v+' Installments';}}
+  submitDecisionToGoogleForm(req.ref,req.empId,req.empName,verdict==='approved'?'Approved':'Rejected',verdict==='approved'?req.reqAmount:0,verdict==='approved'?req.months:0,verdict==='approved'?buildReturnMonths(req.months):'0');
+  closeModal('modal-accept');decide(pendingAcceptRef,verdict,true);pendingAcceptRef=null;
+}
+
+// DETAIL MODAL
+function openDetailModal(ref){
+  const req=allRequests.find(r=>r.ref===ref);if(!req)return;detailRef=ref;
+  document.getElementById('modal-detail-body').innerHTML=`
+    <div class="detail-grid">
+      <div class="detail-row full"><div class="detail-label">${SVG.hash} REF ID</div><div class="detail-value mono accent">${esc(req.ref)}</div></div>
+      <div class="detail-row"><div class="detail-label">${SVG.user} Employee Name</div><div class="detail-value">${esc(req.empName)}</div></div>
+      <div class="detail-row"><div class="detail-label">${SVG.id} Emp ID</div><div class="detail-value mono">${req.empId}</div></div>
+      <div class="detail-row full"><div class="detail-label">${SVG.fingerprint} EID Number</div><div class="detail-value mono">${esc(req.eidNo)||'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">${SVG.dollar} Req Amount</div><div class="detail-value purple">${req.reqAmount?'AED '+fmt(req.reqAmount):'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">${SVG.cal} For Month</div><div class="detail-value">${fmtMonth(req.reqForMonth)}</div></div>
+      <div class="detail-row full"><div class="detail-label">${SVG.msg} Reason</div><div class="detail-value">${esc(req.reqReason)||'—'}</div></div>
+      <div class="detail-row full"><div class="detail-label">${SVG.cal} Ret Req Months</div><div class="detail-value" style="font-size:12px;">${esc(req.retReqMonths)||'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">${SVG.shield} App Amount</div><div class="detail-value teal">${req.appAmount?'AED '+fmt(req.appAmount):'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">${SVG.activity} Status</div><div class="detail-value">${statusBadge(req.status)}</div></div>
+      <div class="detail-row"><div class="detail-label">${SVG.wallet} Amount</div><div class="detail-value purple">${req.amount?'AED '+fmt(req.amount):'—'}</div></div>
+      <div class="detail-row"><div class="detail-label">${SVG.calcheck} Diss Date</div><div class="detail-value amber">${fmtDate(req.dissDate)}</div></div>
+    </div>`;
+  const isPending=req.status==='pending';
+  document.getElementById('detail-accept-btn').style.display=isPending?'':'none';
+  document.getElementById('detail-reject-btn').style.display=isPending?'':'none';
+  document.getElementById('detail-accept-btn').onclick=()=>{closeModal('modal-detail');openAcceptModal(ref);};
+  document.getElementById('detail-reject-btn').onclick=()=>{closeModal('modal-detail');decide(ref,'rejected');};
+  document.getElementById('modal-detail').classList.add('open');
+}
+
+// GOOGLE FORM
+function submitDecisionToGoogleForm(ref,empId,empName,verdict,appAmount,appInstallments,retMonthsList){
+  const body=new FormData();
+  body.append('entry.1832699408',ref);body.append('entry.136041612',String(empId));body.append('entry.1153392573',verdict);
+  body.append('entry.312937153',String(appAmount));body.append('entry.229574748',String(appInstallments));
+  body.append('entry.1835619254',retMonthsList);body.append('entry.338921058',empName);
+  fetch(GOOGLE_FORM_ACTION,{method:'POST',mode:'no-cors',body});
+}
+
+// SCROLL TOP
+window.addEventListener('scroll',()=>{document.getElementById('scroll-top').classList.toggle('show',window.scrollY>300);});
+function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'});}
+
+// THEME SYNC — parent frame attribute → sessionStorage fallback → 'dark'
+(function(){
+  let t='dark';
+  try{t=window.parent.document.documentElement.getAttribute('data-theme')||t;}catch(_){}
+  try{t=sessionStorage.getItem('__ui_theme')||t;}catch(_){}
+  document.documentElement.setAttribute('data-theme',t);
+})();
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t||'dark');}
+function syncTheme(){
+  const p=window.parent?.document?.documentElement;
+  if(p){applyTheme(p.getAttribute('data-theme'));}
+}
+syncTheme();
+try{
+  const p=window.parent?.document?.documentElement;
+  if(p){
+    new MutationObserver(()=>applyTheme(p.getAttribute('data-theme'))).observe(p,{attributes:true,attributeFilter:['data-theme']});
+  }
+}catch(e){}
+
+// BACKGROUND WATCHER — polls IDB every 30s + reacts to ap-cache-updated event
+(function _bgWatcher(){
+  let _debounce=null;
+  async function _applyFromIDB(){
+    const entry=await _idbGet(_AP2_CACHE_KEY).catch(()=>null);
+    let rows=null;
+    if(Array.isArray(entry))rows=entry;
+    else if(entry&&Array.isArray(entry.data))rows=entry.data;
+    else if(entry&&Array.isArray(entry.rows))rows=entry.rows;
+    if(rows&&rows.length){processFetchedData(rows);updateCacheInfo(0,false);}
+  }
+  const _debouncedApply=()=>{clearTimeout(_debounce);_debounce=setTimeout(_applyFromIDB,200);};
+  setInterval(_applyFromIDB,30000);
+  window.addEventListener('ap-cache-updated',_debouncedApply);
+  window.addEventListener('message',e=>{
+    if(!e.data)return;
+    if(e.data.type==='ap-cache-updated'&&e.data.key===_AP2_CACHE_KEY){
+      _debouncedApply();
+    }
+    if(e.data.type==='ap-theme'&&e.data.theme){
+      document.documentElement.setAttribute('data-theme',e.data.theme);
+    }
+  });
+})();
+
+(async()=>{await loadData();})();
+</script>
+</body>
+</html>

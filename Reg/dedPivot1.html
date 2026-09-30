@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Deduction Pivot Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0a0c10;--bg2:#0f1117;--bg3:#141720;
+  --surface:#181c26;--surface2:#1e2333;--surface3:#242a3d;
+  --border:#252b3d;--border2:#2e3650;--border3:#3a4260;
+  --text:#e8edf8;--text2:#8d96b0;--text3:#5a6280;
+  --accent:#4f8ef7;--accent-dim:rgba(79,142,247,.12);--accent-glow:rgba(79,142,247,.25);
+  --teal:#2dd4aa;--teal-dim:rgba(45,212,170,.12);
+  --amber:#f5a623;--amber-dim:rgba(245,166,35,.12);
+  --red:#f05252;--red-dim:rgba(240,82,82,.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,.12);
+  --radius:6px;--radius-lg:10px;--radius-xl:14px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --shadow-lg:0 8px 40px rgba(0,0,0,.8);
+  --header-h:56px;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.55;-webkit-font-smoothing:antialiased;}
+.shell{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* HEADER */
+.header{height:var(--header-h);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,2vw,22px);background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:300;gap:12px;flex-wrap:wrap;}
+.brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;letter-spacing:-.3px;}
+.brand-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.brand-sub{font-size:10px;font-weight:500;color:var(--text3);letter-spacing:.04em;text-transform:uppercase;}
+.header-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.hbadge{display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;background:var(--surface2);border:1px solid var(--border2);font-size:11px;color:var(--text2);white-space:nowrap;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s ease infinite;flex-shrink:0;}
+.live-dot.stale{background:var(--amber);}
+.live-dot.empty{background:var(--red);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+/* CONTENT */
+.content{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:clamp(10px,2.2vh,20px) clamp(14px,2vw,22px) clamp(10px,2vh,16px);}
+.page-hdr{flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:clamp(8px,1.8vh,18px);flex-wrap:wrap;}
+.page-hdr h1{font-size:18px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:10px;}
+.page-hdr p{font-size:12px;color:var(--text3);margin-top:3px;}
+.page-hdr-actions{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:clamp(6px,1.2vh,8px) 16px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface2);color:var(--text);cursor:pointer;font-size:12px;font-family:var(--font);font-weight:600;transition:all .15s;white-space:nowrap;}
+.btn:hover{background:var(--surface3);border-color:var(--border3);}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.btn.primary:hover{background:var(--accent);color:#fff;}
+.btn.success{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.btn.success:hover{background:var(--teal);color:#000;}
+.btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none;}
+.btn.sm{padding:5px 11px;font-size:11px;}
+.btn.xs{padding:3px 8px;font-size:10.5px;}
+.seg{display:flex;border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;}
+.seg button{padding:7px 13px;background:var(--surface2);border:none;border-right:1px solid var(--border2);color:var(--text2);font-size:11.5px;font-weight:600;font-family:var(--font);cursor:pointer;}
+.seg button:last-child{border-right:none;}
+.seg button.active{background:var(--accent-dim);color:var(--accent);}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;flex:1;min-height:0;display:flex;flex-direction:column;}
+.card-hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:clamp(8px,1.4vh,12px) 16px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;}
+.card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;}
+.card-body{padding:16px;}
+
+/* STAT ROW */
+.stat-row{flex-shrink:0;display:flex;gap:clamp(6px,1vh,10px);margin-bottom:clamp(8px,1.6vh,14px);flex-wrap:wrap;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:clamp(9px,1.4vh,13px) 16px;flex:1 1 150px;min-width:0;display:flex;align-items:center;gap:12px;}
+.stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stat-icon.blue{background:var(--accent-dim);color:var(--accent);}
+.stat-icon.teal{background:var(--teal-dim);color:var(--teal);}
+.stat-icon.purple{background:var(--purple-dim);color:var(--purple);}
+.stat-icon.amber{background:var(--amber-dim);color:var(--amber);}
+.stat-val{font-size:19px;font-weight:700;font-family:var(--mono);line-height:1;}
+.stat-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-top:2px;}
+
+/* FILTERS */
+.filter-bar{flex-shrink:0;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;padding:clamp(8px,1.4vh,12px) 16px;border-bottom:1px solid var(--border);}
+.fi{display:flex;flex-direction:column;gap:3px;}
+.fi label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);}
+.fi select,.fi input{padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:12px;outline:none;}
+.fi select:focus,.fi input:focus{border-color:var(--accent);}
+.fi input{width:180px;}
+.fi select{min-width:150px;}
+.search-w{position:relative;}
+.search-w svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;}
+.search-w input{padding-left:28px;}
+
+/* TABLE */
+.tbl-wrap{flex:1;min-height:0;overflow-x:auto;overflow-y:auto;width:100%;-webkit-overflow-scrolling:touch;}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl thead th{position:sticky;top:0;z-index:2;background:var(--bg3);padding:9px 12px;text-align:left;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);border-bottom:2px solid var(--border2);white-space:nowrap;cursor:pointer;user-select:none;}
+.tbl thead th:hover{color:var(--text2);}
+.tbl thead th.num,.tbl tbody td.num{text-align:right;}
+.tbl tbody td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.tbl tbody tr:last-child td{border-bottom:none;}
+.tbl tbody tr:hover td{background:rgba(255,255,255,.018);}
+.mono{font-family:var(--mono);font-size:11.5px;}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap;}
+.badge.blue{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(79,142,247,.25);}
+.badge.gray{background:rgba(90,98,128,.15);color:var(--text2);border:1px solid var(--border2);}
+
+/* PAGINATION */
+.pag-bar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:clamp(6px,1vh,9px) 16px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.pag-info{font-size:11.5px;color:var(--text3);}
+.pag-btns{display:flex;gap:4px;}
+.pg-btn{min-width:28px;height:28px;padding:0 6px;border-radius:5px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;font-size:11.5px;font-family:var(--mono);display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.pg-btn:hover:not(:disabled):not(.cur){background:var(--surface3);}
+.pg-btn.cur{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.pg-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* EMPTY */
+.empty{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:56px 20px;color:var(--text3);}
+.empty-ico{font-size:38px;margin-bottom:12px;opacity:.4;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--surface3);border:1px solid var(--border3);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:11px 16px;display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.34,1.4,.64,1);z-index:9999;max-width:340px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* PIVOT ROW → CLICKABLE */
+.tbl tbody tr.clickable{cursor:pointer;}
+.tbl tbody tr.clickable:hover td{background:var(--accent-dim);}
+.row-chevron{color:var(--text3);opacity:.6;}
+
+/* WORKSPACE — main table + inline detail panel side-by-side */
+.workspace{display:flex;align-items:stretch;gap:14px;flex:1;min-height:0;}
+.main-col{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;}
+
+/* DETAIL PANEL — pushes/adjusts layout, not an overlay */
+.detail-panel{width:0;flex-shrink:0;opacity:0;overflow:hidden;border-radius:var(--radius-lg);transition:width .32s cubic-bezier(.32,1,.5,1),opacity .22s ease;position:sticky;top:calc(var(--header-h) + 14px);}
+.detail-panel.open{width:380px;opacity:1;}
+.detail-panel-inner{width:380px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);max-height:calc(100vh - var(--header-h) - 28px);display:flex;flex-direction:column;overflow:hidden;}
+.detail-hdr{flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:clamp(10px,1.8vh,14px) 16px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,var(--accent-dim),transparent);}
+.detail-hdr-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:8px;}
+.detail-fields{display:flex;flex-direction:column;gap:7px;}
+.detail-field{display:flex;align-items:center;gap:8px;}
+.detail-field-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);width:62px;flex-shrink:0;}
+.detail-field-val{font-size:13px;font-weight:600;color:var(--text);}
+.detail-close{width:26px;height:26px;border-radius:7px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.detail-close:hover{background:var(--surface3);color:var(--text);}
+.detail-summary{flex-shrink:0;display:flex;gap:8px;padding:clamp(8px,1.4vh,12px) 16px;border-bottom:1px solid var(--border);}
+.detail-stat{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:9px 8px;text-align:center;}
+.detail-stat-val{font-size:15px;font-weight:700;font-family:var(--mono);line-height:1;}
+.detail-stat-lbl{font-size:8.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-top:4px;}
+.detail-tbl-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.detail-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.detail-tbl thead th{position:sticky;top:0;background:var(--bg3);padding:8px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);border-bottom:2px solid var(--border2);z-index:1;}
+.detail-tbl thead th.num,.detail-tbl tbody td.num{text-align:right;}
+.detail-tbl tbody td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.detail-tbl tbody tr:last-child td{border-bottom:none;}
+.detail-tbl tbody tr{opacity:0;animation:rowIn .28s ease forwards;}
+@keyframes rowIn{to{opacity:1;}}
+.detail-tbl tbody tr:hover td{background:rgba(255,255,255,.02);}
+.detail-txn{display:flex;align-items:center;gap:8px;}
+.detail-txn-dot{width:6px;height:6px;border-radius:50%;background:var(--dtc,var(--purple));flex-shrink:0;}
+.detail-txn-id{font-family:var(--mono);font-size:11.5px;color:var(--text);}
+.detail-amt{font-family:var(--mono);font-weight:700;color:var(--purple);}
+.detail-empty{padding:30px 16px;text-align:center;color:var(--text3);font-size:12px;}
+
+/* SHORT DISPLAYS — compact vertical rhythm further when viewport height is tight */
+@media(max-height:680px){
+  :root{--header-h:48px;}
+  .page-hdr p{display:none;}
+  .stat-card{gap:8px;}
+  .stat-icon{width:30px;height:30px;}
+}
+
+@media(max-width:900px){
+  .workspace{flex-direction:column;}
+  .detail-panel{
+    width:100%;
+    height:0;
+    opacity:0;
+    overflow:hidden;
+    position:static;
+    order:-1;
+    transition:height .28s cubic-bezier(.32,1,.5,1),opacity .2s ease;
+  }
+  .detail-panel.open{
+    width:100%;
+    height:auto;
+    opacity:1;
+    margin-bottom:14px;
+  }
+  .detail-panel-inner{width:100%;max-height:60vh;}
+}
+@media(max-width:680px){
+  .content{padding:14px 14px 10px;}
+  .fi input{width:100%;}
+
+  /* mobile: drop non-essential chrome to save vertical space */
+  .hide-mobile{display:none !important;}
+  .page-hdr{margin-bottom:10px;}
+  .filter-bar{padding:10px 12px;gap:8px;}
+  .fi{flex:1 1 auto;min-width:0;}
+  .fi select{width:100%;min-width:0;}
+  .search-w{width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-ico"></span><span id="toast-msg"></span></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+    </div>
+    <div>
+      <div>Deduction Pivot Report</div>
+      <div class="brand-sub">Rider · Type · Amount · Month</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="content">
+
+  <div class="page-hdr">
+    <div>
+      <h1>Deduction Pivot</h1>
+      <p class="hide-mobile">Reads <span class="mono" style="color:var(--teal);">ap2_dedLog</span> + <span class="mono" style="color:var(--teal);">ap2_Employee</span> straight from IndexedDB cache · read-only</p>
+    </div>
+    <div class="page-hdr-actions">
+      <div class="seg" id="view-seg">
+        <button class="active" data-view="pivot" onclick="setView('pivot')">Pivot</button>
+        <button data-view="detail" onclick="setView('detail')">Detail</button>
+      </div>
+      <button class="btn sm hide-mobile" onclick="reloadFromIDB(true)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Reload cache
+      </button>
+      <button class="btn success sm hide-mobile" onclick="exportCSV()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+    </div>
+  </div>
+
+  <div class="workspace" id="workspace">
+   <div class="main-col">
+    <div class="stat-row hide-mobile" id="stat-row"></div>
+
+    <div class="card">
+      <div class="filter-bar">
+        <div class="fi hide-mobile">
+          <label>Month</label>
+          <select class="sel" id="f-month" onchange="applyFilters()"><option value="ALL">All months</option></select>
+        </div>
+        <div class="fi hide-mobile">
+          <label>Employee</label>
+          <select class="sel" id="f-emp" onchange="applyFilters()"><option value="ALL">All employees</option></select>
+        </div>
+        <div class="fi">
+          <label>Deduction Type</label>
+          <select class="sel" id="f-type" onchange="applyFilters()"><option value="ALL">All types</option></select>
+        </div>
+        <div class="fi">
+          <label>Search</label>
+          <div class="search-w">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="f-search" placeholder="Rider ID or name…" oninput="applyFilters()"/>
+          </div>
+        </div>
+        <div class="fi hide-mobile">
+          <label>&nbsp;</label>
+          <button class="btn sm" onclick="resetFilters()">Reset</button>
+        </div>
+      </div>
+
+      <div class="card-hdr">
+        <div class="card-title" id="tbl-title">Pivot — grouped by Rider · Type · Month</div>
+        <span class="mono" style="font-size:11px;color:var(--text3);" id="row-count">0 rows</span>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead id="tbl-head"></thead>
+          <tbody id="tbl-body"></tbody>
+        </table>
+      </div>
+
+      <div id="empty-state" style="display:none;" class="empty">
+        <div class="empty-ico">📭</div>
+        <div style="font-weight:700;margin-bottom:4px;">No deduction records found</div>
+        <div style="font-size:12px;">Either the cache is empty, or your filters don't match anything. Try Reset.</div>
+      </div>
+
+      <div class="pag-bar">
+        <span class="pag-info" id="pag-info">—</span>
+        <div class="pag-btns" id="pag-btns"></div>
+      </div>
+    </div>
+   </div>
+
+   <!-- DRILL-DOWN DETAIL PANEL — inline, adjusts the main table's width when open -->
+   <aside class="detail-panel" id="detail-panel">
+     <div class="detail-panel-inner">
+       <div class="detail-hdr">
+         <div style="flex:1;">
+           <div class="detail-hdr-eyebrow">Deduction Detail</div>
+           <div class="detail-fields">
+             <div class="detail-field"><span class="detail-field-lbl">Rider ID</span><span class="detail-field-val mono" id="dp-rid">—</span></div>
+             <div class="detail-field"><span class="detail-field-lbl">Name</span><span class="detail-field-val" id="dp-name">—</span></div>
+             <div class="detail-field"><span class="detail-field-lbl">Ded Type</span><span class="detail-field-val" id="dp-type">—</span></div>
+           </div>
+         </div>
+         <button class="detail-close" onclick="closeDrawer()">✕</button>
+       </div>
+       <div class="detail-summary" id="detail-summary"></div>
+       <div class="detail-tbl-wrap">
+         <table class="detail-tbl">
+           <thead><tr><th>Transaction ID</th><th class="num">Amount (AED)</th></tr></thead>
+           <tbody id="detail-tbl-body"></tbody>
+         </table>
+         <div id="detail-empty" class="detail-empty" style="display:none;">No transactions in this group.</div>
+       </div>
+     </div>
+   </aside>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG — adjust these if your sheet column order differs.
+// dedLog / Employee are stored in IDB as Array<Array> (dataLayer.js
+// normalises object rows via Object.values(), so order = source column order).
+// ═══════════════════════════════════════════════
+const IDB_NAME  = 'ap2_fleet_cache';
+const IDB_STORE = 'datasets';
+const KEY_DEDLOG = 'ap2_dedLog';
+const KEY_EMP    = 'ap2_Employee';
+
+// dedLog row order, matches dedEngine.html's approveBatch() push:
+// [EmpID, DedID, DedType, Amount, Month]
+const DL = { empId:0, dedId:1, dedType:2, amount:3, month:4 };
+
+// Employee row — best-guess default. If Rider Names show as "Unknown",
+// open devtools console: this page logs the first raw row of ap2_Employee
+// on load — find the right index and update EMP.name below.
+const EMP = { empId:0, name:1 };
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let RAW_DED = [];      // parsed dedLog rows: {empId,dedId,dedType,amount,month}
+let EMP_MAP = {};       // empId -> name
+let VIEW = 'pivot';     // 'pivot' | 'detail'
+let PAGE = 1;
+const PAGE_SIZE = 50;
+let SORT = { key:'amount', dir:'desc' };
+let CURRENT_PIVOT_ROWS = []; // rows currently rendered in the pivot table (for drawer lookup)
+let _lastSig = null;         // signature of last-loaded cache, used to skip no-op background refreshes
+
+// ═══════════════════════════════════════════════
+// IDB — read-only, no version pin (avoids upgrade conflicts with dataLayer.js)
+// ═══════════════════════════════════════════════
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_NAME);
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+async function idbGet(key) {
+  try {
+    const db = await openDB();
+    return await new Promise((resolve, reject) => {
+      if (!db.objectStoreNames.contains(IDB_STORE)) { resolve(null); return; }
+      const req = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(key);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror   = () => reject(req.error);
+    });
+  } catch (e) {
+    console.warn('[dedPivot] idbGet failed for', key, e.message);
+    return null;
+  }
+}
+
+function normId(v) { return String(v ?? '').trim().toUpperCase(); }
+
+// Reshapes month values into "May 2025" style, regardless of source format:
+// ISO timestamps (2025-05-31T20:00:00.000Z), "YYYY-MM", or already "May 2025".
+function parseMonthLabel(raw) {
+  if (raw === undefined || raw === null || raw === '') return 'Unknown';
+  const s = String(raw).trim();
+  if (/^[A-Za-z]+\s+\d{4}$/.test(s)) return s; // already "May 2025"
+
+  const ym = s.match(/^(\d{4})-(\d{2})$/); // "2025-05"
+  if (ym) {
+    return new Date(Date.UTC(+ym[1], +ym[2]-1, 1))
+      .toLocaleString('en-US', { month:'long', year:'numeric', timeZone:'UTC' });
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) { // ISO date / datetime
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleString('en-US', { month:'long', year:'numeric', timeZone:'UTC' });
+    }
+  }
+  return s; // unrecognised format — leave as-is rather than mangle it
+}
+
+// Cheap signature so background refreshes can detect "nothing actually
+// changed" and skip touching the DOM at all.
+function _cacheSig(dedRows, empRows) {
+  return dedRows.length + '|' + empRows.length + '|' + JSON.stringify(dedRows[dedRows.length - 1] || '');
+}
+
+async function reloadFromIDB(manual) {
+  const [dedRec, empRec] = await Promise.all([idbGet(KEY_DEDLOG), idbGet(KEY_EMP)]);
+
+  // dedLog
+  const dedRows = (dedRec && Array.isArray(dedRec.data)) ? dedRec.data : [];
+  if (dedRows[0]) console.log('[dedPivot] sample ap2_dedLog row:', dedRows[0]);
+  RAW_DED = dedRows.map(r => ({
+    empId:   r[DL.empId],
+    dedId:   r[DL.dedId],
+    dedType: r[DL.dedType] || 'Unknown',
+    amount:  parseFloat(String(r[DL.amount]).replace(/,/g,'')) || 0,
+    month:   parseMonthLabel(r[DL.month])
+  })).filter(r => r.empId !== undefined && r.empId !== '');
+
+  // Employee lookup
+  const empRows = (empRec && Array.isArray(empRec.data)) ? empRec.data : [];
+  if (empRows[0]) console.log('[dedPivot] sample ap2_Employee row:', empRows[0]);
+  EMP_MAP = {};
+  empRows.forEach(r => {
+    const id = r[EMP.empId];
+    if (id === undefined || id === '') return;
+    EMP_MAP[normId(id)] = r[EMP.name] || '';
+  });
+
+  _lastSig = _cacheSig(dedRows, empRows);
+  populateFilterOptions();
+  PAGE = 1;
+  render();
+
+  if (manual) showToast('Cache reloaded', 'ok');
+}
+
+// ═══════════════════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════════════════
+function populateFilterOptions() {
+  const months = [...new Set(RAW_DED.map(r => r.month))].sort();
+  const types  = [...new Set(RAW_DED.map(r => r.dedType))].sort();
+  const emps   = [...new Set(RAW_DED.map(r => r.empId))].sort();
+
+  fillSelect('f-month', months, 'ALL', 'All months');
+  fillSelect('f-type', types, 'ALL', 'All types');
+  fillSelect('f-emp', emps, 'ALL', 'All employees', id => {
+    const name = EMP_MAP[normId(id)];
+    return name ? `${id} — ${name}` : String(id);
+  });
+}
+function fillSelect(id, values, keepValue, keepLabel, labelFn) {
+  const sel = document.getElementById(id);
+  const prev = sel.value || keepValue;
+  sel.innerHTML = `<option value="${keepValue}">${keepLabel}</option>` +
+    values.map(v => `<option value="${esc(v)}">${esc(labelFn ? labelFn(v) : v)}</option>`).join('');
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+}
+
+function getFiltered() {
+  const month  = document.getElementById('f-month').value;
+  const emp    = document.getElementById('f-emp').value;
+  const type   = document.getElementById('f-type').value;
+  const search = document.getElementById('f-search').value.trim().toLowerCase();
+
+  return RAW_DED.filter(r => {
+    if (month !== 'ALL' && r.month !== month) return false;
+    if (emp   !== 'ALL' && String(r.empId) !== emp) return false;
+    if (type  !== 'ALL' && r.dedType !== type) return false;
+    if (search) {
+      const name = (EMP_MAP[normId(r.empId)] || '').toLowerCase();
+      const id   = String(r.empId).toLowerCase();
+      if (!id.includes(search) && !name.includes(search)) return false;
+    }
+    return true;
+  });
+}
+
+function applyFilters() { PAGE = 1; render(); }
+function resetFilters() {
+  document.getElementById('f-month').value = 'ALL';
+  document.getElementById('f-emp').value = 'ALL';
+  document.getElementById('f-type').value = 'ALL';
+  document.getElementById('f-search').value = '';
+  applyFilters();
+}
+
+// ═══════════════════════════════════════════════
+// VIEW / AGGREGATION
+// ═══════════════════════════════════════════════
+function setView(v) {
+  VIEW = v;
+  document.querySelectorAll('#view-seg button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  document.getElementById('tbl-title').textContent = v === 'pivot'
+    ? 'Pivot — grouped by Rider · Type · Month'
+    : 'Detail — raw deduction records';
+  PAGE = 1;
+  render();
+}
+
+function buildPivotRows(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const key = r.empId + '||' + r.dedType + '||' + r.month;
+    if (!map[key]) {
+      map[key] = { empId:r.empId, riderName: EMP_MAP[normId(r.empId)] || 'Unknown', dedType:r.dedType, month:r.month, amount:0, records:0 };
+    }
+    map[key].amount += r.amount;
+    map[key].records++;
+  });
+  return Object.values(map);
+}
+
+function sortRows(rows) {
+  const { key, dir } = SORT;
+  const mul = dir === 'asc' ? 1 : -1;
+  return [...rows].sort((a,b) => {
+    let av = a[key], bv = b[key];
+    if (typeof av === 'number' && typeof bv === 'number') return (av-bv)*mul;
+    return String(av).localeCompare(String(bv)) * mul;
+  });
+}
+
+function setSort(key) {
+  if (SORT.key === key) SORT.dir = SORT.dir === 'asc' ? 'desc' : 'asc';
+  else SORT = { key, dir: key === 'amount' ? 'desc' : 'asc' };
+  render();
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function render() {
+  const filtered = getFiltered();
+  renderStats(filtered);
+
+  let rows = VIEW === 'pivot' ? buildPivotRows(filtered) : filtered.map(r => ({
+    empId:r.empId, riderName: EMP_MAP[normId(r.empId)] || 'Unknown', dedType:r.dedType, month:r.month, amount:r.amount, dedId:r.dedId
+  }));
+  rows = sortRows(rows);
+
+  const empty = document.getElementById('empty-state');
+  const tblWrap = document.querySelector('.tbl-wrap');
+  if (!rows.length) {
+    empty.style.display = 'flex';
+    tblWrap.style.display = 'none';
+    document.getElementById('row-count').textContent = '0 rows';
+    document.getElementById('pag-info').textContent = '—';
+    document.getElementById('pag-btns').innerHTML = '';
+    return;
+  }
+  empty.style.display = 'none';
+  tblWrap.style.display = 'block';
+
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  if (PAGE > totalPages) PAGE = totalPages;
+  const start = (PAGE-1)*PAGE_SIZE;
+  const pageRows = rows.slice(start, start+PAGE_SIZE);
+
+  renderHead();
+  renderBody(pageRows);
+
+  document.getElementById('row-count').textContent = `${rows.length} rows`;
+  document.getElementById('pag-info').textContent = `Showing ${start+1}–${Math.min(start+PAGE_SIZE, rows.length)} of ${rows.length}`;
+  buildPagination(PAGE, totalPages);
+}
+
+function sortIndicator(key) {
+  if (SORT.key !== key) return '';
+  return SORT.dir === 'asc' ? ' ▲' : ' ▼';
+}
+
+function renderHead() {
+  const head = document.getElementById('tbl-head');
+  if (VIEW === 'pivot') {
+    head.innerHTML = `<tr>
+      <th onclick="setSort('empId')">Rider ID${sortIndicator('empId')}</th>
+      <th onclick="setSort('riderName')">Rider Name${sortIndicator('riderName')}</th>
+      <th onclick="setSort('dedType')">Deduction Type${sortIndicator('dedType')}</th>
+      <th onclick="setSort('month')">Month${sortIndicator('month')}</th>
+      <th class="num" onclick="setSort('records')">Records${sortIndicator('records')}</th>
+      <th class="num" onclick="setSort('amount')">Amount (AED)${sortIndicator('amount')}</th>
+    </tr>`;
+  } else {
+    head.innerHTML = `<tr>
+      <th onclick="setSort('empId')">Rider ID${sortIndicator('empId')}</th>
+      <th onclick="setSort('riderName')">Rider Name${sortIndicator('riderName')}</th>
+      <th>Ded ID</th>
+      <th onclick="setSort('dedType')">Deduction Type${sortIndicator('dedType')}</th>
+      <th onclick="setSort('month')">Month${sortIndicator('month')}</th>
+      <th class="num" onclick="setSort('amount')">Amount (AED)${sortIndicator('amount')}</th>
+    </tr>`;
+  }
+}
+
+function renderBody(rows) {
+  const body = document.getElementById('tbl-body');
+  if (VIEW === 'pivot') {
+    CURRENT_PIVOT_ROWS = rows;
+    body.innerHTML = rows.map((r,i) => `
+      <tr class="clickable" onclick="openDrawer(${i})">
+        <td class="mono">${esc(r.empId)}</td>
+        <td>${esc(r.riderName)}</td>
+        <td><span class="badge blue" style="background:${colorForType(r.dedType)}22;color:${colorForType(r.dedType)};border-color:${colorForType(r.dedType)}55;">${esc(r.dedType)}</span></td>
+        <td class="mono">${esc(r.month)}</td>
+        <td class="num mono">${r.records}</td>
+        <td class="num mono" style="color:var(--purple);font-weight:700;">${fmt(r.amount)} <span class="row-chevron">›</span></td>
+      </tr>`).join('');
+  } else {
+    body.innerHTML = rows.map(r => `
+      <tr>
+        <td class="mono">${esc(r.empId)}</td>
+        <td>${esc(r.riderName)}</td>
+        <td class="mono">${esc(r.dedId ?? '—')}</td>
+        <td><span class="badge blue">${esc(r.dedType)}</span></td>
+        <td class="mono">${esc(r.month)}</td>
+        <td class="num mono" style="color:var(--purple);font-weight:700;">${fmt(r.amount)}</td>
+      </tr>`).join('');
+  }
+}
+
+function renderStats(filtered) {
+  const totalAmount = filtered.reduce((s,r) => s+r.amount, 0);
+  const riders = new Set(filtered.map(r => r.empId)).size;
+  const types  = new Set(filtered.map(r => r.dedType)).size;
+
+  document.getElementById('stat-row').innerHTML = `
+    <div class="stat-card"><div class="stat-icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="stat-val">${riders}</div><div class="stat-lbl">Riders</div></div></div>
+    <div class="stat-card"><div class="stat-icon amber"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg></div><div><div class="stat-val">${filtered.length}</div><div class="stat-lbl">Records</div></div></div>
+    <div class="stat-card"><div class="stat-icon teal"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><div><div class="stat-val">${types}</div><div class="stat-lbl">Deduction Types</div></div></div>
+    <div class="stat-card"><div class="stat-icon purple"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div><div class="stat-val" style="font-size:15px;color:var(--purple);">AED ${fmt(totalAmount)}</div><div class="stat-lbl">Total Deductions</div></div></div>`;
+}
+
+function buildPagination(cur, total) {
+  const el = document.getElementById('pag-btns');
+  el.innerHTML = '';
+  const btn = (label, page, disabled, active) => {
+    const b = document.createElement('button');
+    b.className = 'pg-btn' + (active ? ' cur' : '');
+    b.disabled = disabled;
+    b.textContent = label;
+    b.onclick = () => { PAGE = page; render(); };
+    return b;
+  };
+  el.appendChild(btn('‹', cur-1, cur<=1, false));
+  for (let p = Math.max(1,cur-2); p <= Math.min(total,cur+2); p++) el.appendChild(btn(p, p, false, p===cur));
+  el.appendChild(btn('›', cur+1, cur>=total, false));
+}
+
+// ═══════════════════════════════════════════════
+// DRILL-DOWN DETAIL PANEL (inline, adjusts main table width)
+// ═══════════════════════════════════════════════
+const TYPE_COLORS = ['#4f8ef7','#2dd4aa','#f5a623','#f05252','#a78bfa','#ec4899','#22d3ee'];
+function colorForType(type) {
+  let h = 0;
+  const s = String(type || '');
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return TYPE_COLORS[h % TYPE_COLORS.length];
+}
+
+function openDrawer(idx) {
+  const group = CURRENT_PIVOT_ROWS[idx];
+  if (!group) return;
+
+  const rows = RAW_DED
+    .filter(r => r.empId === group.empId && r.dedType === group.dedType && r.month === group.month)
+    .sort((a,b) => b.amount - a.amount);
+
+  const avgAmount = rows.length ? group.amount / rows.length : 0;
+  const accent = colorForType(group.dedType);
+
+  document.getElementById('dp-rid').textContent = group.empId;
+  document.getElementById('dp-name').textContent = group.riderName || 'Unknown';
+  document.getElementById('dp-type').innerHTML =
+    `<span class="badge blue" style="background:${accent}22;color:${accent};border-color:${accent}55;">${esc(group.dedType)}</span> <span class="mono" style="color:var(--text3);font-size:10.5px;">${esc(group.month)}</span>`;
+
+  document.getElementById('detail-summary').innerHTML = `
+    <div class="detail-stat"><div class="detail-stat-val">${rows.length}</div><div class="detail-stat-lbl">Txns</div></div>
+    <div class="detail-stat"><div class="detail-stat-val" style="color:var(--purple);">${fmt(group.amount)}</div><div class="detail-stat-lbl">Total AED</div></div>
+    <div class="detail-stat"><div class="detail-stat-val" style="color:${accent};">${fmt(avgAmount)}</div><div class="detail-stat-lbl">Avg AED</div></div>`;
+
+  const body = document.getElementById('detail-tbl-body');
+  const empty = document.getElementById('detail-empty');
+  if (!rows.length) {
+    body.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    body.innerHTML = rows.map((r,i) => `
+      <tr style="--dtc:${accent};animation-delay:${Math.min(i,12)*30}ms;">
+        <td><div class="detail-txn"><span class="detail-txn-dot"></span><span class="detail-txn-id">${esc(r.dedId ?? '—')}</span></div></td>
+        <td class="num detail-amt">${fmt(r.amount)}</td>
+      </tr>`).join('');
+  }
+
+  document.getElementById('detail-panel').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('detail-panel').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+// ═══════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════
+function exportCSV() {
+  const filtered = getFiltered();
+  let rows, headers;
+  if (VIEW === 'pivot') {
+    rows = sortRows(buildPivotRows(filtered));
+    headers = ['Rider ID','Rider Name','Deduction Type','Month','Records','Amount (AED)'];
+    var lines = rows.map(r => [r.empId, r.riderName, r.dedType, r.month, r.records, r.amount]);
+  } else {
+    rows = sortRows(filtered.map(r => ({ empId:r.empId, riderName: EMP_MAP[normId(r.empId)] || 'Unknown', dedId:r.dedId, dedType:r.dedType, month:r.month, amount:r.amount })));
+    headers = ['Rider ID','Rider Name','Ded ID','Deduction Type','Month','Amount (AED)'];
+    var lines = rows.map(r => [r.empId, r.riderName, r.dedId, r.dedType, r.month, r.amount]);
+  }
+  if (!lines.length) { showToast('Nothing to export', 'warn'); return; }
+  const csv = [headers.join(','), ...lines.map(l => l.map(csvCell).join(','))].join('\n');
+  dl('\uFEFF' + csv, `Deduction_Pivot_${new Date().toISOString().slice(0,10)}.csv`, 'text/csv;charset=utf-8');
+  showToast(`Exported ${lines.length} rows`, 'ok');
+}
+function csvCell(v) {
+  const s = String(v ?? '');
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+}
+function dl(content, filename, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type }));
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+// ═══════════════════════════════════════════════
+// BACKGROUND CACHE WATCHER — patches data in place, no full reload/blink.
+// Polls every 30s and on ap-cache-updated events (same-window custom event
+// or postMessage from a parent shell). Skips the render entirely if the
+// cache hasn't actually changed, and otherwise updates RAW_DED/EMP_MAP and
+// re-renders while preserving the current page, filters and scroll
+// position — never resets to page 1 or shows a loading/blank state.
+// ═══════════════════════════════════════════════
+let _bgDebounce = null;
+
+async function _applyFromIDB() {
+  try {
+    const [dedRec, empRec] = await Promise.all([idbGet(KEY_DEDLOG), idbGet(KEY_EMP)]);
+    const dedRows = (dedRec && Array.isArray(dedRec.data)) ? dedRec.data : [];
+    const empRows = (empRec && Array.isArray(empRec.data)) ? empRec.data : [];
+
+    const sig = _cacheSig(dedRows, empRows);
+    if (sig === _lastSig) return; // no change — skip touching the DOM
+    _lastSig = sig;
+
+    RAW_DED = dedRows.map(r => ({
+      empId:   r[DL.empId],
+      dedId:   r[DL.dedId],
+      dedType: r[DL.dedType] || 'Unknown',
+      amount:  parseFloat(String(r[DL.amount]).replace(/,/g,'')) || 0,
+      month:   parseMonthLabel(r[DL.month])
+    })).filter(r => r.empId !== undefined && r.empId !== '');
+
+    EMP_MAP = {};
+    empRows.forEach(r => {
+      const id = r[EMP.empId];
+      if (id === undefined || id === '') return;
+      EMP_MAP[normId(id)] = r[EMP.name] || '';
+    });
+
+    populateFilterOptions();
+
+    // Patch the table in place: keep whatever page/scroll the user is on.
+    const wrap = document.querySelector('.tbl-wrap');
+    const scrollTop = wrap ? wrap.scrollTop : 0;
+    render();
+    if (wrap) wrap.scrollTop = scrollTop;
+  } catch (e) {
+    console.warn('[dedPivot] background refresh error:', e.message);
+  }
+}
+
+function _debouncedApply() {
+  if (_bgDebounce) clearTimeout(_bgDebounce);
+  _bgDebounce = setTimeout(_applyFromIDB, 200);
+}
+
+setInterval(_applyFromIDB, 30000);
+window.addEventListener('ap-cache-updated', _debouncedApply);
+
+// Cross-frame updates — parent shell can push a cache-updated notice via
+// postMessage when this report is embedded in an iframe.
+window.addEventListener('message', (e) => {
+  if (!e.data) return;
+  if (e.data.type === 'ap-cache-updated') _debouncedApply();
+});
+
+// ═══════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════
+function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmt(n) { return Number(n||0).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+
+let _toastTimer;
+const ICONS = {
+  ok:   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  warn: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>'
+};
+function showToast(msg, type='ok') {
+  const t = document.getElementById('toast');
+  t.className = 'toast show';
+  document.getElementById('toast-ico').innerHTML = ICONS[type] || '';
+  document.getElementById('toast-msg').textContent = msg;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ═══════════════════════════════════════════════
+// INIT — no in-page access guard (parent shell handles it), no dataLayer.js load
+// ═══════════════════════════════════════════════
+reloadFromIDB(false);
+</script>
+</body>
+</html>
