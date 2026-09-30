@@ -16,8 +16,8 @@
   The login flow here is self-contained: it does NOT call Auth.isAuthenticated()
   before the user clicks — only after a successful server response.
 -->
-<script src="https://effimalik.github.io/Testing/shared/auth.js?v=7"></script>
-<script src="https://effimalik.github.io/Testing/shared/dataLayer.js?v=7"></script>
+<script src="https://effimalik.github.io/Testing/shared/auth.js?v=8"></script>
+<script src="https://effimalik.github.io/Testing/shared/dataLayer.js?v=8"></script>
 
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -379,8 +379,8 @@ if (_yearEl) _yearEl.textContent = new Date().getFullYear();
    Keep in sync with auth.js and Code.gs CFG block
 ═══════════════════════════════════════════════════ */
 const CONFIG = {
-  API_BASE         : 'https://script.google.com/macros/s/AKfycbwHZnQa4elV-ChUslHoci1UhWZnTuBPhLIlrI_-TsOX6ysamVvUDrpkpS3pRVMEoWeP/exec',
-  // API_BASE         : 'https://script.google.com/macros/s/AKfycbwrHCi1-Ur0L3Rns8sAPNVLkRH4UIXAxt3t6tQB-rnjtBDIMZPzGf5PNCOwaDMZYClI/exec',
+  SUPABASE_URL     : 'https://vqmbnegrqfzphaawwogj.supabase.co',
+  SUPABASE_KEY     : 'sb_publishable_57UwCMxEzrWmPdkLf85B_A_7h166c55', // publishable key — safe in browser
   GOOGLE_CLIENT_ID : '743775120253-lr54jgst59jqr5s61vc3i4o3rnfn596a.apps.googleusercontent.com',
 };
 
@@ -503,32 +503,92 @@ function _showFallbackButton(onCredential) {
 }
 
 /* ═══════════════════════════════════════════════════
-   SEND TOKEN TO APPS SCRIPT — Content-Type: text/plain
-   avoids CORS preflight
+   VERIFY WITH SUPABASE — Google token → session → users_log → permissions
 ═══════════════════════════════════════════════════ */
-async function verifyWithAppsScript(idToken) {
-  const controller = new AbortController();
-  const timeoutId  = setTimeout(() => controller.abort(), 30_000);
-  try {
-    const res = await fetch(CONFIG.API_BASE, {
-      method : 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body   : JSON.stringify({ type: 'login', token: idToken }),
-      signal : controller.signal,
-    });
-    clearTimeout(timeoutId);
-    if (!res.ok) throw new Error('Server returned HTTP ' + res.status + '. Please try again.');
-    const text = await res.text();
-    try { return JSON.parse(text); }
-    catch {
-      console.error('[Login] Non-JSON response from server:', text.substring(0, 200));
-      throw new Error('Server returned an unexpected response. Please try again.');
-    }
-  } catch (e) {
-    clearTimeout(timeoutId);
-    if (e.name === 'AbortError') throw new Error('Request timed out (30s). Check your connection and try again.');
-    throw e;
+async function verifyWithSupabase(idToken) {
+  const base = CONFIG.SUPABASE_URL;
+  const call = async (path, opts, token) => {
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => controller.abort(), 30_000);
+    try {
+      const headers = Object.assign({ apikey: CONFIG.SUPABASE_KEY, 'Content-Type': 'application/json' }, (opts && opts.headers) || {});
+      if (token) headers.Authorization = 'Bearer ' + token;
+      return await fetch(base + path, Object.assign({}, opts, { headers, signal: controller.signal }));
+    } catch (e) {
+      if (e.name === 'AbortError') throw new Error('Request timed out (30s). Check your connection and try again.');
+      throw e;
+    } finally { clearTimeout(timeoutId); }
+  };
+
+  // 1) Google ID token → Supabase session (Supabase verifies the token with Google)
+  const authRes = await call('/auth/v1/token?grant_type=id_token', {
+    method: 'POST', body: JSON.stringify({ provider: 'google', id_token: idToken }),
+  });
+  if (!authRes.ok) {
+    console.error('[Login] Supabase sign-in failed', authRes.status, (await authRes.text()).substring(0, 200));
+    throw new Error('Sign-in could not be verified. Please try again.');
   }
+  const sess   = await authRes.json();
+  const access = sess.access_token;
+  const user   = sess.user || {};
+  const email  = String(user.email || '').trim().toLowerCase();
+  if (!access || !email) throw new Error('Sign-in did not return an account. Please try again.');
+  const signOutQuiet = () => call('/auth/v1/logout', { method: 'POST' }, access).catch(() => {});
+
+  // 2) Is this email an active user? (RLS only lets a user read their own row)
+  const uRes = await call('/rest/v1/users_log?select=*', {}, access);
+  if (!uRes.ok) { await signOutQuiet(); throw new Error('Could not check your account. Please try again.'); }
+  const me = (await uRes.json()).find(u => String(u.email || '').trim().toLowerCase() === email);
+
+  if (!me) {
+    // Unknown email → log an access request for admin review (best effort)
+    const meta = user.user_metadata || {};
+    const reqRes = await call('/rest/v1/access_requests?on_conflict=email', {
+      method : 'POST',
+      headers: { Prefer: 'resolution=ignore-duplicates,return=minimal' },
+      body   : JSON.stringify({ email, name: meta.full_name || meta.name || email }),
+    }, access).catch(() => null);
+    await signOutQuiet();
+    if (reqRes && reqRes.ok) {
+      return { allowed: false, status: 'pending', email, reason: 'Your access request has been sent to the administrator for approval.' };
+    }
+    return { allowed: false, status: 'denied', email, title: 'Access Denied',
+             reason: 'Your account is not authorised to access FleetFlow Pro. Contact support.' };
+  }
+
+  if (String(me.status || '').trim().toLowerCase() !== 'active') {
+    await signOutQuiet();
+    return { allowed: false, status: 'inactive', email, title: 'Account Inactive',
+             reason: 'Your account is inactive. Contact support to reactivate it.' };
+  }
+
+  // 3) Portal permissions (Param_Key bits "view|add|editDelete", Table_Name "alias:table,…")
+  const pRes = await call('/rest/v1/permissions_log?select=*', {}, access);
+  if (!pRes.ok) { await signOutQuiet(); throw new Error('Could not load your permissions. Please try again.'); }
+  const permissions = {};
+  (await pRes.json())
+    .filter(p => String(p.Email || '').trim().toLowerCase() === email)
+    .forEach(p => {
+      const bits = String(p.Param_Key || '').replace(/-/g, '|').split('|').map(b => b.trim());
+      const tables = String(p.Table_Name || '').split(',').map(s => s.trim()).filter(Boolean).map(s => {
+        const i = s.indexOf(':');
+        return i > 0 ? { alias: s.slice(0, i).trim(), table: s.slice(i + 1).trim() } : { alias: null, table: s };
+      });
+      permissions[p.Dataset_Key] = {
+        label  : p.Label || p.Dataset_Key,
+        apiKey : p.Api_Key || '',
+        tables : tables,
+        access : { view: bits[0] === '1', add: bits[1] === '1', editDelete: bits[2] === '1' },
+      };
+    });
+
+  return {
+    allowed: true, status: 'approved', email,
+    name: me.name || email, role: me.role || 'User',
+    sessionId: user.id, token: access, refreshToken: sess.refresh_token,
+    expiresAt: Date.now() + (Number(sess.expires_in) || 3600) * 1000,
+    permissions,
+  };
 }
 
 /* ═══════════════════════════════════════════════════
@@ -691,7 +751,7 @@ async function startGoogleLogin() {
   let result = null;
 
   try {
-    result = await verifyWithAppsScript(idToken);
+    result = await verifyWithSupabase(idToken);
   } catch (e) {
     if (myToken !== flowToken) return;
     setVerifyStatus('Something Went Wrong', 'Please try again.', 'error');
@@ -748,6 +808,8 @@ async function startGoogleLogin() {
       name       : result.name || result.email,
       role       : result.role || 'User',
       permissions: result.permissions || null,
+      refreshToken: result.refreshToken || null,
+      expiresAt  : result.expiresAt || null,
     });
   } catch (e) {
     console.error('[Login] Auth.createSession threw:', e.message);
