@@ -8,12 +8,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
-<script src="https://effimalik.github.io/Testing/shared/auth.js?v=5"></script>
-<script src="https://effimalik.github.io/Testing/shared/dataLayer.js"></script>
-<script src="https://effimalik.github.io/Testing/shared/cioView.js"></script>
-<script src="https://effimalik.github.io/Testing/shared/accessGuard.js"></script>
-<script src="https://effimalik.github.io/Testing/shared/cacheWatcher.js?v=1"></script>
-<!-- <script src="https://effimalik.github.io/Testing/shared/devPre.js"></script> -->
+<script src="https://effimalik.github.io/fh_supabase/shared/auth.js?v=5"></script>
+<script src="https://effimalik.github.io/fh_supabase/shared/dataLayer.js"></script>
+<script src="https://effimalik.github.io/fh_supabase/shared/cioView.js"></script>
+<script src="https://effimalik.github.io/fh_supabase/shared/accessGuard.js"></script>
+<script src="https://effimalik.github.io/fh_supabase/shared/cacheWatcher.js?v=1"></script>
+<!-- <script src="https://effimalik.github.io/fh_supabase/shared/devPre.js"></script> -->
 
 <!-- ═══════════════════════════════════════════════════════════════
      AP2 IDB Bridge — all data served from IndexedDB via AdminPro
@@ -2164,16 +2164,16 @@ function renderAlertList(items) {
     const raw = sessionStorage.getItem('ap_session');
     if (!raw) {
       console.warn('[index] auth.js not loaded and no session found — redirecting');
-      window.location.replace('https://effimalik.github.io/Testing/login.html');
+      window.location.replace('https://effimalik.github.io/fh_supabase/login.html');
       return;
     }
     const s = JSON.parse(raw);
     if (!s || !s.sessionId || !s.token || !s.email) {
-      window.location.replace('https://effimalik.github.io/Testing/login.html');
+      window.location.replace('https://effimalik.github.io/fh_supabase/login.html');
     }
   } catch (e) {
     console.error('[sessionGuard] Error — redirecting to be safe:', e);
-    window.location.replace('https://effimalik.github.io/Testing/login.html');
+    window.location.replace('https://effimalik.github.io/fh_supabase/login.html');
   }
 })();
 
@@ -2184,7 +2184,7 @@ function signOut() {
   } else {
     // Fallback if auth.js failed to load
     sessionStorage.removeItem('ap_session');
-    window.location.replace('https://effimalik.github.io/Testing/login.html');
+    window.location.replace('https://effimalik.github.io/fh_supabase/login.html');
   }
 }
 
@@ -2715,7 +2715,7 @@ function updateCacheHealthDot() {
 })();
 
 /* Override _notifyFrame to also push the full preload bundle so child
-   re-renders with the laTesting data without issuing new pull requests */
+   re-renders with the lafh_supabase data without issuing new pull requests */
 function _notifyFrame() {
   const frame = document.getElementById('main-frame');
   if (!frame || !frame.contentWindow) return;
