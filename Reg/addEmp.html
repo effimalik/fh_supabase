@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<script src="https://effimalik.github.io/fh_supabase/shared/config.js"></script>
 <script src="https://effimalik.github.io/fh_supabase/shared/auth.js?v=8"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -144,6 +145,8 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   font-family:var(--font);font-size:13px;outline:none;
   transition:border-color .15s,box-shadow .15s;
 }
+.field select{height:38px;padding:0 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font);font-size:13px;outline:none;}
+.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
 .field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
 .field input::placeholder{color:var(--text3);}
 .field input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5);cursor:pointer;}
@@ -439,32 +442,18 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
           <div class="field-msg hint" id="msg-ref"></div>
         </div>
 
-        <!-- EID Expiry -->
+        <!-- Checkout Exception -->
         <div class="field">
-          <label>EID Expiry Date</label>
-          <input type="date" id="ef-eid-exp"/>
-          <div class="field-msg hint" id="msg-eid-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
+          <label>Checkout Exception</label>
+          <select id="ef-checkout"><option value="No">No</option><option value="Yes">Yes</option></select>
+          <div class="field-msg hint"></div>
         </div>
 
-        <!-- License Expiry -->
+        <!-- HR Status -->
         <div class="field">
-          <label>License Expiry</label>
-          <input type="date" id="ef-lic-exp"/>
-          <div class="field-msg hint" id="msg-lic-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
-        </div>
-
-        <!-- Labour Card -->
-        <div class="field">
-          <label>Labour Card Expiry</label>
-          <input type="date" id="ef-lab-exp"/>
-          <div class="field-msg hint" id="msg-lab-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
-        </div>
-
-        <!-- Insurance -->
-        <div class="field">
-          <label>Insurance Expiry</label>
-          <input type="date" id="ef-ins-exp"/>
-          <div class="field-msg hint" id="msg-ins-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
+          <label>HR Status</label>
+          <select id="ef-hrstatus"></select>
+          <div class="field-msg hint"></div>
         </div>
       </div>
 
@@ -527,8 +516,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
         </table>
       </div>
       <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Expired / Invalid</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div> Expires within 30 days</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> Invalid</div>
         <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div> Valid</div>
       </div>
     </div>
@@ -558,10 +546,10 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <div class="info-box">
       <div class="info-box-title"><i class="ti ti-info-circle"></i> Before you start</div>
       <div class="info-row"><i class="ti ti-check"></i><span>Download the template and fill in your data</span></div>
-      <div class="info-row"><i class="ti ti-check"></i><span>Dates must be formatted as <code>YYYY-MM-DD</code></span></div>
+      <div class="info-row"><i class="ti ti-check"></i><span>Date of birth as <code>DD/MM/YYYY</code> (or <code>YYYY-MM-DD</code>)</span></div>
       <div class="info-row"><i class="ti ti-check"></i><span>EID format: <code>784-YYYY-XXXXXXX-X</code></span></div>
-      <div class="info-row"><i class="ti ti-check"></i><span>Phone numbers must be digits only, e.g. <code>971501234567</code></span></div>
-      <div class="info-row"><i class="ti ti-check"></i><span>Expired dates are flagged in red during preview but will still be uploaded</span></div>
+      <div class="info-row"><i class="ti ti-check"></i><span>Phone numbers saved as 9 digits, e.g. <code>501234567</code></span></div>
+      <div class="info-row"><i class="ti ti-check"></i><span>Checkout Exception: <code>Yes</code> / <code>No</code> · HR Status: <code>Active</code> / <code>Inactive</code> (blank = No / Active)</span></div>
     </div>
 
     <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
@@ -579,10 +567,8 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
       <div class="template-col-item"><i class="ti ti-phone" style="color:var(--accent)"></i><div class="req-dot r"></div>UAE Mobile</div>
       <div class="template-col-item"><i class="ti ti-phone-call" style="color:var(--accent)"></i><div class="req-dot r"></div>Emergency Contact</div>
       <div class="template-col-item"><i class="ti ti-users" style="color:var(--accent)"></i><div class="req-dot r"></div>Reference</div>
-      <div class="template-col-item"><i class="ti ti-calendar-event" style="color:var(--text3)"></i><div class="req-dot o"></div>EID Expiry Date</div>
-      <div class="template-col-item"><i class="ti ti-license" style="color:var(--text3)"></i><div class="req-dot o"></div>License Expiry</div>
-      <div class="template-col-item"><i class="ti ti-briefcase" style="color:var(--text3)"></i><div class="req-dot o"></div>Labour Card Expiry</div>
-      <div class="template-col-item"><i class="ti ti-heart-rate-monitor" style="color:var(--text3)"></i><div class="req-dot o"></div>Insurance Expiry</div>
+      <div class="template-col-item"><i class="ti ti-logout" style="color:var(--text3)"></i><div class="req-dot o"></div>Checkout Exception</div>
+      <div class="template-col-item"><i class="ti ti-user-check" style="color:var(--text3)"></i><div class="req-dot o"></div>Hr Status</div>
     </div>
   </div>
 
@@ -604,33 +590,10 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 'use strict';
 
 /* ═══ SUPABASE SAVE ═══════════════════════════════════════════ */
-const CONFIG = {
-  SUPABASE_URL     : 'https://vqmbnegrqfzphaawwogj.supabase.co',
-  SUPABASE_KEY     : 'sb_publishable_57UwCMxEzrWmPdkLf85B_A_7h166c55', // publishable key — safe in browser
-  GOOGLE_CLIENT_ID : '743775120253-lr54jgst59jqr5s61vc3i4o3rnfn596a.apps.googleusercontent.com',
-};
-
-const EMP_TABLE   = 'emp_log';
-const EMP_DATASET = 'ap2_employee';
+/* CONFIG comes from the shared config.js */
+const EMP_TABLE   = CONFIG.EMP_TABLE;
+const EMP_DATASET = CONFIG.EMP_DATASET;
 const BULK_CHUNK  = 50;
-
-/* Column names are detected automatically from emp_log (matching is case/underscore
-   insensitive). Only fill this in if the check below reports a column it can't match,
-   e.g.  EMP_COLUMNS = { licExp: 'Licence_Expiry' }                                  */
-const EMP_COLUMNS = {};
-const EMP_ALIASES = {
-  empId    : ['empid','employeeid'],
-  name     : ['name','fullname','employeename'],
-  eid      : ['eidnumber','eid','eidno','emiratesid'],
-  dob      : ['dateofbirth','dob','birthdate'],
-  mobile   : ['uaemobile','mobile','mobilenumber','phone'],
-  emergency: ['emergencymobile','emergencycontact','emergencyphone','emergency'],
-  ref      : ['reference','ref','referredby'],
-  eidExp   : ['eidexpiry','eidexpirydate','eidexpiration','eidexp'],
-  licExp   : ['licenseexpiry','licenceexpiry','licenseexpirydate','licexpiry','licexp'],
-  labExp   : ['labourexpiry','laboureexpiry','laborexpiry','labourcardexpiry','labexpiry','labexp'],
-  insExp   : ['insuranceexpiry','insexpiry','insuranceexpirydate','insexp'],
-};
 
 async function dbError(res){
   let b = {}; try { b = await res.json(); } catch(_) {}
@@ -667,28 +630,8 @@ function checkCanAdd(){
     throw new Error("You don't have permission to add employees.");
 }
 
-/* Work out the real emp_log column for each form field (once per page load). */
-let _empColsPromise = null;
-function getEmpColumns(){
-  if (!_empColsPromise) _empColsPromise = (async () => {
-    const res  = await sb(EMP_TABLE + '?select=*&limit=1');
-    const rows = await res.json();
-    if (!rows.length) throw new Error('emp_log is empty, so column names cannot be detected. Fill in EMP_COLUMNS at the top of this script.');
-    const byNorm = {};
-    Object.keys(rows[0]).forEach(c => { byNorm[c.toLowerCase().replace(/[^a-z0-9]/g, '')] = c; });
-    const map = {}, missing = [];
-    for (const [field, aliases] of Object.entries(EMP_ALIASES)) {
-      map[field] = EMP_COLUMNS[field] || aliases.map(a => byNorm[a]).find(Boolean);
-      if (!map[field]) missing.push(field);
-    }
-    if (missing.length)
-      throw new Error('Could not match emp_log columns for: ' + missing.join(', ') +
-        '. Set them in EMP_COLUMNS. Columns found: ' + Object.keys(rows[0]).join(', '));
-    console.log('[addEmp] emp_log column map', map);
-    return map;
-  })().catch(e => { _empColsPromise = null; throw e; });
-  return _empColsPromise;
-}
+/* emp_log column map comes from the shared config. */
+async function getEmpColumns(){ return CONFIG.EMP_COLUMNS; }
 
 const normId = v => String(v == null ? '' : v).trim().replace(/^0+(?=\d)/, '');
 
@@ -702,24 +645,31 @@ function isoDate(x){
     if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31)
       return m[3] + '-' + String(mm).padStart(2, '0') + '-' + String(dd).padStart(2, '0');
   }
-  throw new Error('Invalid date "' + s + '" (use YYYY-MM-DD)');
+  throw new Error('Invalid date "' + s + '" (use DD/MM/YYYY)');
+}
+function toIsoSafe(x){ try { return isoDate(x) || ''; } catch(_) { return ''; } }
+const dmy   = iso => { const [y,m,d] = iso.split('-'); return d + '/' + m + '/' + y; };   // stored format
+const phone = v => String(v||'').replace(/\D/g,'').replace(/^00/,'').replace(/^971/,'').replace(/^0/,'');
+const yesNo = v => /^y/i.test(String(v||'').trim()) ? 'Yes' : 'No';
+const hrStat = v => { const t=String(v||'').trim().toLowerCase(); return CONFIG.HR_STATUSES.find(x=>x.toLowerCase()===t) || ''; };
+function createdAt(){                                                       // 2026-06-14 22:58:39+04:00
+  return new Date(Date.now()+4*3600e3).toISOString().slice(0,19).replace('T',' ') + CONFIG.TZ_OFFSET;
 }
 
-/* r = { name, eid, dob, mobile, emergency, ref, eidExp, licExp, labExp, insExp } → emp_log row */
+/* r = { name, eid, dob, mobile, emergency, ref, checkout, hrStatus } → emp_log row (all text) */
 function toRecord(cols, r){
-  const txt = x => { const s = (x == null ? '' : String(x)).trim(); return s === '' ? null : s; };
+  const txt = x => String(x == null ? '' : x).trim();
   const o = {};
   o[cols.empId]     = extractEmpId(r.eid);
   o[cols.name]      = txt(r.name);
   o[cols.eid]       = txt(r.eid);
-  o[cols.dob]       = isoDate(r.dob);
-  o[cols.mobile]    = txt(r.mobile);
-  o[cols.emergency] = txt(r.emergency);
+  o[cols.dob]       = dmy(isoDate(r.dob));
+  o[cols.mobile]    = phone(r.mobile);
+  o[cols.emergency] = phone(r.emergency);
   o[cols.ref]       = txt(r.ref);
-  o[cols.eidExp]    = isoDate(r.eidExp);
-  o[cols.licExp]    = isoDate(r.licExp);
-  o[cols.labExp]    = isoDate(r.labExp);
-  o[cols.insExp]    = isoDate(r.insExp);
+  o[cols.checkout]  = yesNo(r.checkout);
+  o[cols.hrStatus]  = hrStat(r.hrStatus) || CONFIG.HR_STATUSES[0];
+  o[cols.createdAt] = createdAt();
   return o;
 }
 
@@ -769,8 +719,7 @@ async function saveEmployee(){
     const r = {
       name: $('ef-name').value, eid: $('ef-eid').value, dob: $('ef-dob').value,
       mobile: $('ef-mobile').value, emergency: $('ef-emergency').value, ref: $('ef-ref').value,
-      eidExp: $('ef-eid-exp').value, licExp: $('ef-lic-exp').value,
-      labExp: $('ef-lab-exp').value, insExp: $('ef-ins-exp').value,
+      checkout: $('ef-checkout').value, hrStatus: $('ef-hrstatus').value,
     };
     const cols = await getEmpColumns();
     if (await empIdExists(cols.empId, extractEmpId(r.eid)))
@@ -838,7 +787,9 @@ function valEID(v){
 }
 function valDOB(v){
   if(!v) return 'Date of birth is required';
-  const d=new Date(v), tod=today();
+  const iso=toIsoSafe(v);
+  if(!iso) return 'Invalid date of birth';
+  const d=new Date(iso), tod=today();
   let age=tod.getFullYear()-d.getFullYear();
   const m=tod.getMonth()-d.getMonth();
   if(m<0||(m===0&&tod.getDate()<d.getDate())) age--;
@@ -849,13 +800,6 @@ function valDOB(v){
 function valPhone(v, label){
   if(!v) return `${label} is required`;
   if(!PHONE_RE.test(v)) return `${label}: enter a valid phone number`;
-  return '';
-}
-function valFutureDate(v, label){
-  if(!v) return ''; // optional
-  const d=new Date(v);
-  if(isNaN(d)) return `${label}: invalid date`;
-  if(d<=today()) return `${label} must be a future date`;
   return '';
 }
 function valName(v){
@@ -890,6 +834,8 @@ function setMsg(msgId, inputEl, errMsg, hintHtml){
     else { inputEl.classList.remove('ok','err'); }
   }
 }
+
+$('ef-hrstatus').innerHTML=CONFIG.HR_STATUSES.map(x=>`<option>${x}</option>`).join('');
 
 // EID live
 $('ef-eid').addEventListener('input', function(){
@@ -939,19 +885,6 @@ $('ef-ref').addEventListener('blur', function(){
   setMsg('msg-ref',this,valRef(this.value),'');
 });
 
-const expiryFields=[
-  ['ef-eid-exp','msg-eid-exp','EID Expiry'],
-  ['ef-lic-exp','msg-lic-exp','License Expiry'],
-  ['ef-lab-exp','msg-lab-exp','Labour Card Expiry'],
-  ['ef-ins-exp','msg-ins-exp','Insurance Expiry'],
-];
-expiryFields.forEach(([fid,mid,label])=>{
-  $(fid).addEventListener('change',function(){
-    const err=valFutureDate(this.value,label);
-    setMsg(mid,this,err,`<span style="color:var(--text3)">Must be a future date if provided</span>`);
-  });
-});
-
 /* ═══════════════════════════════════════
    FORM SUBMIT
 ═══════════════════════════════════════ */
@@ -967,10 +900,6 @@ function handleSubmit(e){
   check(valPhone($('ef-mobile').value,'UAE Mobile'),'msg-mobile',$('ef-mobile'),'');
   check(valPhone($('ef-emergency').value,'Emergency Contact'),'msg-emergency',$('ef-emergency'),'');
   check(valRef($('ef-ref').value),'msg-ref',$('ef-ref'),'');
-  expiryFields.forEach(([fid,mid,label])=>{
-    check(valFutureDate($(fid).value,label),mid,$(fid),`<span style="color:var(--text3)">Must be a future date if provided</span>`);
-  });
-
   if(!$('ef-empid').value){
     setMsg('msg-eid',$('ef-eid'),'EID must be valid to generate Employee ID',`<span style="color:var(--text3)">Format: 784-YYYY-XXXXXXX-X</span>`);
     ok=false;
@@ -985,6 +914,7 @@ function handleSubmit(e){
 function resetForm(){
   $('employeeForm').reset();
   $('ef-empid').value='';
+  $('ef-checkout').value='No'; $('ef-hrstatus').value=CONFIG.HR_STATUSES[0];
   $('empIdDisplay').textContent='—';
   document.querySelectorAll('.field input').forEach(i=>{i.classList.remove('ok','err');});
   document.querySelectorAll('.field-msg').forEach(m=>{
@@ -993,9 +923,6 @@ function resetForm(){
   // restore hints
   $('msg-eid').innerHTML=`<span style="color:var(--text3)">Format: 784-YYYY-XXXXXXX-X</span>`;
   $('msg-dob').innerHTML=`<span style="color:var(--text3)">Must be 18+ years old</span>`;
-  expiryFields.forEach(([,mid])=>{
-    $(mid).innerHTML=`<span style="color:var(--text3)">Must be a future date if provided</span>`;
-  });
 }
 
 /* ═══════════════════════════════════════
@@ -1075,16 +1002,14 @@ function splitCSVLine(line){
 ═══════════════════════════════════════ */
 function normaliseRow(row){
   return {
-    name:        row['Full Name']||row['full_name']||row['FullName']||'',
-    eid:         row['EID Number']||row['EID']||row['eid']||'',
-    dob:         row['Date of Birth']||row['DOB']||row['dob']||'',
-    mobile:      row['UAE Mobile']||row['mobile']||row['Mobile']||'',
-    emergency:   row['Emergency Contact']||row['emergency']||'',
+    name:        row['Name']||row['Full Name']||row['full_name']||row['FullName']||'',
+    eid:         row['Eid_Number']||row['EID Number']||row['EID']||row['eid']||'',
+    dob:         row['Date_Of_Birth']||row['Date of Birth']||row['DOB']||row['dob']||'',
+    mobile:      row['Uae_Mobile']||row['UAE Mobile']||row['mobile']||row['Mobile']||'',
+    emergency:   row['Emergency_Mobile']||row['Emergency Contact']||row['emergency']||'',
     ref:         row['Reference']||row['reference']||'',
-    eidExp:      row['EID Expiry Date']||row['eid_expiry']||'',
-    licExp:      row['License Expiry']||row['license_expiry']||'',
-    labExp:      row['Labour Card Expiry']||row['labour_expiry']||'',
-    insExp:      row['Insurance Expiry']||row['insurance_expiry']||'',
+    checkout:    row['Checkout_Exception']||row['Checkout Exception']||'',
+    hrStatus:    row['Hr_Status']||row['HR Status']||'',
   };
 }
 
@@ -1097,34 +1022,9 @@ function validateRow(r){
   if(valPhone(r.mobile,'UAE Mobile'))     e(valPhone(r.mobile,'Mobile'));
   if(valPhone(r.emergency,'Emergency'))   e(valPhone(r.emergency,'Emergency'));
   if(valRef(r.ref))             e(valRef(r.ref));
-  // expiry: only invalid date format blocks (past dates allowed but flagged)
-  ['eidExp','licExp','labExp','insExp'].forEach(k=>{
-    const v=r[k];
-    if(v&&isNaN(new Date(v))) e(`Invalid date format: ${v}`);
-  });
+  if(r.checkout && !/^(yes|no)$/i.test(r.checkout.trim())) e('Checkout Exception must be Yes or No');
+  if(r.hrStatus && !hrStat(r.hrStatus)) e('HR Status must be one of: '+CONFIG.HR_STATUSES.join(', '));
   return errors;
-}
-
-/* date cell class */
-function dateClass(val){
-  if(!val) return '';
-  const d=new Date(val), tod=today();
-  if(isNaN(d)) return 'err-cell';
-  const diff=(d-tod)/(1000*60*60*24);
-  if(diff<0) return 'expired';
-  if(diff<=30) return 'expiring';
-  return 'ok-date';
-}
-function dateLabel(val){
-  if(!val) return '<span style="color:var(--text3)">—</span>';
-  const d=new Date(val), tod=today();
-  if(isNaN(d)) return `<span style="color:var(--red)">${val}</span>`;
-  const diff=Math.ceil((d-tod)/(1000*60*60*24));
-  const cls=dateClass(val);
-  let tag='';
-  if(diff<0) tag=`<span style="font-size:9.5px;margin-left:4px;background:var(--red-dim);color:var(--red);padding:1px 5px;border-radius:10px;">Expired</span>`;
-  else if(diff<=30) tag=`<span style="font-size:9.5px;margin-left:4px;background:var(--amber-dim);color:var(--amber);padding:1px 5px;border-radius:10px;">${diff}d</span>`;
-  return `<span class="${cls}">${val}</span>${tag}`;
 }
 
 /* ═══════════════════════════════════════
@@ -1134,15 +1034,14 @@ function buildPreview(rows){
   if(!rows.length){ showToast('No data rows found in file.','error'); return; }
 
   const wrap=$('previewWrap');
-  let valid=0, warned=0, invalid=0;
+  let valid=0, invalid=0;
 
   // Build head
   const head=$('previewHead');
   head.innerHTML=`<tr>
     <th>#</th><th>Status</th><th>Emp ID</th><th>Full Name</th>
     <th>EID Number</th><th>DOB</th><th>Mobile</th><th>Emergency</th>
-    <th>Reference</th><th>EID Exp</th><th>Lic Exp</th>
-    <th>Labour Exp</th><th>Ins Exp</th><th>Issues</th>
+    <th>Reference</th><th>Checkout Exc.</th><th>HR Status</th><th>Issues</th>
   </tr>`;
 
   const body=$('previewBody');
@@ -1153,17 +1052,10 @@ function buildPreview(rows){
     const errors=validateRow(r);
     const empId=extractEmpId(r.eid);
 
-    // check expiry warnings (past dates, row still valid for upload)
-    const expiryDates=[r.eidExp,r.licExp,r.labExp,r.insExp];
-    const hasExpired=expiryDates.some(v=>{ if(!v) return false; const d=new Date(v); return !isNaN(d)&&d<today(); });
-
     let statusHtml, rowClass='';
     if(errors.length){
       invalid++;
       statusHtml=`<span class="row-status invalid"><i class="ti ti-x"></i> Invalid</span>`;
-    } else if(hasExpired){
-      warned++;
-      statusHtml=`<span class="row-status warn"><i class="ti ti-alert-triangle"></i> Has Expired Dates</span>`;
     } else {
       valid++;
       statusHtml=`<span class="row-status valid"><i class="ti ti-check"></i> Valid</span>`;
@@ -1180,10 +1072,8 @@ function buildPreview(rows){
       <td>${r.mobile||'<span style="color:var(--red)">—</span>'}</td>
       <td>${r.emergency||'<span style="color:var(--red)">—</span>'}</td>
       <td>${r.ref||'<span style="color:var(--red)">—</span>'}</td>
-      <td>${dateLabel(r.eidExp)}</td>
-      <td>${dateLabel(r.licExp)}</td>
-      <td>${dateLabel(r.labExp)}</td>
-      <td>${dateLabel(r.insExp)}</td>
+      <td>${r.checkout?yesNo(r.checkout):'No'}</td>
+      <td>${hrStat(r.hrStatus)||(r.hrStatus?'<span style="color:var(--red)">'+r.hrStatus+'</span>':CONFIG.HR_STATUSES[0])}</td>
       <td class="err-cell">${errors.length?errors.join(' · '):'<span style="color:var(--teal)">—</span>'}</td>
     `;
     body.appendChild(tr);
@@ -1194,11 +1084,10 @@ function buildPreview(rows){
   const stats=$('previewStats');
   stats.innerHTML='';
   if(valid)   stats.innerHTML+=`<span class="stat-chip ok"><i class="ti ti-check"></i>${valid} Ready</span>`;
-  if(warned)  stats.innerHTML+=`<span class="stat-chip warn"><i class="ti ti-alert-triangle"></i>${warned} Warnings</span>`;
   if(invalid) stats.innerHTML+=`<span class="stat-chip bad"><i class="ti ti-x"></i>${invalid} Invalid</span>`;
 
   wrap.classList.add('show');
-  showToast(`Loaded ${rows.length} rows — ${invalid} invalid, ${warned} with expired dates`, invalid?'info':'success');
+  showToast(`Loaded ${rows.length} rows — ${invalid} invalid`, invalid?'info':'success');
 }
 
 /* ═══════════════════════════════════════
@@ -1276,8 +1165,8 @@ async function submitBulk(){
    DOWNLOAD TEMPLATE
 ═══════════════════════════════════════ */
 function downloadTemplate(){
-  const h=['Full Name','EID Number','Date of Birth','UAE Mobile','Emergency Contact','Reference','EID Expiry Date','License Expiry','Labour Card Expiry','Insurance Expiry'];
-  const s=['Ahmed Al Mansoori','784-1990-1234567-1','1990-06-15','971501234567','971509876543','HR Department','2027-01-01','2027-06-30','2027-12-31','2028-03-01'];
+  const h=['Name','Eid_Number','Date_Of_Birth','Uae_Mobile','Emergency_Mobile','Reference','Checkout_Exception','Hr_Status'];
+  const s=['Ahmed Al Mansoori','784-1990-1234567-1','15/06/1990','501234567','509876543','HR Department','No','Active'];
   const csv=h.join(',')+'\n'+s.join(',')+'\n';
   const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),download:'employee_bulk_template.csv'});
   a.click(); URL.revokeObjectURL(a.href);
