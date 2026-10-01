@@ -37,7 +37,7 @@
   const INACTIVITY_TTL   = 30 * 60 * 1000;   // 30 min idle
   const ABSOLUTE_TTL     = 8  * 60 * 60 * 1000; // 8 hr hard limit
   const SERVER_CHECK_INT = 5  * 60 * 1000;    // server ping every 5 min
-  const ALLOWED_ORIGIN   = 'https://effimalik.github.io/Testing/';
+  const ALLOWED_ORIGIN   = 'https://effimalik.github.io/fh_supabase/';
    const SUPABASE_URL = 'https://vqmbnegrqfzphaawwogj.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_57UwCMxEzrWmPdkLf85B_A_7h166c55'; // publishable key — safe in browser (RLS protects data)
   const REFRESH_SKEW = 60 * 1000; // refresh access token 60s before it expires
