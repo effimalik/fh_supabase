@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
-<script src="https://effimalik.github.io/Testing/shared/auth.js"></script>
+<script src="https://effimalik.github.io/fh_supabase/shared/auth.js?v=8"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
@@ -392,84 +392,78 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
       <span style="font-size:11px;color:var(--text3);">Auto-generated from last 8 digits of EID</span>
     </div>
 
-    <!-- Hidden iframe -->
-    <iframe name="__frm" id="__frm" style="display:none;"
-      onload="if(window._submitted){showToast('Employee saved successfully!','success');resetForm();window._submitted=false;}"></iframe>
+    <form id="employeeForm" onsubmit="return handleSubmit(event);">
 
-    <form id="employeeForm"
-      action="https://docs.google.com/forms/d/e/1FAIpQLSekyWrAEOqXpE2Zb3k5dGV0Y_4Ka1pUSrnEWev_hH-HJxL87A/formResponse"
-      method="POST" target="__frm" onsubmit="return handleSubmit(event);">
-
-      <input type="hidden" name="entry.108507522" id="ef-empid"/>
+      <input type="hidden" id="ef-empid"/>
 
       <div class="form-grid">
         <!-- Full Name -->
         <div class="field">
           <label>Full Name <span class="req">*</span></label>
-          <input type="text" id="ef-name" name="entry.1124526098" placeholder="Ahmed Al Mansoori"/>
+          <input type="text" id="ef-name" placeholder="Ahmed Al Mansoori"/>
           <div class="field-msg hint" id="msg-name"></div>
         </div>
 
         <!-- EID -->
         <div class="field">
           <label>EID Number <span class="req">*</span></label>
-          <input type="text" id="ef-eid" name="entry.605013500" placeholder="784-XXXX-XXXXXXX-X" maxlength="18"/>
+          <input type="text" id="ef-eid" placeholder="784-XXXX-XXXXXXX-X" maxlength="18"/>
           <div class="field-msg hint" id="msg-eid"><span style="color:var(--text3)">Format: 784-YYYY-XXXXXXX-X</span></div>
         </div>
 
         <!-- DOB -->
         <div class="field">
           <label>Date of Birth <span class="req">*</span></label>
-          <input type="date" id="ef-dob" name="entry.312378018"/>
+          <input type="date" id="ef-dob"/>
           <div class="field-msg hint" id="msg-dob"><span style="color:var(--text3)">Must be 18+ years old</span></div>
         </div>
 
         <!-- UAE Mobile -->
         <div class="field">
           <label>UAE Mobile <span class="req">*</span></label>
-          <input type="tel" id="ef-mobile" name="entry.439131661" placeholder="+971 50 123 4567"/>
+          <input type="tel" id="ef-mobile" placeholder="+971 50 123 4567"/>
           <div class="field-msg hint" id="msg-mobile"></div>
         </div>
 
         <!-- Emergency -->
         <div class="field">
           <label>Emergency Contact <span class="req">*</span></label>
-          <input type="tel" id="ef-emergency" name="entry.1139688451" placeholder="+971 50 987 6543"/>
+          <input type="tel" id="ef-emergency" placeholder="+971 50 987 6543"/>
           <div class="field-msg hint" id="msg-emergency"></div>
         </div>
 
         <!-- Reference -->
         <div class="field">
           <label>Reference <span class="req">*</span></label>
-          <input type="text" id="ef-ref" name="entry.642094797" placeholder="Referred by…"/>
+          <input type="text" id="ef-ref" placeholder="Referred by…"/>
           <div class="field-msg hint" id="msg-ref"></div>
         </div>
 
         <!-- EID Expiry -->
         <div class="field">
           <label>EID Expiry Date</label>
-          <input type="date" id="ef-eid-exp" name="entry.1962789080"/>
+          <input type="date" id="ef-eid-exp"/>
           <div class="field-msg hint" id="msg-eid-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
         </div>
 
         <!-- License Expiry -->
         <div class="field">
           <label>License Expiry</label>
-          <input type="date" id="ef-lic-exp" name="entry.2090960301"/>
+          <input type="date" id="ef-lic-exp"/>
           <div class="field-msg hint" id="msg-lic-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
         </div>
 
         <!-- Labour Card -->
         <div class="field">
           <label>Labour Card Expiry</label>
-          <input type="date" id="ef-lab-exp" name="entry.1595041081"/>
+          <input type="date" id="ef-lab-exp"/>
           <div class="field-msg hint" id="msg-lab-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
         </div>
 
         <!-- Insurance -->
         <div class="field">
           <label>Insurance Expiry</label>
-          <input type="date" id="ef-ins-exp" name="entry.203686715"/>
+          <input type="date" id="ef-ins-exp"/>
           <div class="field-msg hint" id="msg-ins-exp"><span style="color:var(--text3)">Must be a future date if provided</span></div>
         </div>
       </div>
@@ -608,6 +602,192 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 
 <script>
 'use strict';
+
+/* ═══ SUPABASE SAVE ═══════════════════════════════════════════ */
+const CONFIG = {
+  SUPABASE_URL     : 'https://vqmbnegrqfzphaawwogj.supabase.co',
+  SUPABASE_KEY     : 'sb_publishable_57UwCMxEzrWmPdkLf85B_A_7h166c55', // publishable key — safe in browser
+  GOOGLE_CLIENT_ID : '743775120253-lr54jgst59jqr5s61vc3i4o3rnfn596a.apps.googleusercontent.com',
+};
+
+const EMP_TABLE   = 'emp_log';
+const EMP_DATASET = 'ap2_employee';
+const BULK_CHUNK  = 50;
+
+/* Column names are detected automatically from emp_log (matching is case/underscore
+   insensitive). Only fill this in if the check below reports a column it can't match,
+   e.g.  EMP_COLUMNS = { licExp: 'Licence_Expiry' }                                  */
+const EMP_COLUMNS = {};
+const EMP_ALIASES = {
+  empId    : ['empid','employeeid'],
+  name     : ['name','fullname','employeename'],
+  eid      : ['eidnumber','eid','eidno','emiratesid'],
+  dob      : ['dateofbirth','dob','birthdate'],
+  mobile   : ['uaemobile','mobile','mobilenumber','phone'],
+  emergency: ['emergencymobile','emergencycontact','emergencyphone','emergency'],
+  ref      : ['reference','ref','referredby'],
+  eidExp   : ['eidexpiry','eidexpirydate','eidexpiration','eidexp'],
+  licExp   : ['licenseexpiry','licenceexpiry','licenseexpirydate','licexpiry','licexp'],
+  labExp   : ['labourexpiry','laboureexpiry','laborexpiry','labourcardexpiry','labexpiry','labexp'],
+  insExp   : ['insuranceexpiry','insexpiry','insuranceexpirydate','insexp'],
+};
+
+async function dbError(res){
+  let b = {}; try { b = await res.json(); } catch(_) {}
+  const msg = b.message || ('HTTP ' + res.status);
+  let text;
+  if (res.status === 401)                         text = 'Your session has expired. Please log in again.';
+  else if (res.status === 403 || b.code === '42501') text = "You don't have permission to add employees.";
+  else if (b.code === '23505')                    text = 'This employee already exists (duplicate Employee ID).';
+  else if (b.code === '23502')                    text = 'A required database column is empty: ' + msg;
+  else if (b.code === '22P02' || b.code === '22007' || b.code === '22008')
+                                                  text = 'A value has the wrong format for its database column: ' + msg;
+  else if (b.code === 'PGRST204')                 text = 'Database column not found: ' + msg;
+  else                                            text = 'Could not save: ' + msg;
+  const err = new Error(text); err.status = res.status; err.code = b.code; return err;
+}
+
+async function sb(path, opts){
+  opts = opts || {};
+  const token = window.Auth && Auth.getAccessToken ? await Auth.getAccessToken() : null;
+  if (!token) throw new Error('Your session has expired. Please log in again.');
+  const res = await fetch(CONFIG.SUPABASE_URL + '/rest/v1/' + path, {
+    method : opts.method || 'GET',
+    headers: Object.assign({ apikey: CONFIG.SUPABASE_KEY, Authorization: 'Bearer ' + token,
+                             'Content-Type': 'application/json' }, opts.headers || {}),
+    body   : opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  if (!res.ok) throw await dbError(res);
+  return res;
+}
+
+function checkCanAdd(){
+  const perms = (window.Auth && Auth.getPermissions && Auth.getPermissions()) || null;
+  if (perms && !(perms[EMP_DATASET] && perms[EMP_DATASET].access && perms[EMP_DATASET].access.add))
+    throw new Error("You don't have permission to add employees.");
+}
+
+/* Work out the real emp_log column for each form field (once per page load). */
+let _empColsPromise = null;
+function getEmpColumns(){
+  if (!_empColsPromise) _empColsPromise = (async () => {
+    const res  = await sb(EMP_TABLE + '?select=*&limit=1');
+    const rows = await res.json();
+    if (!rows.length) throw new Error('emp_log is empty, so column names cannot be detected. Fill in EMP_COLUMNS at the top of this script.');
+    const byNorm = {};
+    Object.keys(rows[0]).forEach(c => { byNorm[c.toLowerCase().replace(/[^a-z0-9]/g, '')] = c; });
+    const map = {}, missing = [];
+    for (const [field, aliases] of Object.entries(EMP_ALIASES)) {
+      map[field] = EMP_COLUMNS[field] || aliases.map(a => byNorm[a]).find(Boolean);
+      if (!map[field]) missing.push(field);
+    }
+    if (missing.length)
+      throw new Error('Could not match emp_log columns for: ' + missing.join(', ') +
+        '. Set them in EMP_COLUMNS. Columns found: ' + Object.keys(rows[0]).join(', '));
+    console.log('[addEmp] emp_log column map', map);
+    return map;
+  })().catch(e => { _empColsPromise = null; throw e; });
+  return _empColsPromise;
+}
+
+const normId = v => String(v == null ? '' : v).trim().replace(/^0+(?=\d)/, '');
+
+function isoDate(x){
+  const s = (x == null ? '' : String(x)).trim();
+  if (!s) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);          // DD/MM/YYYY (UAE order)
+  if (m) {
+    const dd = +m[1], mm = +m[2];
+    if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31)
+      return m[3] + '-' + String(mm).padStart(2, '0') + '-' + String(dd).padStart(2, '0');
+  }
+  throw new Error('Invalid date "' + s + '" (use YYYY-MM-DD)');
+}
+
+/* r = { name, eid, dob, mobile, emergency, ref, eidExp, licExp, labExp, insExp } → emp_log row */
+function toRecord(cols, r){
+  const txt = x => { const s = (x == null ? '' : String(x)).trim(); return s === '' ? null : s; };
+  const o = {};
+  o[cols.empId]     = extractEmpId(r.eid);
+  o[cols.name]      = txt(r.name);
+  o[cols.eid]       = txt(r.eid);
+  o[cols.dob]       = isoDate(r.dob);
+  o[cols.mobile]    = txt(r.mobile);
+  o[cols.emergency] = txt(r.emergency);
+  o[cols.ref]       = txt(r.ref);
+  o[cols.eidExp]    = isoDate(r.eidExp);
+  o[cols.licExp]    = isoDate(r.licExp);
+  o[cols.labExp]    = isoDate(r.labExp);
+  o[cols.insExp]    = isoDate(r.insExp);
+  return o;
+}
+
+async function insertRecords(recs){
+  await sb(EMP_TABLE, { method: 'POST', headers: { Prefer: 'return=minimal' }, body: recs });
+}
+
+async function empIdExists(col, id){
+  const res  = await sb(EMP_TABLE + '?select=' + encodeURIComponent(col) + '&' + encodeURIComponent(col) +
+                        '=eq.' + encodeURIComponent(id) + '&limit=1');
+  return (await res.json()).length > 0;
+}
+
+async function fetchExistingIds(col){
+  const ids = new Set(); let from = 0;
+  for (;;) {
+    let page;
+    try {
+      const res = await sb(EMP_TABLE + '?select=' + encodeURIComponent(col),
+                           { headers: { 'Range-Unit': 'items', Range: from + '-' + (from + 999) } });
+      page = await res.json();
+    } catch (e) { if (e.status === 416) break; throw e; }
+    page.forEach(r => ids.add(normId(r[col])));
+    if (page.length < 1000) break;
+    from += 1000;
+  }
+  return ids;
+}
+
+/* Make the employee list in the main app show the new rows. */
+async function refreshParentCache(){
+  try {
+    const A = window.parent && window.parent.AdminPro;
+    if (A && A.sync)              await A.sync(EMP_DATASET, true);
+    else if (A && A.forceRefresh) await A.forceRefresh(EMP_DATASET);
+    if (window.parent && typeof window.parent._notifyFrame === 'function') window.parent._notifyFrame();
+  } catch (e) { console.warn('[addEmp] cache refresh skipped:', e.message); }
+}
+
+async function saveEmployee(){
+  const btn = document.querySelector('#employeeForm button[type="submit"]');
+  const label = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2"></i> Saving...';
+  try {
+    checkCanAdd();
+    const r = {
+      name: $('ef-name').value, eid: $('ef-eid').value, dob: $('ef-dob').value,
+      mobile: $('ef-mobile').value, emergency: $('ef-emergency').value, ref: $('ef-ref').value,
+      eidExp: $('ef-eid-exp').value, licExp: $('ef-lic-exp').value,
+      labExp: $('ef-lab-exp').value, insExp: $('ef-ins-exp').value,
+    };
+    const cols = await getEmpColumns();
+    if (await empIdExists(cols.empId, extractEmpId(r.eid)))
+      throw new Error('Employee ID ' + extractEmpId(r.eid) + ' already exists.');
+    await insertRecords([toRecord(cols, r)]);
+    showToast('Employee saved successfully!', 'success');
+    resetForm();
+    refreshParentCache();
+  } catch (e) {
+    console.error('[addEmp] save failed', e);
+    showToast(e.message || 'Could not save the employee.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = label;
+  }
+}
+/* ═══ END SUPABASE SAVE ═══════════════════════════════════════ */
 
 /* ═══════════════════════════════════════
    HELPERS
@@ -797,8 +977,9 @@ function handleSubmit(e){
   }
 
   if(!ok){ e.preventDefault(); showToast('Please fix the highlighted errors.','error'); return false; }
-  window._submitted=true;
-  return true;
+  e.preventDefault();
+  saveEmployee();
+  return false;
 }
 
 function resetForm(){
@@ -1032,37 +1213,62 @@ async function submitBulk(){
   const btn=$('submitBulkBtn');
   wrap.classList.add('show');
   btn.disabled=true;
-  btn.innerHTML='<i class="ti ti-loader-2"></i> Submitting…';
+  btn.innerHTML='<i class="ti ti-loader-2"></i> Submitting...';
+  bar.style.width='0%';
 
-  const URL='https://docs.google.com/forms/d/e/1FAIpQLSekyWrAEOqXpE2Zb3k5dGV0Y_4Ka1pUSrnEWev_hH-HJxL87A/formResponse';
-  let done=0;
-  for(const r of validRows){
-    const params=new URLSearchParams({
-      'entry.108507522': extractEmpId(r.eid),
-      'entry.1124526098': r.name,
-      'entry.605013500': r.eid,
-      'entry.312378018': r.dob,
-      'entry.439131661': r.mobile,
-      'entry.1139688451': r.emergency,
-      'entry.642094797': r.ref,
-      'entry.1962789080': r.eidExp,
-      'entry.2090960301': r.licExp,
-      'entry.1595041081': r.labExp,
-      'entry.203686715': r.insExp,
-    });
-    try{ await fetch(URL,{method:'POST',mode:'no-cors',body:params}); }catch(e){}
-    done++;
-    const pct=Math.round((done/validRows.length)*100);
-    bar.style.width=pct+'%';
-    txt.textContent=`Submitting ${done} of ${validRows.length}…`;
-    await new Promise(res=>setTimeout(res,280));
+  let saved=0, skipped=0, stopped=false;
+  const failed=[];
+  try{
+    checkCanAdd();
+    const cols=await getEmpColumns();
+    txt.textContent='Checking existing employees...';
+    const existing=await fetchExistingIds(cols.empId);
+
+    const recs=[];
+    for(const r of validRows){
+      const key=normId(extractEmpId(r.eid));
+      if(existing.has(key)){ skipped++; continue; }          // already in emp_log (or repeated in file)
+      try{ recs.push({ name:r.name, rec:toRecord(cols,r) }); existing.add(key); }
+      catch(e){ failed.push(r.name+': '+e.message); }
+    }
+
+    let done=0;
+    for(let i=0;i<recs.length;i+=BULK_CHUNK){
+      const chunk=recs.slice(i,i+BULK_CHUNK);
+      try{ await insertRecords(chunk.map(c=>c.rec)); saved+=chunk.length; }
+      catch(e){
+        if(e.status===401||e.status===403) throw e;
+        for(const c of chunk){                                  // isolate the row(s) that failed
+          try{ await insertRecords([c.rec]); saved++; }
+          catch(e2){
+            if(e2.status===401||e2.status===403) throw e2;
+            failed.push(c.name+': '+e2.message);
+          }
+        }
+      }
+      done+=chunk.length;
+      bar.style.width=Math.round(done/recs.length*100)+'%';
+      txt.textContent=`Saving ${done} of ${recs.length}...`;
+    }
+  }catch(e){
+    stopped=true;
+    console.error('[addEmp] bulk save stopped', e);
+    txt.textContent='Stopped: '+(e.message||'bulk save failed');
+    showToast(e.message||'Bulk save failed.','error');
   }
 
-  bar.style.width='100%';
-  txt.textContent=`Done! ${done} employee${done!==1?'s':''} submitted.`;
   btn.disabled=false;
   btn.innerHTML='<i class="ti ti-rocket"></i> Submit Valid Rows';
-  showToast(`${done} employee${done!==1?'s':''} submitted successfully!`,'success');
+  if(saved) refreshParentCache();
+  if(stopped) return;                                           // keep the file so the user can retry
+
+  bar.style.width='100%';
+  const parts=[`${saved} saved`];
+  if(skipped) parts.push(`${skipped} already existed`);
+  if(failed.length) parts.push(`${failed.length} failed`);
+  txt.textContent='Done! '+parts.join(', ')+'.';
+  if(failed.length) console.warn('[addEmp] rows that failed:', failed);
+  showToast(parts.join(', ')+'.', failed.length?'error':(skipped?'info':'success'));
   clearFile();
 }
 
